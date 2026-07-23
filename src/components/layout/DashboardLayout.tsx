@@ -3,6 +3,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 import DashboardNavbar from './DashboardNavbar';
 import Sidebar from './Sidebar';
 import { FloatingDock } from '../ui/floating-dock';
+import ShapeGrid from '../ui/ShapeGrid';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   LayoutDashboard, Landmark, Briefcase, Settings, Scale, MessageCircle, Newspaper,
@@ -33,12 +34,26 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-black overflow-hidden relative">
-      <Sidebar />
-      <div className="flex-1 flex flex-col relative overflow-hidden min-w-0 w-full">
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
+        <ShapeGrid 
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="#2F293A"
+          hoverFillColor="#222"
+          shape="square"
+          hoverTrailAmount={0}
+        />
+      </div>
+      <div className="flex z-10 w-full h-full">
+        <Sidebar />
+        <div className="flex-1 flex flex-col relative overflow-hidden min-w-0 w-full">
         <DashboardNavbar />
         <main className="flex-1 min-h-0 flex flex-col overflow-y-auto custom-scrollbar relative pb-[calc(6rem+env(safe-area-inset-bottom,0px))] md:pb-0">
           <Outlet />
         </main>
+      </div>
+      
       </div>
       
       {/* Mobile Floating Navigation Dock */}
