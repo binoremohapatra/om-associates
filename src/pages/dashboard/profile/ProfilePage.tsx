@@ -34,6 +34,15 @@ export default function ProfilePage() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); // initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     setFormData({
@@ -98,6 +107,18 @@ export default function ProfilePage() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout');
+      logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed', error);
+      logout();
+      navigate('/login');
+    }
+  };
+
   const handleRevokeSession = async (sessionId: string) => {
     try {
       await api.delete(`/user/sessions/${sessionId}`);
@@ -112,16 +133,12 @@ export default function ProfilePage() {
     if (!file) return;
     try {
       setIsUploadingAvatar(true);
-      const fd = new FormData();
-      fd.append('avatar', file);
-      // Wait, we didn't implement avatar upload in the local api. 
-      // This is just a placeholder until we do.
       /*
-      const res = await api.post('/user/profile/avatar', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/upload', formData);
       if (res.data.success) {
-        updateUser({ ...user, ...res.data.data.user });
+        updateUser({ ...user, avatarUrl: res.data.data.url });
       }
       */
     } catch (err) {
@@ -241,7 +258,7 @@ export default function ProfilePage() {
 
         <div className="absolute inset-0">
           <Lanyard
-            position={[0, 0, 16]}
+            position={[0, 0, isMobile ? 24 : 16]}
             gravity={[0, -40, 0]}
             frontImage={frontImage}
             imageFit="cover"
