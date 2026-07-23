@@ -66,8 +66,8 @@ export default function InvoicesPage() {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar pb-12 flex flex-col h-full">
       {/* Controls */}
-      <div className="flex items-center gap-4 mb-6 shrink-0">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6 shrink-0">
+        <div className="relative flex-1 w-full max-w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input 
             type="text"
@@ -87,12 +87,12 @@ export default function InvoicesPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.02]">
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Invoice No</th>
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Client</th>
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap">Invoice No</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap">Date</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap">Client</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap">Amount</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -125,7 +125,7 @@ export default function InvoicesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button 
                           title="Download PDF"
                           className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"

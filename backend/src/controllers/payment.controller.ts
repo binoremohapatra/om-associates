@@ -9,21 +9,49 @@ export class PaymentController {
     try {
       const orgId = req.user!.organizationId;
 
-      // In a real scenario, filter by dates. Here we mock some analytics.
+      const invoices = await prisma.invoice.findMany({
+        where: { organizationId: orgId },
+        select: {
+          status: true,
+          totalPaise: true,
+          paidAt: true,
+          dueDate: true,
+        }
+      });
+
+      let totalRevenuePaise = BigInt(0);
+      let pendingBillsPaise = BigInt(0);
+      let overdueInvoices = 0;
+
+      const now = new Date();
+      const revenueByMonth: Record<string, number> = {};
+
+      for (const inv of invoices) {
+        if (inv.status === 'PAID') {
+          totalRevenuePaise += inv.totalPaise;
+          if (inv.paidAt) {
+            const monthName = inv.paidAt.toLocaleString('default', { month: 'short' });
+            revenueByMonth[monthName] = (revenueByMonth[monthName] || 0) + Number(inv.totalPaise) / 100;
+          }
+        } else if (inv.status === 'SENT' || inv.status === 'PENDING') {
+          pendingBillsPaise += inv.totalPaise;
+          if (inv.dueDate && inv.dueDate < now) {
+            overdueInvoices++;
+          }
+        } else if (inv.status === 'OVERDUE') {
+          pendingBillsPaise += inv.totalPaise;
+          overdueInvoices++;
+        }
+      }
+
+      const revenueData = Object.entries(revenueByMonth).map(([name, amount]) => ({ name, amount }));
+
       const analytics = {
-        totalRevenue: 1250000, // 12,500.00
-        pendingBills: 450000,  // 4,500.00
-        activeSubscriptions: 12,
-        overdueInvoices: 3,
-        revenueData: [
-          { name: 'Jan', amount: 4000 },
-          { name: 'Feb', amount: 3000 },
-          { name: 'Mar', amount: 2000 },
-          { name: 'Apr', amount: 2780 },
-          { name: 'May', amount: 1890 },
-          { name: 'Jun', amount: 2390 },
-          { name: 'Jul', amount: 3490 },
-        ]
+        totalRevenue: Number(totalRevenuePaise) / 100,
+        pendingBills: Number(pendingBillsPaise) / 100,
+        activeSubscriptions: 0,
+        overdueInvoices,
+        revenueData
       };
 
       res.status(200).json({ success: true, data: analytics });

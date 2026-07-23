@@ -19,6 +19,7 @@ const sidebarLinks = [
   { name: 'News', path: '/news', icon: Newspaper },
   { name: 'Queries', path: '/queries', icon: MessageSquare },
   { name: 'Appointments', path: '/appointments', icon: Calendar },
+  { name: 'Payments', path: '/payments', icon: CreditCard },
   { name: 'Analytics', path: '/analytics', icon: BarChart2 },
   { name: 'Settings', path: '/settings', icon: Settings },
 ];

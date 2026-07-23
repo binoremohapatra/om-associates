@@ -37,7 +37,10 @@ import DocumentDashboard from './pages/dashboard/documents/DocumentDashboard';
 import StarredPage from './pages/dashboard/documents/StarredPage';
 import TrashPage from './pages/dashboard/documents/TrashPage';
 
-
+// Payments Module
+import PaymentsLayout from './pages/dashboard/payments/PaymentsLayout';
+import PaymentsDashboardPage from './pages/dashboard/payments/PaymentsDashboardPage';
+import InvoicesPage from './pages/dashboard/payments/InvoicesPage';
 
 // Income Tax
 import IncomeTaxLayout from './pages/dashboard/income-tax/IncomeTaxLayout';
@@ -116,6 +119,13 @@ export default function App() {
                 <Route path="trash" element={<TrashPage />} />
                 <Route path="recent" element={<DocumentDashboard />} />
               </Route>
+              
+              {/* Payments Module */}
+              <Route path="payments" element={<PaymentsLayout />}>
+                <Route index element={<PaymentsDashboardPage />} />
+                <Route path="invoices" element={<InvoicesPage />} />
+              </Route>
+
               {/* Income Tax */}
               <Route path="income-tax" element={<IncomeTaxLayout />}>
                 <Route index element={<IncomeTaxDashboardPage />} />

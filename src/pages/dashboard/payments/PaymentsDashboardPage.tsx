@@ -2,7 +2,7 @@ import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Clock, FileText, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Clock, FileText, CheckCircle2, Building2 } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { MagicBentoGrid } from '../../../components/ui/MagicBento';
 import { formatCurrency } from '../../../lib/utils';
@@ -41,7 +41,7 @@ export default function PaymentsDashboardPage() {
   return (
     <MagicBentoGrid className="flex flex-col shrink-0 w-full p-4 sm:p-6 lg:p-8 pb-12 gap-6">
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-8">
         <BentoCard>
           <div className="flex items-center gap-4 mb-4">
             <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
@@ -72,20 +72,7 @@ export default function PaymentsDashboardPage() {
           </p>
         </BentoCard>
 
-        <BentoCard>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-blue-400" />
-            </div>
-            <p className="text-slate-400 font-medium text-sm">Active Subscriptions</p>
-          </div>
-          <h2 className="text-3xl font-display font-medium text-white mb-2">
-            {data.activeSubscriptions}
-          </h2>
-          <p className="text-sm text-slate-500">
-            Generating recurring revenue
-          </p>
-        </BentoCard>
+
 
         <BentoCard className="bg-gradient-to-br from-[#C9A94B]/20 to-transparent border-[#C9A94B]/30">
           <div className="flex items-center gap-4 mb-4">
@@ -107,8 +94,8 @@ export default function PaymentsDashboardPage() {
       </div>
 
       {/* Revenue Chart */}
-      <BentoCard className="mb-8" title="Revenue Overview" description="Monthly collected revenue vs pending.">
-        <div className="h-[400px] w-full mt-6">
+      <BentoCard className="mb-4 sm:mb-8" title="Revenue Overview" description="Monthly collected revenue vs pending.">
+        <div className="h-[250px] sm:h-[400px] w-full mt-6">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.revenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>

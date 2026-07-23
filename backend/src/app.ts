@@ -23,6 +23,7 @@ import taxRoutes from './routes/tax.routes';
 import platformRoutes from './routes/platform.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import newsRoutes from './routes/news.routes';
+import paymentRoutes from './routes/payment.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import incomeTaxRoutes from './routes/income-tax.routes';
 import legalRoutes from './routes/legal.routes';
@@ -73,6 +74,7 @@ apiRouter.use('/income-tax', incomeTaxRoutes);
 apiRouter.use('/legal', legalRoutes);
 apiRouter.use('/import-export', importExportRoutes);
 apiRouter.use('/appointments', appointmentRoutes);
+apiRouter.use('/payments', paymentRoutes);
 
 app.use('/api/v1', apiRouter);
 

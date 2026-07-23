@@ -15,6 +15,15 @@ import legalRoutes from './routes/legal.routes';
 import importExportRoutes from './routes/import-export.routes';
 import { startScheduler } from './jobs/scheduler';
 
+// Catch unhandled rejections and exceptions to prevent server crashes
+process.on('uncaughtException', (err) => {
+  logger.error({ err }, 'Uncaught Exception');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error({ reason, promise }, 'Unhandled Rejection');
+});
+
 async function bootstrap() {
   try {
     await connectDatabase();

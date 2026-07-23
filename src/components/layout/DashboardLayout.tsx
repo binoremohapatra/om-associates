@@ -21,7 +21,7 @@ const navItems = [
   { title: 'News', path: '/news', icon: <Newspaper className="w-full h-full" /> },
   { title: 'Queries', path: '/queries', icon: <MessageCircle className="w-full h-full" /> },
   { title: 'Meetings', path: '/appointments', icon: <Calendar className="w-full h-full" /> },
-
+  { title: 'Payments', path: '/payments', icon: <CreditCard className="w-full h-full" /> },
   { title: 'Analytics', path: '/analytics', icon: <BarChart2 className="w-full h-full" /> },
   { title: 'Settings', path: '/settings', icon: <Settings className="w-full h-full" /> },
 ];
