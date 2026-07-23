@@ -8,6 +8,7 @@ interface Organization {
 
 interface User {
   id: string;
+  userCode?: string;
   email: string;
   name: string;
   phone?: string;
