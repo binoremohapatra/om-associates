@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Briefcase, Landmark, CheckCircle2, Clock } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { MagicBentoGrid } from '../../../components/ui/MagicBento';
@@ -14,9 +15,7 @@ export default function IncomeTaxDashboardPage() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const response = await axios.get('/api/v1/income-tax/analytics', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/income-tax/analytics');
         if (response.data.success) setData(response.data.data);
       } catch (error) {
         console.error('Failed to fetch income tax analytics', error);
@@ -28,7 +27,7 @@ export default function IncomeTaxDashboardPage() {
   useEffect(() => {
     const fetchItNews = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/news?department=income-tax&limit=10');
+        const res = await fetch('/news?department=income-tax&limit=10');
         const d = await res.json();
         if (d.success) setItNews(d.data || []);
       } catch {} finally { setNewsLoading(false); }

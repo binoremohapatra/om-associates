@@ -1,6 +1,7 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import axios from 'axios';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../../lib/utils';
 import {
@@ -41,12 +42,11 @@ export default function DocumentDashboard() {
   const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const params: any = {};
       if (search) params.search = search;
       if (selectedCategory) params.category = selectedCategory;
 
-      const res = await axios.get('http://localhost:4000/api/v1/documents', {
+      const res = await api.get('/documents', {
         headers: { Authorization: `Bearer ${token}` },
         params
       });
@@ -70,7 +70,6 @@ export default function DocumentDashboard() {
   };
 
   const uploadFiles = async (files: File[]) => {
-    const token = localStorage.getItem('token');
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
@@ -80,7 +79,7 @@ export default function DocumentDashboard() {
       // In production, a picker would be shown
       formData.append('clientId', 'default');
       try {
-        await axios.post('http://localhost:4000/api/v1/documents/upload', formData, {
+        await api.post('/documents/upload', formData, {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
         });
       } catch (e) { /* silently fail for now */ }
@@ -90,8 +89,7 @@ export default function DocumentDashboard() {
 
   const handleStar = async (doc: any) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:4000/api/v1/documents/${doc.id}/star`,
+      await api.patch(`/documents/${doc.id}/star`,
         { isStarred: !doc.isStarred },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -101,8 +99,7 @@ export default function DocumentDashboard() {
 
   const handleTrash = async (doc: any) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/v1/documents/${doc.id}`,
+      await api.delete(`/documents/${doc.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchDocuments();

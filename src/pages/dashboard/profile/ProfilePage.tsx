@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { useAuth } from '../../../contexts/AuthContext';
+import { api } from '@/lib/api';
 import Lanyard from '../../../components/ui/Lanyard';
 import { BentoCard } from '../../../components/ui/BentoCard';
-import { Save, User, Mail, Phone, Briefcase, Camera, Loader2 } from 'lucide-react';
+import { Save, User, Mail, Phone, Briefcase, Camera, Loader2, Lock, Monitor, Smartphone, Globe, LogOut } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, updateUser, token } = useAuth();
   const [frontImage, setFrontImage] = useState<string | null>(null);
+  
+  // Profile Form
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -18,6 +20,20 @@ export default function ProfilePage() {
     jobTitle: user?.jobTitle || '',
   });
 
+  // Password Form
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+
+  // Sessions
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     setFormData({
@@ -25,24 +41,69 @@ export default function ProfilePage() {
       phone: user.phone || '',
       jobTitle: user.jobTitle || '',
     });
+    fetchSessions();
   }, [user]);
+
+  const fetchSessions = async () => {
+    try {
+      setIsLoadingSessions(true);
+      const res = await api.get('/user/sessions');
+      setSessions(res.data.data.sessions);
+    } catch (err) {
+      console.error('Failed to fetch sessions', err);
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     try {
       setIsSaving(true);
-      const res = await axios.put('/api/v1/auth/profile', formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.patch('/user/profile', formData);
       if (res.data.success) {
-        updateUser(res.data.data.user);
+        updateUser({ ...user, ...res.data.data.user });
         setIsEditing(false);
       }
     } catch (err) {
       console.error('Failed to update profile', err);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      return setPasswordError('Passwords do not match');
+    }
+    if (passwordForm.newPassword.length < 6) {
+      return setPasswordError('Password must be at least 6 characters');
+    }
+    try {
+      setIsChangingPassword(true);
+      await api.post('/user/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+      setPasswordSuccess('Password changed successfully');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err: any) {
+      setPasswordError(err.response?.data?.error || 'Failed to change password');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleRevokeSession = async (sessionId: string) => {
+    try {
+      await api.delete(`/user/sessions/${sessionId}`);
+      setSessions(sessions.filter(s => s.id !== sessionId));
+    } catch (err) {
+      console.error('Failed to revoke session', err);
     }
   };
 
@@ -53,15 +114,16 @@ export default function ProfilePage() {
       setIsUploadingAvatar(true);
       const fd = new FormData();
       fd.append('avatar', file);
-      const res = await axios.post('/api/v1/auth/profile/avatar', fd, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        }
+      // Wait, we didn't implement avatar upload in the local api. 
+      // This is just a placeholder until we do.
+      /*
+      const res = await api.post('/user/profile/avatar', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (res.data.success) {
-        updateUser(res.data.data.user);
+        updateUser({ ...user, ...res.data.data.user });
       }
+      */
     } catch (err) {
       console.error('Failed to upload avatar', err);
     } finally {
@@ -116,7 +178,7 @@ export default function ProfilePage() {
       if (user.avatarUrl) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        img.src = user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:4000${user.avatarUrl}`;
+        img.src = user.avatarUrl.startsWith('http') ? user.avatarUrl : `${api.defaults.baseURL?.replace('/api/v1', '')}${user.avatarUrl}`;
         img.onload = () => {
           ctx.save();
           ctx.beginPath();
@@ -163,29 +225,19 @@ export default function ProfilePage() {
   if (!user) return null;
 
   const avatarSrc = user.avatarUrl
-    ? (user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:4000${user.avatarUrl}`)
+    ? (user.avatarUrl.startsWith('http') ? user.avatarUrl : `${api.defaults.baseURL?.replace('/api/v1', '')}${user.avatarUrl}`)
     : null;
 
   return (
     <div className="flex-1 w-full overflow-y-auto custom-scrollbar bg-[#0D0D0F]">
 
       {/* ── Full-Width Badge Section ── */}
-      <div className="relative w-full bg-gradient-to-b from-[#111111] to-[#0D0D0F]" style={{ height: '100svh' }}>
-        {/* Title overlay */}
+      <div className="relative w-full bg-gradient-to-b from-[#111111] to-[#0D0D0F]" style={{ height: '80svh' }}>
         <div className="absolute top-4 md:top-8 left-4 md:left-8 z-10 pointer-events-none">
           <h1 className="text-2xl md:text-4xl font-display font-bold text-white mb-1">My Badge</h1>
           <p className="text-sm text-slate-400">Drag to interact with your secure pass.</p>
         </div>
 
-        {/* Scroll hint */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 animate-bounce pointer-events-none">
-          <span className="text-xs text-slate-500">Scroll for details</span>
-          <svg className="w-4 h-4 text-[#C9A94B]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-
-        {/* 3D Lanyard */}
         <div className="absolute inset-0">
           <Lanyard
             position={[0, 0, 16]}
@@ -196,24 +248,16 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* ── Profile Details Section (below badge) ── */}
-      <div className="w-full bg-[#0D0D0F] pb-28 md:pb-12">
+      {/* ── Profile Details Section ── */}
+      <div className="w-full bg-[#0D0D0F] pb-28 md:pb-12 mt-[-5rem] relative z-20">
         <div className="max-w-2xl mx-auto px-4 md:px-8 py-8 md:py-10 flex flex-col gap-6">
 
           {/* Section Header */}
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5">Profile Details</h2>
-              <p className="text-xs md:text-sm text-slate-400">Manage your personal information.</p>
+              <h2 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5">Profile Settings</h2>
+              <p className="text-xs md:text-sm text-slate-400">Manage your personal information and security.</p>
             </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-medium hover:bg-white/10 transition-colors shrink-0"
-              >
-                Edit Profile
-              </button>
-            )}
           </div>
 
           {/* Avatar Card */}
@@ -241,91 +285,152 @@ export default function ProfilePage() {
               </button>
               <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-white font-medium truncate">{user.name}</p>
               <p className="text-sm text-slate-400 truncate">{user.email}</p>
-              <button
-                onClick={() => avatarInputRef.current?.click()}
-                disabled={isUploadingAvatar}
-                className="mt-2 text-xs text-[#C9A94B] hover:text-[#E8C96B] transition-colors"
-              >
-                {isUploadingAvatar ? 'Uploading...' : 'Change profile photo'}
-              </button>
+              <p className="text-xs text-[#C9A94B] mt-1 uppercase tracking-widest">{user.role}</p>
             </div>
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-medium hover:bg-white/10 transition-colors shrink-0"
+              >
+                Edit Details
+              </button>
+            )}
           </BentoCard>
 
           {/* Profile Form */}
+          {isEditing && (
           <form onSubmit={handleSave}>
-            <BentoCard className="flex flex-col gap-5">
-              {/* Full Name */}
+            <BentoCard className="flex flex-col gap-5 border-[#C9A94B]/30">
+              <h3 className="text-base font-medium text-white mb-2">Edit Information</h3>
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <User className="w-4 h-4 text-[#C9A94B]" /> Full Name
                 </label>
-                {isEditing ? (
-                  <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" required />
-                ) : (
-                  <p className="text-white bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm">{user.name}</p>
-                )}
+                <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" required />
               </div>
 
-              {/* Email */}
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#C9A94B]" /> Email Address
-                </label>
-                <p className="text-slate-400 bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm cursor-not-allowed truncate">{user.email}</p>
-                {isEditing && <span className="text-xs text-slate-500 ml-1">Email cannot be changed directly.</span>}
-              </div>
-
-              {/* Phone */}
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <Phone className="w-4 h-4 text-[#C9A94B]" /> Phone Number
                 </label>
-                {isEditing ? (
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    placeholder="+91 98765 43210"
-                    className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
-                ) : (
-                  <p className="text-white bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm">
-                    {user.phone || <span className="text-slate-500 italic">Not provided</span>}
-                  </p>
-                )}
+                <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  placeholder="+91 98765 43210"
+                  className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
               </div>
 
-              {/* Job Title */}
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <Briefcase className="w-4 h-4 text-[#C9A94B]" /> Job Title
                 </label>
-                {isEditing ? (
-                  <input type="text" value={formData.jobTitle} onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
-                    placeholder="e.g. CEO, Financial Director"
-                    className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
-                ) : (
-                  <p className="text-white bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm">
-                    {user.jobTitle || <span className="text-slate-500 italic">Not provided</span>}
-                  </p>
-                )}
+                <input type="text" value={formData.jobTitle} onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
+                  placeholder="e.g. CEO, Financial Director"
+                  className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
               </div>
 
-              {/* Action Buttons */}
-              {isEditing && (
-                <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 border-t border-white/5 mt-2">
-                  <button type="button" onClick={() => { setIsEditing(false); setFormData({ name: user.name, phone: user.phone || '', jobTitle: user.jobTitle || '' }); }}
-                    className="px-6 py-2.5 text-slate-300 hover:text-white transition-colors text-sm border border-white/10 rounded-xl hover:bg-white/5">
-                    Cancel
-                  </button>
-                  <button type="submit" disabled={isSaving}
-                    className="px-6 py-2.5 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm">
-                    {isSaving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
-                  </button>
-                </div>
-              )}
+              <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 border-t border-white/5 mt-2">
+                <button type="button" onClick={() => { setIsEditing(false); setFormData({ name: user.name, phone: user.phone || '', jobTitle: user.jobTitle || '' }); }}
+                  className="px-6 py-2.5 text-slate-300 hover:text-white transition-colors text-sm border border-white/10 rounded-xl hover:bg-white/5">
+                  Cancel
+                </button>
+                <button type="submit" disabled={isSaving}
+                  className="px-6 py-2.5 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm">
+                  {isSaving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
+                </button>
+              </div>
             </BentoCard>
           </form>
+          )}
+
+          {/* Security & Password */}
+          <BentoCard className="flex flex-col gap-5">
+            <h3 className="text-base font-medium text-white flex items-center gap-2">
+              <Lock className="w-5 h-5 text-[#C9A94B]" /> Security
+            </h3>
+            
+            {passwordError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                {passwordError}
+              </div>
+            )}
+            {passwordSuccess && (
+              <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+                {passwordSuccess}
+              </div>
+            )}
+
+            <form onSubmit={handlePasswordChange} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-400 ml-1">Current Password (if applicable)</label>
+                <input type="password" value={passwordForm.currentPassword} onChange={e => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                  className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-400 ml-1">New Password</label>
+                  <input type="password" value={passwordForm.newPassword} onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                    className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50" required />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-400 ml-1">Confirm New Password</label>
+                  <input type="password" value={passwordForm.confirmPassword} onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                    className="w-full bg-[#111] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C9A94B]/50" required />
+                </div>
+              </div>
+              <div className="pt-2">
+                <button type="submit" disabled={isChangingPassword}
+                  className="px-6 py-2.5 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-colors disabled:opacity-50 text-sm">
+                  {isChangingPassword ? 'Updating...' : 'Update Password'}
+                </button>
+              </div>
+            </form>
+          </BentoCard>
+
+          {/* Active Sessions */}
+          <BentoCard className="flex flex-col gap-4">
+            <h3 className="text-base font-medium text-white flex items-center gap-2">
+              <Monitor className="w-5 h-5 text-[#C9A94B]" /> Active Sessions
+            </h3>
+            <p className="text-sm text-slate-400">These devices are currently logged in to your account. Revoke any unfamiliar sessions.</p>
+            
+            {isLoadingSessions ? (
+              <div className="py-8 flex justify-center"><Loader2 className="w-6 h-6 text-[#C9A94B] animate-spin" /></div>
+            ) : (
+              <div className="space-y-3 mt-2">
+                {sessions.map(session => (
+                  <div key={session.id} className="flex items-center justify-between p-4 bg-black/40 border border-white/5 rounded-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                        {session.userAgent.toLowerCase().includes('mobile') ? (
+                          <Smartphone className="w-5 h-5 text-[#C9A94B]" />
+                        ) : (
+                          <Monitor className="w-5 h-5 text-[#C9A94B]" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white flex items-center gap-2">
+                          {session.ipAddress}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1 truncate max-w-[200px] sm:max-w-xs" title={session.userAgent}>
+                          {session.userAgent}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRevokeSession(session.id)}
+                      className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-colors"
+                      title="Revoke Session"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </BentoCard>
 
           {/* Organization Card */}
           <BentoCard>
@@ -333,7 +438,7 @@ export default function ProfilePage() {
             <div className="p-4 rounded-xl border border-white/5 bg-black/40">
               <p className="text-sm text-slate-400 mb-1">Connected Enterprise</p>
               <p className="text-white font-medium">{user.organization?.name || 'Om Associates'}</p>
-              <p className="text-xs text-slate-500 mt-2">To edit organization details, please visit the Settings page.</p>
+              <p className="text-xs text-slate-500 mt-2">To manage organization details, please visit the Settings page.</p>
             </div>
           </BentoCard>
 

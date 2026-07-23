@@ -1,20 +1,21 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Download, Filter, Search, Landmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { BentoCard } from '../../../components/ui/BentoCard';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function GstChallansPage() {
+  const { token } = useAuth();
   const [challans, setChallans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchChallans = async () => {
+      if (!token) return;
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:4000/api/v1/gst/challans', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get('/gst/challans');
         if (res.data.success) {
           setChallans(res.data.data);
         }
@@ -24,8 +25,8 @@ export default function GstChallansPage() {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
+    fetchChallans();
+  }, [token]);
 
   return (
     <div className="flex flex-col gap-6 h-full">

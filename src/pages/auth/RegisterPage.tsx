@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail, Lock, Zap, User, Building, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '@/lib/api';
+import { IconBrandGoogle, IconBrandFacebook, IconBrandGithub, IconBrandWindows, IconBrandApple } from '@tabler/icons-react';
 import { Button } from '../../components/ui/Button';
 import { GlassCard } from '../../components/ui/GlassCard';
 import Hyperspeed from '../../components/ui/Hyperspeed';
@@ -66,22 +67,25 @@ export default function RegisterPage() {
     setError('');
     setIsLoading(true);
     try {
-      const res = await axios.post('http://localhost:4000/api/v1/auth/signup', {
-        name: formData.name,
-        organizationName: formData.company,
-        email: formData.email,
-        password: formData.password
+      await api.post('/auth/register', { 
+        name: formData.name, 
+        email: formData.email, 
+        password: formData.password 
       });
-      if (res.data.success) {
-        login(res.data.data.accessToken, res.data.data.user);
-        navigate('/dashboard');
-      }
+      
+      const res = await api.post('/auth/login', { email: formData.email, password: formData.password });
+      login(res.data.data.accessToken, res.data.data.user);
+      navigate('/dashboard');
     } catch (err: any) {
-      const errorData = err.response?.data?.error;
-      setError(typeof errorData === 'string' ? errorData : (errorData?.message || 'Registration failed'));
+      setError(err.response?.data?.error || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleOAuth = (providerId: string) => {
+    const provider = providerId.replace('oauth_', '');
+    window.location.href = `${api.defaults.baseURL}/auth/${provider}`;
   };
 
   return (
@@ -156,73 +160,75 @@ export default function RegisterPage() {
             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="space-y-1 relative group">
-                <label className="text-xs font-medium text-slate-400 ml-1">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
-                  <input 
-                    type="text" 
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                    placeholder="John Doe"
-                  />
+                <div className="space-y-1 relative group">
+                  <label className="text-xs font-medium text-slate-400 ml-1">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
+                    <input 
+                      type="text" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
+                      placeholder="John Doe"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-1 relative group">
-                <label className="text-xs font-medium text-slate-400 ml-1">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
-                  <input 
-                    type="email" 
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                    placeholder="name@company.com"
-                  />
+                <div className="space-y-1 relative group">
+                  <label className="text-xs font-medium text-slate-400 ml-1">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
+                    <input 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
+                      placeholder="name@company.com"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-1 relative group">
-                <label className="text-xs font-medium text-slate-400 ml-1">Company Name</label>
-                <div className="relative">
-                  <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
-                  <input 
-                    type="text" 
-                    value={formData.company}
-                    onChange={(e) => setFormData({...formData, company: e.target.value})}
-                    className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                    placeholder="Acme Corp"
-                  />
+                <div className="space-y-1 relative group">
+                  <label className="text-xs font-medium text-slate-400 ml-1">Company Name</label>
+                  <div className="relative">
+                    <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
+                    <input 
+                      type="text" 
+                      value={formData.company}
+                      onChange={(e) => setFormData({...formData, company: e.target.value})}
+                      className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
+                      placeholder="Acme Corp"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-1 relative group">
-                <label className="text-xs font-medium text-slate-400 ml-1">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
-                  <input 
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                    placeholder="••••••••"
-                  />
+                <div className="space-y-1 relative group">
+                  <label className="text-xs font-medium text-slate-400 ml-1">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={18} />
+                    <input 
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                      className="w-full bg-navy-950/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <Button variant="primary" className="w-full mt-6 py-3.5" disabled={isLoading}>
-                {isLoading ? (
-                  <LoaderOne />
-                ) : (
-                  <>
-                    Create Account
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </Button>
-            </form>
+                <Button variant="primary" className="w-full mt-6 py-3.5" disabled={isLoading}>
+                  {isLoading ? (
+                    <LoaderOne />
+                  ) : (
+                    <>
+                      Create Account
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </Button>
+                
+
+              </form>
 
             <div className="mt-8 text-center text-sm text-slate-400">
               Already have an account?{' '}

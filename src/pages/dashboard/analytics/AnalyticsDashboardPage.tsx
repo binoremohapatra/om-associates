@@ -1,10 +1,11 @@
+import { api } from '@/lib/api';
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Sector,
 } from 'recharts';
-import axios from 'axios';
+
 import { formatCurrency, formatNumber } from '../../../lib/utils';
 import { CheckCircle, AlertTriangle, AlertCircle, Info, Activity, BarChart2 } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
@@ -90,10 +91,7 @@ export default function AnalyticsDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:4000/api/v1/analytics/dashboard', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get('/analytics/dashboard');
         if (res.data.success) {
           setData(res.data.data);
         }

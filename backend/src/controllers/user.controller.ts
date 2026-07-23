@@ -7,9 +7,38 @@ import { BadRequestError } from '../types/errors';
 export class UserController {
   static async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, avatarUrl } = req.body;
-      const user = await UserService.updateProfile(req.user!.id, { name, avatarUrl });
+      const { name, avatarUrl, phone } = req.body;
+      const user = await UserService.updateProfile(req.user!.id, { name, avatarUrl, phone });
       sendSuccess(res, { user });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      await UserService.changePassword(req.user!.id, currentPassword, newPassword);
+      sendSuccess(res, { message: 'Password changed successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSessions(req: Request, res: Response, next: NextFunction) {
+    try {
+      const sessions = await UserService.getSessions(req.user!.id);
+      sendSuccess(res, { sessions });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async revokeSession(req: Request, res: Response, next: NextFunction) {
+    try {
+      const sessionId = req.params.sessionId as string;
+      await UserService.revokeSession(req.user!.id, sessionId);
+      sendSuccess(res, { message: 'Session revoked successfully' });
     } catch (err) {
       next(err);
     }

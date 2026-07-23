@@ -1,3 +1,4 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Newspaper, Clock, ArrowUpRight, RefreshCw, AlertCircle, ExternalLink,
@@ -7,7 +8,7 @@ import {
 import { formatDistanceToNow, format } from 'date-fns';
 import { useAuth } from '../../../contexts/AuthContext';
 
-const API_BASE = 'http://localhost:4000/api/v1';
+const API_BASE = '';
 
 interface Department {
   name: string;
@@ -81,9 +82,9 @@ function NewsCard({ item, view, bookmarked, onBookmark, token }:
     if (!token) return;
     try {
       if (bm) {
-        await fetch(`${API_BASE}/news/bookmark/${item.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+        await api.delete(`/news/bookmark/${item.id}`);
       } else {
-        await fetch(`${API_BASE}/news/bookmark`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ newsId: item.id }) });
+        await api.post(`/news/bookmark`, { newsId: item.id });
       }
       setBm(!bm);
       onBookmark(item.id, !bm);
@@ -235,8 +236,8 @@ export default function NewsPage() {
   const fetchStats = useCallback(async () => {
     try {
       setStatsLoading(true);
-      const res = await fetch(`${API_BASE}/news/stats`);
-      const data = await res.json();
+      const response = await api.get(`/news/stats`);
+      const data = response.data;
       if (data.success) {
         setStats(data.data);
         if (data.data.lastSync) setLastSync(data.data.lastSync);
@@ -258,8 +259,8 @@ export default function NewsPage() {
       qp.set('limit', '24');
 
       const endpoint = params.search ? `${API_BASE}/news/search?q=${encodeURIComponent(params.search)}&${qp}` : `${API_BASE}/news?${qp}`;
-      const res = await fetch(endpoint);
-      const data = await res.json();
+      const response = await api.get(endpoint.replace(API_BASE, ''));
+      const data = response.data;
 
       if (data.success) {
         setNews(data.data || []);
@@ -276,8 +277,8 @@ export default function NewsPage() {
   const fetchBookmarks = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch(`${API_BASE}/news/bookmarks/my`, { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
+      const response = await api.get(`/news/bookmarks/my`);
+      const data = response.data;
       if (data.success) setBookmarkedIds(new Set(data.data.map((b: any) => b.newsId)));
     } catch {}
   }, [token]);
@@ -310,7 +311,7 @@ export default function NewsPage() {
     if (!token) return;
     setSyncing(true);
     try {
-      await fetch(`${API_BASE}/news/sync`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      await api.post(`/news/sync`);
       setTimeout(() => { fetchNews({ dept: deptFilter, category: categoryFilter, search, page }); fetchStats(); setSyncing(false); }, 3000);
     } catch { setSyncing(false); }
   };

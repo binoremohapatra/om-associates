@@ -1,20 +1,21 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Download, Filter, Search, FileText } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { BentoCard } from '../../../components/ui/BentoCard';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function GstReturnsPage() {
+  const { token } = useAuth();
   const [returns, setReturns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:4000/api/v1/gst/returns', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get('/gst/returns');
         if (res.data.success) {
           setReturns(res.data.data);
         }
@@ -25,7 +26,7 @@ export default function GstReturnsPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   return (
     <div className="flex flex-col gap-6 h-full">

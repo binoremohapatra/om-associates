@@ -13,7 +13,7 @@ export default function TopNavbar() {
     { title: 'News', value: 'news', path: '/news' },
     { title: 'Queries', value: 'queries', path: '/queries' },
     { title: 'Appointments', value: 'appointments', path: '/appointments' },
-    { title: 'Payments', value: 'payments', path: '/payments' },
+
     { title: 'Reports', value: 'reports', path: '/reports' },
     { title: 'Settings', value: 'settings', path: '/settings' },
   ];

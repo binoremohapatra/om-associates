@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { motion } from 'framer-motion';
 import { Star, FileText, FileImage, File } from 'lucide-react';
 
@@ -23,10 +24,7 @@ export default function StarredPage() {
 
   useEffect(() => {
     const fetch = async () => {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:4000/api/v1/documents?starred=true', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get('/documents?starred=true');
       if (res.data.success) setDocs(res.data.data);
       setLoading(false);
     };

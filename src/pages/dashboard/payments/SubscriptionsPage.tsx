@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { format } from 'date-fns';
 import { Repeat, CheckCircle2, AlertCircle, Zap, Shield, Crown } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
@@ -14,9 +15,7 @@ export default function SubscriptionsPage() {
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const response = await axios.get('/api/v1/payments/subscriptions', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/payments/subscriptions');
         if (response.data.success) {
           setSubscriptions(response.data.data);
         }
@@ -181,9 +180,7 @@ function SubscribeModal({ plan, onClose, onSuccess }: { plan: any, onClose: () =
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -208,9 +205,7 @@ function SubscribeModal({ plan, onClose, onSuccess }: { plan: any, onClose: () =
         billingCycle: formData.billingCycle
       };
 
-      await axios.post('/api/v1/payments/subscriptions', payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/payments/subscriptions', payload);
       onSuccess();
     } catch (error: any) {
       console.error('Failed to create subscription', error);

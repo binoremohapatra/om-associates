@@ -24,6 +24,9 @@ enum UserRole {
 enum AuthProvider {
   EMAIL
   GOOGLE
+  FACEBOOK
+  GITHUB
+  MICROSOFT
 }
 
 enum EntityType {
@@ -110,7 +113,7 @@ model Organization {
   id               String           @id @default(cuid())
   name             String
   gstin            String?          @unique
-  pan              String?          // AES-256 encrypted at app layer
+  pan              String? // AES-256 encrypted at app layer
   entityType       EntityType       @default(PRIVATE_LIMITED)
   addressLine1     String?
   addressLine2     String?
@@ -125,10 +128,10 @@ model Organization {
   updatedAt        DateTime         @updatedAt
 
   // Relations
-  users             User[]
-  clients           Client[]
-  gstNews           GstNews[]
-  taxRules          TaxRule[]
+  users    User[]
+  clients  Client[]
+  gstNews  GstNews[]
+  taxRules TaxRule[]
 
   @@map("organizations")
 }
@@ -136,42 +139,130 @@ model Organization {
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 model User {
-  id                    String    @id @default(cuid())
-  organizationId        String
-  email                 String    @unique
-  name                  String
-  phone                 String?
-  jobTitle              String?
-  avatarUrl             String?
-  passwordHash          String?
-  authProvider          AuthProvider @default(EMAIL)
-  googleId              String?   @unique
-  role                  UserRole  @default(STAFF)
-  isEmailVerified       Boolean   @default(false)
-  emailVerifyToken      String?   @unique
-  emailVerifyExpiry     DateTime?
-  passwordResetToken    String?   @unique
-  passwordResetExpiry   DateTime?
-  refreshTokenHash      String?
-  lastLoginAt           DateTime?
-  isActive              Boolean   @default(true)
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id             String       @id @default(cuid())
+  organizationId String
+  email          String       @unique
+  name           String
+  passwordHash   String?
+  emailVerified  Boolean      @default(false)
+  phone          String?
+  jobTitle       String?
+  avatarUrl      String?
+  clerkId        String?      @unique
+  authProvider   AuthProvider @default(EMAIL)
+  providerId     String?
+  role           UserRole     @default(STAFF)
+  lastLoginAt    DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   // Relations
-  organization          Organization       @relation(fields: [organizationId], references: [id])
-  notifications         Notification[]
-  auditLogs             AuditLog[]         @relation("ActorLogs")
-  chatConversations     ChatConversation[]
-  createdInvoices       Invoice[]          @relation("InvoiceCreator")
-  createdFilings        TaxFiling[]        @relation("FilingCreator")
-  createdGstFilings     GstFiling[]        @relation("GstFilingCreator")
-  appointments          Appointment[]
-  bookmarks             UserBookmark[]
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  notifications     Notification[]
+  auditLogs         AuditLog[]         @relation("ActorLogs")
+  chatConversations ChatConversation[]
+  createdInvoices   Invoice[]          @relation("InvoiceCreator")
+  createdFilings    TaxFiling[]        @relation("FilingCreator")
+  createdGstFilings GstFiling[]        @relation("GstFilingCreator")
+  appointments      Appointment[]
+  bookmarks         UserBookmark[]
+
+  // Auth Relations
+  sessions      Session[]
+  refreshTokens RefreshToken[]
+  oauthAccounts OAuthAccount[]
+  userDevices   UserDevice[]
 
   @@index([organizationId])
   @@index([email])
   @@map("users")
+}
+
+// ─── Custom Authentication Models ─────────────────────────────────────────────
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id              String    @id @default(cuid())
+  userId          String
+  token           String    @unique
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
+  revokedAt       DateTime?
+  replacedByToken String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email, token])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+model OAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+model UserDevice {
+  id         String    @id @default(cuid())
+  userId     String
+  deviceId   String
+  deviceType String?
+  lastIp     String?
+  lastLogin  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_devices")
 }
 
 // ─── Clients (businesses managed by the organization) ────────────────────────
@@ -181,7 +272,7 @@ model Client {
   organizationId String
   name           String
   gstin          String?
-  pan            String?    // AES-256 encrypted at app layer
+  pan            String? // AES-256 encrypted at app layer
   entityType     EntityType @default(PROPRIETORSHIP)
   addressLine1   String?
   addressLine2   String?
@@ -191,28 +282,28 @@ model Client {
   phone          String?
   email          String?
   isActive       Boolean    @default(true)
-  deletedAt      DateTime?  // Soft delete
+  deletedAt      DateTime? // Soft delete
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
   // Relations
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  taxFilings     TaxFiling[]
-  gstFilings     GstFiling[]
-  invoices       Invoice[]
-  deductions     Deduction[]
-  notifications  Notification[]
-  
+  organization  Organization   @relation(fields: [organizationId], references: [id])
+  taxFilings    TaxFiling[]
+  gstFilings    GstFiling[]
+  invoices      Invoice[]
+  deductions    Deduction[]
+  notifications Notification[]
+
   // Phase 1 GST Models Reverse Relations
-  gstProfile     GstProfile?
-  gstChallans    GstChallan[]
-  gstNotices     GstNotice[]
-  documents      Document[]
+  gstProfile          GstProfile?
+  gstChallans         GstChallan[]
+  gstNotices          GstNotice[]
+  documents           Document[]
   paymentTransactions PaymentTransaction[]
-  subscriptions   Subscription[]
-  appointments    Appointment[]
-  legalCases      LegalCase[]
-  importExports   ImportExportRecord[]
+  subscriptions       Subscription[]
+  appointments        Appointment[]
+  legalCases          LegalCase[]
+  importExports       ImportExportRecord[]
 
   @@index([organizationId])
   @@index([gstin])
@@ -223,22 +314,22 @@ model Client {
 // ─── Tax Rules (versioned by FY) ─────────────────────────────────────────────
 
 model TaxRule {
-  id              String     @id @default(cuid())
-  organizationId  String?    // null = global rule, set = org-specific override
-  financialYear   String     // e.g. "2025-26"
-  entityType      EntityType
-  regime          TaxRegime?
+  id             String     @id @default(cuid())
+  organizationId String? // null = global rule, set = org-specific override
+  financialYear  String // e.g. "2025-26"
+  entityType     EntityType
+  regime         TaxRegime?
   // JSONB for slab brackets: [{ min: 0, max: 300000, rate: 0 }, ...]
-  slabBrackets    Json
-  surchargeRules  Json       // [{ threshold: 5000000, rate: 0.1 }, ...]
-  cessRate        Float      @default(0.04)
-  flatRate        Float?     // for Partnership, LLP (0.30)
-  notes           String?
-  effectiveFrom   DateTime
-  effectiveTo     DateTime?
-  createdAt       DateTime   @default(now())
+  slabBrackets   Json
+  surchargeRules Json // [{ threshold: 5000000, rate: 0.1 }, ...]
+  cessRate       Float      @default(0.04)
+  flatRate       Float? // for Partnership, LLP (0.30)
+  notes          String?
+  effectiveFrom  DateTime
+  effectiveTo    DateTime?
+  createdAt      DateTime   @default(now())
 
-  organization    Organization? @relation(fields: [organizationId], references: [id])
+  organization Organization? @relation(fields: [organizationId], references: [id])
 
   @@unique([financialYear, entityType, regime])
   @@index([financialYear, entityType])
@@ -248,34 +339,34 @@ model TaxRule {
 // ─── Tax Filings (Income Tax) ─────────────────────────────────────────────────
 
 model TaxFiling {
-  id                 String       @id @default(cuid())
-  clientId           String
-  createdById        String
-  financialYear      String       // "2025-26"
-  regime             TaxRegime    @default(NEW)
-  grossIncome        BigInt       // paise
-  totalDeductions    BigInt       @default(0) // paise
-  taxableIncome      BigInt       // paise
-  taxLiability       BigInt       // paise
-  surcharge          BigInt       @default(0) // paise
-  cess               BigInt       @default(0) // paise
-  totalTaxPayable    BigInt       // paise (tax + surcharge + cess)
-  advanceTaxPaid     BigInt       @default(0) // paise
-  tdsDeducted        BigInt       @default(0) // paise
-  netTaxPayable      BigInt       // paise (totalTaxPayable - advanceTaxPaid - tdsDeducted)
-  status             FilingStatus @default(PENDING)
-  idempotencyKey     String       @unique
-  filedAt            DateTime?
-  acknowledgementNo  String?
-  notes              String?
-  deletedAt          DateTime?    // Soft delete
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  id                String       @id @default(cuid())
+  clientId          String
+  createdById       String
+  financialYear     String // "2025-26"
+  regime            TaxRegime    @default(NEW)
+  grossIncome       BigInt // paise
+  totalDeductions   BigInt       @default(0) // paise
+  taxableIncome     BigInt // paise
+  taxLiability      BigInt // paise
+  surcharge         BigInt       @default(0) // paise
+  cess              BigInt       @default(0) // paise
+  totalTaxPayable   BigInt // paise (tax + surcharge + cess)
+  advanceTaxPaid    BigInt       @default(0) // paise
+  tdsDeducted       BigInt       @default(0) // paise
+  netTaxPayable     BigInt // paise (totalTaxPayable - advanceTaxPaid - tdsDeducted)
+  status            FilingStatus @default(PENDING)
+  idempotencyKey    String       @unique
+  filedAt           DateTime?
+  acknowledgementNo String?
+  notes             String?
+  deletedAt         DateTime? // Soft delete
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   // Relations
-  client             Client    @relation(fields: [clientId], references: [id])
-  createdBy          User      @relation("FilingCreator", fields: [createdById], references: [id])
-  deductions         Deduction[]
+  client     Client      @relation(fields: [clientId], references: [id])
+  createdBy  User        @relation("FilingCreator", fields: [createdById], references: [id])
+  deductions Deduction[]
 
   @@index([clientId, financialYear])
   @@index([status])
@@ -285,35 +376,35 @@ model TaxFiling {
 // ─── GST Filings ─────────────────────────────────────────────────────────────
 
 model GstFiling {
-  id               String      @id @default(cuid())
-  clientId         String
-  createdById      String
-  formType         GstFormType
-  periodStart      DateTime    // e.g. 2025-10-01
-  periodEnd        DateTime    // e.g. 2025-10-31
-  dueDate          DateTime
-  filedAt          DateTime?
-  status           FilingStatus @default(PENDING)
+  id                String       @id @default(cuid())
+  clientId          String
+  createdById       String
+  formType          GstFormType
+  periodStart       DateTime // e.g. 2025-10-01
+  periodEnd         DateTime // e.g. 2025-10-31
+  dueDate           DateTime
+  filedAt           DateTime?
+  status            FilingStatus @default(PENDING)
   // Financial data
-  totalTaxableValue  BigInt?   // paise
-  totalCgst          BigInt?   // paise
-  totalSgst          BigInt?   // paise
-  totalIgst          BigInt?   // paise
-  totalTaxPayable    BigInt?   // paise
-  lateFeePerDay      BigInt    @default(5000) // paise (₹50)
-  lateFeeMaxAmount   BigInt    @default(1000000) // paise (₹10,000)
-  lateFeeAccrued     BigInt    @default(0) // paise
-  interestRate       Float     @default(0.18) // 18% per annum for GSTR-3B
-  acknowledgementNo  String?
-  notes              String?
-  idempotencyKey     String    @unique
-  deletedAt          DateTime? // Soft delete
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  totalTaxableValue BigInt? // paise
+  totalCgst         BigInt? // paise
+  totalSgst         BigInt? // paise
+  totalIgst         BigInt? // paise
+  totalTaxPayable   BigInt? // paise
+  lateFeePerDay     BigInt       @default(5000) // paise (₹50)
+  lateFeeMaxAmount  BigInt       @default(1000000) // paise (₹10,000)
+  lateFeeAccrued    BigInt       @default(0) // paise
+  interestRate      Float        @default(0.18) // 18% per annum for GSTR-3B
+  acknowledgementNo String?
+  notes             String?
+  idempotencyKey    String       @unique
+  deletedAt         DateTime? // Soft delete
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   // Relations
-  client             Client @relation(fields: [clientId], references: [id])
-  createdBy          User   @relation("GstFilingCreator", fields: [createdById], references: [id])
+  client    Client @relation(fields: [clientId], references: [id])
+  createdBy User   @relation("GstFilingCreator", fields: [createdById], references: [id])
 
   @@index([clientId, formType])
   @@index([dueDate, status])
@@ -323,40 +414,40 @@ model GstFiling {
 // ─── Invoices ─────────────────────────────────────────────────────────────────
 
 model Invoice {
-  id               String        @id @default(cuid())
-  organizationId   String
-  clientId         String
-  createdById      String
-  invoiceNumber    String        @unique // INV-2526-00047
-  financialYear    String        // "2025-26"
-  status           InvoiceStatus @default(DRAFT)
-  invoiceDate      DateTime      @default(now())
-  dueDate          DateTime
+  id              String        @id @default(cuid())
+  organizationId  String
+  clientId        String
+  createdById     String
+  invoiceNumber   String        @unique // INV-2526-00047
+  financialYear   String // "2025-26"
+  status          InvoiceStatus @default(DRAFT)
+  invoiceDate     DateTime      @default(now())
+  dueDate         DateTime
   // Amounts in paise
-  subtotalPaise    BigInt        @default(0)
-  discountPaise    BigInt        @default(0)
-  totalCgstPaise   BigInt        @default(0)
-  totalSgstPaise   BigInt        @default(0)
-  totalIgstPaise   BigInt        @default(0)
-  totalTaxPaise    BigInt        @default(0)
-  totalPaise       BigInt        @default(0) // subtotal - discount + tax
-  paidAmountPaise  BigInt        @default(0)
-  currency         String        @default("INR")
-  notes            String?
-  termsConditions  String?
-  idempotencyKey   String        @unique
-  sentAt           DateTime?
-  paidAt           DateTime?
-  cancelledAt      DateTime?
-  deletedAt        DateTime?     // Soft delete
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  subtotalPaise   BigInt        @default(0)
+  discountPaise   BigInt        @default(0)
+  totalCgstPaise  BigInt        @default(0)
+  totalSgstPaise  BigInt        @default(0)
+  totalIgstPaise  BigInt        @default(0)
+  totalTaxPaise   BigInt        @default(0)
+  totalPaise      BigInt        @default(0) // subtotal - discount + tax
+  paidAmountPaise BigInt        @default(0)
+  currency        String        @default("INR")
+  notes           String?
+  termsConditions String?
+  idempotencyKey  String        @unique
+  sentAt          DateTime?
+  paidAt          DateTime?
+  cancelledAt     DateTime?
+  deletedAt       DateTime? // Soft delete
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   // Relations
-  client           Client        @relation(fields: [clientId], references: [id])
-  createdBy        User          @relation("InvoiceCreator", fields: [createdById], references: [id])
-  lineItems        InvoiceLineItem[]
-  transactions     PaymentTransaction[]
+  client       Client               @relation(fields: [clientId], references: [id])
+  createdBy    User                 @relation("InvoiceCreator", fields: [createdById], references: [id])
+  lineItems    InvoiceLineItem[]
+  transactions PaymentTransaction[]
 
   @@index([organizationId, financialYear])
   @@index([clientId])
@@ -365,24 +456,24 @@ model Invoice {
 }
 
 model InvoiceLineItem {
-  id              String  @id @default(cuid())
+  id              String          @id @default(cuid())
   invoiceId       String
   description     String
-  quantity        Float   @default(1)
-  unitPricePaise  BigInt  // paise
-  gstRate         Float   @default(0) // 0, 5, 12, 18, 28
+  quantity        Float           @default(1)
+  unitPricePaise  BigInt // paise
+  gstRate         Float           @default(0) // 0, 5, 12, 18, 28
   transactionType TransactionType @default(INTRA_STATE)
-  cgstRate        Float   @default(0)
-  sgstRate        Float   @default(0)
-  igstRate        Float   @default(0)
-  cgstPaise       BigInt  @default(0)
-  sgstPaise       BigInt  @default(0)
-  igstPaise       BigInt  @default(0)
-  totalPaise      BigInt  // unitPrice * quantity + taxes
+  cgstRate        Float           @default(0)
+  sgstRate        Float           @default(0)
+  igstRate        Float           @default(0)
+  cgstPaise       BigInt          @default(0)
+  sgstPaise       BigInt          @default(0)
+  igstPaise       BigInt          @default(0)
+  totalPaise      BigInt // unitPrice * quantity + taxes
   hsn             String? // HSN/SAC code
-  createdAt       DateTime @default(now())
+  createdAt       DateTime        @default(now())
 
-  invoice         Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@index([invoiceId])
   @@map("invoice_line_items")
@@ -391,21 +482,21 @@ model InvoiceLineItem {
 // ─── Deductions ───────────────────────────────────────────────────────────────
 
 model Deduction {
-  id            String   @id @default(cuid())
-  clientId      String
-  taxFilingId   String?
-  financialYear String
-  section       String   // "80C", "32", "35", "37(1)", "80JJAA", etc.
-  description   String
-  amountPaise   BigInt   // paise
-  isEligible    Boolean  @default(true)
+  id              String   @id @default(cuid())
+  clientId        String
+  taxFilingId     String?
+  financialYear   String
+  section         String // "80C", "32", "35", "37(1)", "80JJAA", etc.
+  description     String
+  amountPaise     BigInt // paise
+  isEligible      Boolean  @default(true)
   rejectionReason String?
-  evidenceNote  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  evidenceNote    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  client        Client      @relation(fields: [clientId], references: [id])
-  taxFiling     TaxFiling?  @relation(fields: [taxFilingId], references: [id])
+  client    Client     @relation(fields: [clientId], references: [id])
+  taxFiling TaxFiling? @relation(fields: [taxFilingId], references: [id])
 
   @@index([clientId, financialYear])
   @@map("deductions")
@@ -414,23 +505,23 @@ model Deduction {
 // ─── GST News / Updates ───────────────────────────────────────────────────────
 
 model GstNews {
-  id              String   @id @default(cuid())
-  organizationId  String?  // null = global/public
+  id              String    @id @default(cuid())
+  organizationId  String? // null = global/public
   title           String
   excerpt         String
-  content         String   @db.Text
-  category        String   // "Rate Change", "Compliance", "Budget", etc.
+  content         String    @db.Text
+  category        String // "Rate Change", "Compliance", "Budget", etc.
   tags            String[] // Array of tags
-  isFeatured      Boolean  @default(false)
-  isTrending      Boolean  @default(false)
-  isPublished     Boolean  @default(false)
+  isFeatured      Boolean   @default(false)
+  isTrending      Boolean   @default(false)
+  isPublished     Boolean   @default(false)
   publishedAt     DateTime?
-  readTimeMinutes Int      @default(3)
+  readTimeMinutes Int       @default(3)
   authorId        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  organization    Organization? @relation(fields: [organizationId], references: [id])
+  organization Organization? @relation(fields: [organizationId], references: [id])
 
   @@index([isPublished, publishedAt])
   @@index([category])
@@ -440,20 +531,20 @@ model GstNews {
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 model Notification {
-  id          String           @id @default(cuid())
-  userId      String
-  clientId    String?
-  type        NotificationType
-  title       String
-  message     String
-  payload     Json?            // Additional structured data
-  isRead      Boolean          @default(false)
-  readAt      DateTime?
-  expiresAt   DateTime?
-  createdAt   DateTime         @default(now())
+  id        String           @id @default(cuid())
+  userId    String
+  clientId  String?
+  type      NotificationType
+  title     String
+  message   String
+  payload   Json? // Additional structured data
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  expiresAt DateTime?
+  createdAt DateTime         @default(now())
 
-  user        User    @relation(fields: [userId], references: [id])
-  client      Client? @relation(fields: [clientId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  client Client? @relation(fields: [clientId], references: [id])
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
@@ -463,20 +554,20 @@ model Notification {
 // ─── Audit Log ────────────────────────────────────────────────────────────────
 
 model AuditLog {
-  id          String      @id @default(cuid())
-  actorId     String?     // null for system actions
-  action      AuditAction
-  entityType  String      // "Invoice", "TaxFiling", "Client", etc.
-  entityId    String
-  before      Json?       // snapshot before mutation
-  after       Json?       // snapshot after mutation
-  ipAddress   String?
-  userAgent   String?
-  requestId   String?
-  metadata    Json?
-  createdAt   DateTime    @default(now())
+  id         String      @id @default(cuid())
+  actorId    String? // null for system actions
+  action     AuditAction
+  entityType String // "Invoice", "TaxFiling", "Client", etc.
+  entityId   String
+  before     Json? // snapshot before mutation
+  after      Json? // snapshot after mutation
+  ipAddress  String?
+  userAgent  String?
+  requestId  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
 
-  actor       User? @relation("ActorLogs", fields: [actorId], references: [id])
+  actor User? @relation("ActorLogs", fields: [actorId], references: [id])
 
   @@index([entityType, entityId])
   @@index([actorId, createdAt])
@@ -494,8 +585,8 @@ model ChatConversation {
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
 
-  user      User          @relation(fields: [userId], references: [id])
-  messages  ChatMessage[]
+  user     User          @relation(fields: [userId], references: [id])
+  messages ChatMessage[]
 
   @@index([userId, status])
   @@map("chat_conversations")
@@ -504,15 +595,15 @@ model ChatConversation {
 model ChatMessage {
   id               String   @id @default(cuid())
   conversationId   String
-  role             String   // "user" | "assistant" | "system"
+  role             String // "user" | "assistant" | "system"
   content          String   @db.Text
-  contextSnapshot  Json?    // client context used to ground the response
+  contextSnapshot  Json? // client context used to ground the response
   promptTokens     Int?
   completionTokens Int?
   modelUsed        String?
   createdAt        DateTime @default(now())
 
-  conversation     ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId, createdAt])
   @@map("chat_messages")
@@ -533,13 +624,13 @@ model InvoiceSequence {
 // ─── Contact Messages ─────────────────────────────────────────────────────────
 
 model ContactMessage {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  subject     String
-  message     String   @db.Text
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@index([isRead])
   @@map("contact_messages")
@@ -548,82 +639,82 @@ model ContactMessage {
 // ─── GST Phase 1 Models ────────────────────────────────────────────────────────
 
 model GstProfile {
-  id              String   @id @default(cuid())
-  clientId        String   @unique
-  gstin           String   @unique
-  tradeName       String
-  legalName       String
-  status          String   @default("Active")
+  id               String   @id @default(cuid())
+  clientId         String   @unique
+  gstin            String   @unique
+  tradeName        String
+  legalName        String
+  status           String   @default("Active")
   registrationDate DateTime
-  taxpayerType    String   @default("Regular") // Regular, Composition, etc.
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  taxpayerType     String   @default("Regular") // Regular, Composition, etc.
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@map("gst_profiles")
 }
 
 model GstChallan {
-  id              String   @id @default(cuid())
-  clientId        String
-  cpin            String   @unique
-  amountPaise     BigInt   // paise
-  status          String   @default("PENDING") // PENDING, PAID, EXPIRED
-  generationDate  DateTime @default(now())
-  expiryDate      DateTime
-  paymentDate     DateTime?
-  bankReference   String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  clientId       String
+  cpin           String    @unique
+  amountPaise    BigInt // paise
+  status         String    @default("PENDING") // PENDING, PAID, EXPIRED
+  generationDate DateTime  @default(now())
+  expiryDate     DateTime
+  paymentDate    DateTime?
+  bankReference  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, status])
   @@map("gst_challans")
 }
 
 model GstNotice {
-  id              String   @id @default(cuid())
-  clientId        String
-  noticeNumber    String   @unique
-  issueDate       DateTime
-  replyDueDate    DateTime
-  status          String   @default("OPEN") // OPEN, REPLIED, CLOSED
-  description     String   @db.Text
-  documentUrl     String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(cuid())
+  clientId     String
+  noticeNumber String   @unique
+  issueDate    DateTime
+  replyDueDate DateTime
+  status       String   @default("OPEN") // OPEN, REPLIED, CLOSED
+  description  String   @db.Text
+  documentUrl  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, status])
   @@map("gst_notices")
 }
 
 model Document {
-  id              String   @id @default(cuid())
-  clientId        String
-  folderName      String   @default("General")
-  fileName        String
-  fileUrl         String
-  fileType        String
-  sizeBytes       Int
-  category        String?
-  tags            String[]
-  ocrText         String?  @db.Text
-  aiSummary       String?  @db.Text
-  expiryDate      DateTime?
-  isStarred       Boolean  @default(false)
-  isDeleted       Boolean  @default(false)
-  currentVersion  Int      @default(1)
-  deletedAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  clientId       String
+  folderName     String    @default("General")
+  fileName       String
+  fileUrl        String
+  fileType       String
+  sizeBytes      Int
+  category       String?
+  tags           String[]
+  ocrText        String?   @db.Text
+  aiSummary      String?   @db.Text
+  expiryDate     DateTime?
+  isStarred      Boolean   @default(false)
+  isDeleted      Boolean   @default(false)
+  currentVersion Int       @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  client          Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  versions        DocumentVersion[]
-  shares          DocumentShare[]
+  client   Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  versions DocumentVersion[]
+  shares   DocumentShare[]
 
   @@index([clientId, folderName])
   @@index([clientId, isDeleted])
@@ -632,31 +723,31 @@ model Document {
 }
 
 model DocumentVersion {
-  id          String   @id @default(cuid())
-  documentId  String
-  versionNum  Int
-  fileUrl     String
-  sizeBytes   Int
-  createdBy   String?  // user ID who uploaded it
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  documentId String
+  versionNum Int
+  fileUrl    String
+  sizeBytes  Int
+  createdBy  String? // user ID who uploaded it
+  createdAt  DateTime @default(now())
 
-  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@unique([documentId, versionNum])
   @@map("document_versions")
 }
 
 model DocumentShare {
-  id          String   @id @default(cuid())
-  documentId  String
-  shareToken  String   @unique
-  accessRole  String   @default("VIEW") // VIEW, DOWNLOAD
-  expiresAt   DateTime?
-  isRevoked   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(cuid())
+  documentId String
+  shareToken String    @unique
+  accessRole String    @default("VIEW") // VIEW, DOWNLOAD
+  expiresAt  DateTime?
+  isRevoked  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
   @@map("document_shares")
@@ -679,8 +770,8 @@ model PaymentTransaction {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  invoice           Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  invoice Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  client  Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId])
   @@index([invoiceId])
@@ -688,18 +779,18 @@ model PaymentTransaction {
 }
 
 model Subscription {
-  id                String   @id @default(cuid())
-  clientId          String
-  planName          String
-  amountPaise       BigInt
-  billingCycle      String   @default("MONTHLY") // MONTHLY, YEARLY
-  status            String   @default("ACTIVE")  // ACTIVE, CANCELLED, PAST_DUE
-  nextBillingDate   DateTime
-  razorpaySubId     String?  @unique
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String   @id @default(cuid())
+  clientId        String
+  planName        String
+  amountPaise     BigInt
+  billingCycle    String   @default("MONTHLY") // MONTHLY, YEARLY
+  status          String   @default("ACTIVE") // ACTIVE, CANCELLED, PAST_DUE
+  nextBillingDate DateTime
+  razorpaySubId   String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, status])
   @@map("subscriptions")
@@ -710,20 +801,20 @@ model Subscription {
 // ------------------------------------------------------
 
 model Appointment {
-  id                String   @id @default(cuid())
-  clientId          String
-  createdById       String
-  title             String
-  description       String?
-  scheduledAt       DateTime
-  durationMinutes   Int      @default(30)
-  status            String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
-  meetLink          String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String   @id @default(cuid())
+  clientId        String
+  createdById     String
+  title           String
+  description     String?
+  scheduledAt     DateTime
+  durationMinutes Int      @default(30)
+  status          String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  meetLink        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  createdBy         User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdBy User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
   @@index([clientId, scheduledAt])
   @@index([status])
@@ -735,18 +826,18 @@ model Appointment {
 // ------------------------------------------------------
 
 model LegalCase {
-  id                String   @id @default(cuid())
-  clientId          String
-  caseNumber        String?
-  title             String
-  description       String?
-  court             String?
-  status            String   @default("OPEN") // OPEN, CLOSED, APPEALED
-  nextHearingDate   DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String    @id @default(cuid())
+  clientId        String
+  caseNumber      String?
+  title           String
+  description     String?
+  court           String?
+  status          String    @default("OPEN") // OPEN, CLOSED, APPEALED
+  nextHearingDate DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, status])
   @@map("legal_cases")
@@ -757,22 +848,21 @@ model LegalCase {
 // ------------------------------------------------------
 
 model ImportExportRecord {
-  id                String   @id @default(cuid())
-  clientId          String
-  recordType        String   // IEC, BILL_OF_ENTRY, SHIPPING_BILL, LUT
-  documentNumber    String?
-  portCode          String?
-  status            String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  filedAt           DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id             String    @id @default(cuid())
+  clientId       String
+  recordType     String // IEC, BILL_OF_ENTRY, SHIPPING_BILL, LUT
+  documentNumber String?
+  portCode       String?
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  filedAt        DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@index([clientId, recordType])
   @@map("import_export_records")
 }
-
 
 // ══════════════════════════════════════════════════════════════════
 // GOVERNMENT UPDATES & COMPLIANCE CENTER
@@ -781,41 +871,41 @@ model ImportExportRecord {
 model GovDepartment {
   id          String   @id @default(cuid())
   slug        String   @unique // "gst-council", "cbic", "income-tax", "dgft", "mca"
-  name        String   // "GST Council", "CBIC", "Income Tax Dept", "DGFT", "MCA"
-  shortName   String   // "GST", "CBIC", "IT", "DGFT", "MCA"
+  name        String // "GST Council", "CBIC", "Income Tax Dept", "DGFT", "MCA"
+  shortName   String // "GST", "CBIC", "IT", "DGFT", "MCA"
   description String?
-  website     String   // official URL
+  website     String // official URL
   logoColor   String   @default("#C9A94B") // brand color for UI
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  news        GovernmentNews[]
+  news GovernmentNews[]
 
   @@map("gov_departments")
 }
 
 model GovernmentNews {
-  id               String    @id @default(cuid())
-  departmentId     String
-  title            String
-  summary          String?   @db.Text
-  category         String    // "Circular", "Notification", "Press Release", "Trade Notice", etc.
-  notificationNo   String?   // e.g. "12/2026-Central Tax"
-  officialUrl      String
-  pdfUrl           String?
-  sourceWebsite    String    // raw domain
-  tags             String[]
-  priority         String    @default("NORMAL")  // "HIGH", "NORMAL", "LOW"
-  publishedAt      DateTime
-  contentHash      String    @unique // SHA-256 of title+url for dedup
-  isActive         Boolean   @default(true)
-  readTimeMinutes  Int       @default(2)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id              String   @id @default(cuid())
+  departmentId    String
+  title           String
+  summary         String?  @db.Text
+  category        String // "Circular", "Notification", "Press Release", "Trade Notice", etc.
+  notificationNo  String? // e.g. "12/2026-Central Tax"
+  officialUrl     String
+  pdfUrl          String?
+  sourceWebsite   String // raw domain
+  tags            String[]
+  priority        String   @default("NORMAL") // "HIGH", "NORMAL", "LOW"
+  publishedAt     DateTime
+  contentHash     String   @unique // SHA-256 of title+url for dedup
+  isActive        Boolean  @default(true)
+  readTimeMinutes Int      @default(2)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  department       GovDepartment    @relation(fields: [departmentId], references: [id])
-  bookmarks        UserBookmark[]
+  department GovDepartment  @relation(fields: [departmentId], references: [id])
+  bookmarks  UserBookmark[]
 
   @@index([departmentId, publishedAt])
   @@index([category])
@@ -830,8 +920,8 @@ model UserBookmark {
   newsId    String
   createdAt DateTime @default(now())
 
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  news      GovernmentNews @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  news GovernmentNews @relation(fields: [newsId], references: [id], onDelete: Cascade)
 
   @@unique([userId, newsId])
   @@index([userId])
@@ -839,17 +929,17 @@ model UserBookmark {
 }
 
 model GovSyncLog {
-  id             String   @id @default(cuid())
-  startedAt      DateTime @default(now())
-  completedAt    DateTime?
-  totalFetched   Int      @default(0)
-  totalNew       Int      @default(0)
-  totalDuplicates Int     @default(0)
-  totalErrors    Int      @default(0)
-  status         String   @default("RUNNING") // "RUNNING", "SUCCESS", "PARTIAL", "FAILED"
-  errorDetails   Json?
+  id              String    @id @default(cuid())
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  totalFetched    Int       @default(0)
+  totalNew        Int       @default(0)
+  totalDuplicates Int       @default(0)
+  totalErrors     Int       @default(0)
+  status          String    @default("RUNNING") // "RUNNING", "SUCCESS", "PARTIAL", "FAILED"
+  errorDetails    Json?
 
-  fetchHistory   FetchHistory[]
+  fetchHistory FetchHistory[]
 
   @@index([startedAt])
   @@map("gov_sync_logs")
@@ -858,16 +948,16 @@ model GovSyncLog {
 model FetchHistory {
   id           String   @id @default(cuid())
   syncLogId    String
-  department   String   // "gst-council", "cbic", etc.
+  department   String // "gst-council", "cbic", etc.
   url          String
-  status       String   // "SUCCESS", "FAILED"
+  status       String // "SUCCESS", "FAILED"
   itemsFetched Int      @default(0)
   itemsNew     Int      @default(0)
   durationMs   Int      @default(0)
   errorMessage String?
   createdAt    DateTime @default(now())
 
-  syncLog      GovSyncLog @relation(fields: [syncLogId], references: [id], onDelete: Cascade)
+  syncLog GovSyncLog @relation(fields: [syncLogId], references: [id], onDelete: Cascade)
 
   @@index([syncLogId])
   @@index([department])
@@ -875,18 +965,17 @@ model FetchHistory {
 }
 
 model FailedJob {
-  id          String   @id @default(cuid())
-  jobType     String   // "news-sync"
-  payload     Json
-  attempts    Int      @default(0)
-  maxAttempts Int      @default(3)
+  id           String    @id @default(cuid())
+  jobType      String // "news-sync"
+  payload      Json
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
   errorMessage String?
-  nextRetryAt DateTime?
-  resolvedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  nextRetryAt  DateTime?
+  resolvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([jobType, nextRetryAt])
   @@map("failed_jobs")
 }
-

@@ -1,4 +1,5 @@
-﻿import { app } from './app';
+import 'dotenv/config'; // Must be first!
+import { app } from './app';
 import { config } from './config';
 import { logger } from './config/logger';
 import { connectDatabase, disconnectDatabase } from './config/database';

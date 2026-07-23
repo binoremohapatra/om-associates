@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Globe2, FileText, Anchor, Search, Download, Upload } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -14,9 +15,7 @@ export default function ImportExportPage() {
   const fetchRecords = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/import-export/records', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/import-export/records');
       if (response.data.success) {
         setRecords(response.data.data);
       }
@@ -34,7 +33,7 @@ export default function ImportExportPage() {
   useEffect(() => {
     const fetchDgftNews = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/news?department=dgft&limit=10');
+        const res = await fetch('/news?department=dgft&limit=10');
         const d = await res.json();
         if (d.success) setDgftNews(d.data || []);
       } catch {} finally { setNewsLoading(false); }
@@ -234,9 +233,7 @@ function EximModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -254,9 +251,7 @@ function EximModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () 
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/api/v1/import-export/records', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/import-export/records', formData);
       onSuccess();
     } catch (error) {
       console.error('Failed to create EXIM record', error);
@@ -368,9 +363,7 @@ function UploadEximModal({ onClose, onSuccess }: { onClose: () => void, onSucces
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -395,7 +388,7 @@ function UploadEximModal({ onClose, onSuccess }: { onClose: () => void, onSucces
       formData.append('eximPdf', file);
       formData.append('clientId', clientId);
 
-      await axios.post('/api/v1/import-export/parse-document', formData, {
+      await api.post('/import-export/parse-document', formData, {
         headers: { 
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data'

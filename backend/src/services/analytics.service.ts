@@ -163,7 +163,7 @@ export class AnalyticsService {
     });
 
     // 4. Recent Activity
-    const recentActivity = [];
+    const recentActivity: any[] = [];
     // Get latest payment transactions
     const payments = await prisma.paymentTransaction.findMany({
       where: { client: { organizationId } },

@@ -49,13 +49,35 @@ export const config = {
     port: parseInt(optional('SMTP_PORT', '587'), 10),
     user: optional('SMTP_USER', ''),
     pass: optional('SMTP_PASS', ''),
-    from: optional('EMAIL_FROM', 'noreply@taxos.in'),
+    from: optional('EMAIL_FROM', 'noreply@omassociates.com'),
+  },
+  
+  resend: {
+    apiKey: process.env.RESEND_API_KEY,
   },
 
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL || '/api/v1/auth/google/callback',
+  },
+  
+  facebook: {
+    clientId: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    callbackUrl: process.env.FACEBOOK_CALLBACK_URL || '/api/v1/auth/facebook/callback',
+  },
+  
+  github: {
+    clientId: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackUrl: process.env.GITHUB_CALLBACK_URL || '/api/v1/auth/github/callback',
+  },
+  
+  microsoft: {
+    clientId: process.env.MICROSOFT_CLIENT_ID,
+    clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+    callbackUrl: process.env.MICROSOFT_CALLBACK_URL || '/api/v1/auth/microsoft/callback',
   },
 
   ai: {

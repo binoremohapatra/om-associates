@@ -1,3 +1,4 @@
+import 'dotenv/config'; // Load immediately!
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -23,10 +24,14 @@ import platformRoutes from './routes/platform.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import newsRoutes from './routes/news.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import incomeTaxRoutes from './routes/income-tax.routes';
+import legalRoutes from './routes/legal.routes';
+import importExportRoutes from './routes/import-export.routes';
+import appointmentRoutes from './routes/appointment.routes';
 
 const app = express();
 
-// ── Security & Utility Middleware ─────────────────────────────────────────────
+// Security & Utility Middleware
 app.use(helmet());
 app.use(
   cors({
@@ -34,6 +39,9 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
+
+
+
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
@@ -61,6 +69,10 @@ apiRouter.use('/platform', platformRoutes);
 apiRouter.use('/analytics', analyticsRoutes);
 apiRouter.use('/news', newsRoutes);
 apiRouter.use('/dashboard', dashboardRoutes);
+apiRouter.use('/income-tax', incomeTaxRoutes);
+apiRouter.use('/legal', legalRoutes);
+apiRouter.use('/import-export', importExportRoutes);
+apiRouter.use('/appointments', appointmentRoutes);
 
 app.use('/api/v1', apiRouter);
 

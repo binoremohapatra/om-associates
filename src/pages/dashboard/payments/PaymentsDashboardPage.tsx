@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Clock, FileText, CheckCircle2 } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
@@ -14,9 +15,7 @@ export default function PaymentsDashboardPage() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const response = await axios.get('/api/v1/payments/analytics', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/payments/analytics');
         if (response.data.success) {
           setData(response.data.data);
         }
@@ -176,9 +175,7 @@ function CreateInvoiceModal({ onClose, onSuccess }: { onClose: () => void, onSuc
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -196,9 +193,7 @@ function CreateInvoiceModal({ onClose, onSuccess }: { onClose: () => void, onSuc
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/api/v1/payments/invoices', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/payments/invoices', formData);
       onSuccess();
     } catch (error: any) {
       console.error('Failed to create invoice', error);

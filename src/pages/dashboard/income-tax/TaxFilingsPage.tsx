@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { format } from 'date-fns';
 import { Download, Search, FileText, Upload } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
@@ -13,9 +14,7 @@ export default function TaxFilingsPage() {
   const fetchFilings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/income-tax/filings', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/income-tax/filings');
       if (response.data.success) {
         setFilings(response.data.data);
       }
@@ -173,9 +172,7 @@ function AddFilingModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -199,9 +196,7 @@ function AddFilingModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
         deductions: formData.deductions ? Number(formData.deductions) * 100 : 0
       };
 
-      await axios.post('/api/v1/tax/filings', payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/tax/filings', payload);
       onSuccess();
     } catch (error: any) {
       console.error('Failed to create tax filing', error);
@@ -321,7 +316,7 @@ function UploadItrModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
       const formData = new FormData();
       formData.append('itrvPdf', file);
 
-      await axios.post('/api/v1/tax/parse-itrv', formData, {
+      await api.post('/tax/parse-itrv', formData, {
         headers: { 
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data'

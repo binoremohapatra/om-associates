@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { api } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { AlertCircle, Clock, CheckCircle2, TrendingUp, Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -15,10 +15,7 @@ export default function GstDashboardPage() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:4000/api/v1/gst/dashboard', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get('/gst/dashboard');
         if (res.data.success) {
           setData(res.data.data);
         }
@@ -34,10 +31,11 @@ export default function GstDashboardPage() {
   useEffect(() => {
     const fetchGstNews = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/news?department=gst-council&limit=8');
-        const cbicRes = await fetch('http://localhost:4000/api/v1/news?department=cbic&limit=8');
-        const [d1, d2] = await Promise.all([res.json(), cbicRes.json()]);
-        const combined = [...(d1.data || []), ...(d2.data || [])]
+        const [res, cbicRes] = await Promise.all([
+          api.get('/news?department=gst-council&limit=8'),
+          api.get('/news?department=cbic&limit=8')
+        ]);
+        const combined = [...(res.data.data || []), ...(cbicRes.data.data || [])]
           .sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
           .slice(0, 10);
         setGstNews(combined);

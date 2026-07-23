@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Scale, Calendar, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { MagicBentoGrid } from '../../../components/ui/MagicBento';
@@ -16,9 +17,7 @@ export default function LegalPage() {
   const fetchCases = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/legal/cases', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/legal/cases');
       if (response.data.success) {
         setCases(response.data.data);
       }
@@ -36,7 +35,7 @@ export default function LegalPage() {
   useEffect(() => {
     const fetchMcaNews = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/news?department=mca&limit=8');
+        const res = await fetch('/news?department=mca&limit=8');
         const d = await res.json();
         if (d.success) setMcaNews(d.data || []);
       } catch {} finally { setNewsLoading(false); }
@@ -195,9 +194,7 @@ function CaseModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -215,9 +212,7 @@ function CaseModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () 
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/api/v1/legal/cases', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/legal/cases', formData);
       onSuccess();
     } catch (error) {
       console.error('Failed to create case', error);

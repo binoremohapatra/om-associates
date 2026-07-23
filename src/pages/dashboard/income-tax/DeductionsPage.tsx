@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Landmark, ShieldAlert, CheckCircle2, AlertCircle } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { cn, formatCurrency } from '../../../lib/utils';
@@ -12,9 +13,7 @@ export default function DeductionsPage() {
   const fetchDeductions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/income-tax/deductions', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/income-tax/deductions');
       if (response.data.success) {
         setDeductions(response.data.data);
       }
@@ -123,9 +122,7 @@ function AddDeductionModal({ onClose, onSuccess }: { onClose: () => void, onSucc
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -152,9 +149,7 @@ function AddDeductionModal({ onClose, onSuccess }: { onClose: () => void, onSucc
         amountPaise: Number(formData.amount) * 100 // convert rupees to paise
       };
 
-      await axios.post(`/api/v1/tax/clients/${formData.clientId}/deductions`, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post(`/tax/clients/${formData.clientId}/deductions`, payload);
       onSuccess();
     } catch (error: any) {
       console.error('Failed to add deduction', error);

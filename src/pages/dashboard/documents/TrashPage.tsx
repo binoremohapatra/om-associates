@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { motion } from 'framer-motion';
 import { Trash2, RefreshCw, FileText, File, FileImage, AlertTriangle } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -23,10 +24,7 @@ export default function TrashPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchDocs = async () => {
-    const token = localStorage.getItem('token');
-    const res = await axios.get('http://localhost:4000/api/v1/documents?trash=true', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const res = await api.get('/documents?trash=true');
     if (res.data.success) setDocs(res.data.data);
     setLoading(false);
   };
@@ -34,10 +32,7 @@ export default function TrashPage() {
   useEffect(() => { fetchDocs(); }, []);
 
   const handleRestore = async (id: string) => {
-    const token = localStorage.getItem('token');
-    await axios.patch(`http://localhost:4000/api/v1/documents/${id}/restore`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    await api.patch(`/documents/${id}/restore`, {});
     fetchDocs();
   };
 

@@ -1,13 +1,15 @@
+import { api } from '@/lib/api';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransition, fadeInUp } from '../../lib/animations';
 import { Button } from '../../components/ui/Button';
 import { Search, Plus, MessageSquare, Send, Bot, User, Sparkles, Paperclip, ChevronLeft, Loader2 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
-const API_URL = 'http://localhost:4000/api/v1/ai';
+const API_URL = '/ai';
 
 export default function QueriesPage() {
+  const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeQueryId, setActiveQueryId] = useState<string | null>(null);
   const [input, setInput] = useState('');
@@ -17,15 +19,12 @@ export default function QueriesPage() {
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    fetchConversations();
-  }, []);
+    if (token) fetchConversations();
+  }, [token]);
 
   const fetchConversations = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/conversations`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get(`${API_URL}/conversations`);
       if (res.data.success) {
         setConversations(res.data.data);
         if (res.data.data.length > 0 && !activeQueryId) {
@@ -50,10 +49,7 @@ export default function QueriesPage() {
   const fetchMessages = async (conversationId: string) => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_URL}/conversations/${conversationId}/messages`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get(`${API_URL}/conversations/${conversationId}/messages`);
       if (res.data.success) {
         setMessages(res.data.data);
       }
@@ -79,14 +75,11 @@ export default function QueriesPage() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     
     try {
-      const token = localStorage.getItem('token');
       const payload = activeQueryId?.startsWith('new-') 
         ? { message: userMessage }
         : { message: userMessage, conversationId: activeQueryId };
 
-      const res = await axios.post(`${API_URL}/chat`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.post(`${API_URL}/chat`, payload);
       
       if (res.data.success) {
         const { conversationId, message } = res.data.data;

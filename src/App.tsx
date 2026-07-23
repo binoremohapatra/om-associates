@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+
 import { ThemeProvider } from './hooks/useTheme';
 import { ToastProvider } from './hooks/useToast';
 import Navbar from './components/layout/Navbar';
@@ -18,6 +19,10 @@ import QueriesPage from './pages/queries/QueriesPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import ProfilePage from './pages/dashboard/profile/ProfilePage';
 import { AuthProvider } from './contexts/AuthContext';
+import OAuthCallbackPage from './pages/auth/OAuthCallbackPage';
+import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // GST Module
 import GstLayout from './pages/dashboard/gst/GstLayout';
@@ -32,11 +37,7 @@ import DocumentDashboard from './pages/dashboard/documents/DocumentDashboard';
 import StarredPage from './pages/dashboard/documents/StarredPage';
 import TrashPage from './pages/dashboard/documents/TrashPage';
 
-// Payments
-import PaymentsLayout from './pages/dashboard/payments/PaymentsLayout';
-import PaymentsDashboardPage from './pages/dashboard/payments/PaymentsDashboardPage';
-import InvoicesPage from './pages/dashboard/payments/InvoicesPage';
-import SubscriptionsPage from './pages/dashboard/payments/SubscriptionsPage';
+
 
 // Income Tax
 import IncomeTaxLayout from './pages/dashboard/income-tax/IncomeTaxLayout';
@@ -83,7 +84,10 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
             <Route path="/" element={<Layout />}>
               <Route index element={<LandingPage />} />
             </Route>
@@ -120,12 +124,7 @@ export default function App() {
                 <Route path="calculator" element={<TaxCalculatorPage />} />
               </Route>
               
-              {/* Payments */}
-              <Route path="payments" element={<PaymentsLayout />}>
-                <Route index element={<PaymentsDashboardPage />} />
-                <Route path="invoices" element={<InvoicesPage />} />
-                <Route path="subscriptions" element={<SubscriptionsPage />} />
-              </Route>
+
               <Route path="legal" element={<LegalPage />} />
               <Route path="import-export" element={<ImportExportPage />} />
               <Route path="news" element={<NewsPage />} />

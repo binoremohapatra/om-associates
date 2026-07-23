@@ -1,79 +1,85 @@
 import { Router } from 'express';
-import passport from 'passport';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 import { AuthController } from '../controllers/auth.controller';
-import { validate } from '../middleware/request';
 import { authenticate } from '../middleware/auth';
-import { z } from 'zod';
+import passport from 'passport';
+import { AuthService } from '../services/auth.service';
+import { prisma } from '../config/database';
+import { config } from '../config';
 
 const router = Router();
 
-const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  name: z.string().min(1),
-  organizationName: z.string().optional(),
-});
+// Local Auth
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.post('/logout', AuthController.logout);
+router.post('/refresh', AuthController.refresh);
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
+// OTP & Password
+router.post('/send-otp', AuthController.sendOtp);
+router.post('/verify-otp', AuthController.verifyOtp);
+router.post('/forgot-password', AuthController.forgotPassword);
+router.post('/reset-password', AuthController.resetPassword);
 
-const refreshSchema = z.object({
-  refreshToken: z.string().optional(),
-});
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-const resetPasswordSchema = z.object({
-  email: z.string().email(),
-  token: z.string(),
-  newPassword: z.string().min(8),
-});
-
-const verifyEmailSchema = z.object({
-  token: z.string(),
-});
-
-// Email/Password Routes
-router.post('/signup', validate(signupSchema), AuthController.register);
-router.post('/login', validate(loginSchema), AuthController.login);
-router.post('/refresh', validate(refreshSchema), AuthController.refresh);
-router.post('/logout', authenticate, AuthController.logout);
+// Profile
 router.get('/me', authenticate, AuthController.me);
-router.put('/profile', authenticate, AuthController.updateProfile);
 
-// Avatar upload
-const avatarUploadDir = path.join(process.cwd(), 'uploads', 'avatars');
-if (!fs.existsSync(avatarUploadDir)) fs.mkdirSync(avatarUploadDir, { recursive: true });
+// OAuth Helper
+const oauthCallbackHandler = async (req: any, res: any) => {
+  const user = req.user;
+  if (!user) {
+    return res.redirect(`${config.server.corsOrigins[0]}/login?error=oauth_failed`);
+  }
 
-const avatarStorage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, avatarUploadDir),
-  filename: (req, _file, cb) => cb(null, `avatar_${(req as any).user?.id}_${Date.now()}.jpg`),
-});
-const avatarUpload = multer({ storage: avatarStorage, limits: { fileSize: 5 * 1024 * 1024 } });
-router.post('/profile/avatar', authenticate, avatarUpload.single('avatar'), AuthController.uploadAvatar);
-router.post('/forgot-password', validate(forgotPasswordSchema), AuthController.forgotPassword);
-router.post('/reset-password', validate(resetPasswordSchema), AuthController.resetPassword);
-router.post('/verify-email', validate(verifyEmailSchema), AuthController.verifyEmail);
-router.post('/resend-verification', authenticate, AuthController.resendVerification);
+  const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
+  
+  await prisma.session.create({
+    data: {
+      userId: user.id,
+      token: accessToken,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15m
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent']
+    }
+  });
 
-// Google OAuth Routes
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'], session: false })
-);
+  await prisma.refreshToken.create({
+    data: {
+      userId: user.id,
+      token: refreshToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    }
+  });
 
-router.get(
-  '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login?error=auth_failed', session: false }),
-  AuthController.googleCallback
-);
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLoginAt: new Date() }
+  });
+
+  // Redirect to frontend with access token
+  res.redirect(`${config.server.corsOrigins[0]}/oauth-callback?token=${accessToken}`);
+};
+
+// Google OAuth
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: '/login' }), oauthCallbackHandler);
+
+// Facebook OAuth
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+router.get('/facebook/callback', passport.authenticate('facebook', { session: false, failureRedirect: '/login' }), oauthCallbackHandler);
+
+// GitHub OAuth
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+router.get('/github/callback', passport.authenticate('github', { session: false, failureRedirect: '/login' }), oauthCallbackHandler);
+
+// Microsoft OAuth
+router.get('/microsoft', passport.authenticate('microsoft', { scope: ['user.read'] }));
+router.get('/microsoft/callback', passport.authenticate('microsoft', { session: false, failureRedirect: '/login' }), oauthCallbackHandler);
 
 export default router;
-

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail, Lock, Eye, EyeOff, CheckCircle2, TrendingUp, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '@/lib/api';
+import { IconBrandGoogle, IconBrandFacebook, IconBrandGithub, IconBrandWindows, IconBrandApple } from '@tabler/icons-react';
 import Hyperspeed from '../../components/ui/Hyperspeed';
 import GoldDivider from '../../components/ui/GoldDivider';
 import { LoaderOne } from '../../components/ui/loader';
@@ -69,20 +70,23 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
     try {
-      const res = await axios.post('http://localhost:4000/api/v1/auth/login', {
-        email,
-        password
-      });
-      if (res.data.success) {
-        login(res.data.data.accessToken, res.data.data.user);
-        navigate('/dashboard');
-      }
+      const res = await api.post('/auth/login', { email, password });
+      login(res.data.data.accessToken, res.data.data.user);
+      navigate('/dashboard');
     } catch (err: any) {
-      const errorData = err.response?.data?.error;
-      setError(typeof errorData === 'string' ? errorData : (errorData?.message || 'Invalid credentials'));
+      if (err.response?.data?.errorCode === 'NOT_VERIFIED') {
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+      } else {
+        setError(err.response?.data?.error || 'Invalid credentials');
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleOAuth = (providerId: string) => {
+    const provider = providerId.replace('oauth_', '');
+    window.location.href = `${api.defaults.baseURL}/auth/${provider}`;
   };
 
   return (
@@ -329,15 +333,15 @@ export default function LoginPage() {
                   />
                   <span className="text-xs" style={{ color: '#68687C' }}>Remember me</span>
                 </label>
-                <a
-                  href="#"
+                <Link
+                  to="/forgot-password"
                   className="text-xs font-medium transition-colors duration-200"
                   style={{ color: '#C9A94B' }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#E8C96B'}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#C9A94B'}
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               {/* Submit */}
@@ -377,6 +381,7 @@ export default function LoginPage() {
                   </>
                 )}
               </motion.button>
+
             </form>
 
             {/* Register link */}

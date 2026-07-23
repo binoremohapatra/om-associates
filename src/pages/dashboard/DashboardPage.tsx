@@ -13,6 +13,7 @@ import {
 import LuxuryBackground from '../../components/ui/LuxuryBackground';
 import { cn } from '../../lib/utils';
 import { MagicBentoGrid } from '../../components/ui/MagicBento';
+import { api } from '@/lib/api';
 
 export default function DashboardPage() {
   const { user, token } = useAuth();
@@ -27,11 +28,8 @@ export default function DashboardPage() {
     const fetchDashboardData = async () => {
       if (!token) return;
       try {
-        const response = await fetch('http://localhost:4000/api/v1/dashboard/summary', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        if (data.success) setDashboardData(data.data);
+        const response = await api.get('/dashboard/summary');
+        if (response.data.success) setDashboardData(response.data.data);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -44,9 +42,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchGovNews = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/v1/news/latest?perDept=3');
-        const data = await res.json();
-        if (data.success) setGovNews(data.data || {});
+        const response = await api.get('/news/latest?perDept=3');
+        if (response.data.success) setGovNews(response.data.data || {});
       } catch {} finally { setGovNewsLoading(false); }
     };
     fetchGovNews();

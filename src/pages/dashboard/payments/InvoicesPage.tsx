@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { format } from 'date-fns';
 import { Download, CreditCard, Search, Filter } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
@@ -11,9 +12,7 @@ export default function InvoicesPage() {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const response = await axios.get('/api/v1/payments/invoices', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/payments/invoices');
         if (response.data.success) {
           setInvoices(response.data.data);
         }
@@ -28,23 +27,19 @@ export default function InvoicesPage() {
 
   const handlePayNow = async (invoice: any) => {
     try {
-      const response = await axios.post('/api/v1/payments/razorpay/order', {
+      const response = await api.post('/payments/razorpay/order', {
         invoiceId: invoice.id,
         amountPaise: invoice.totalPaise
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.data.success) {
         // Here we would normally initialize Razorpay checkout
         alert(`Mock Razorpay Order Created: ${response.data.data.id}\nProceeding to mock verification...`);
         
-        const verifyRes = await axios.post('/api/v1/payments/razorpay/verify', {
+        const verifyRes = await api.post('/payments/razorpay/verify', {
           razorpay_order_id: response.data.data.id,
           razorpay_payment_id: 'pay_mock_' + Math.floor(Math.random() * 1000000),
           razorpay_signature: 'mock_signature'
-        }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
 
         if (verifyRes.data.success) {

@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, Landmark, FileCheck, Scale, Search, Upload } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -138,7 +139,10 @@ function GstNavItem({ item, isActive }: { item: any, isActive: boolean }) {
   );
 }
 
+import { useAuth } from '../../../contexts/AuthContext';
+
 function UploadGstModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+  const { token } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -167,10 +171,10 @@ function UploadGstModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
       const formData = new FormData();
       formData.append('document', file);
 
-      await axios.post('/api/v1/gst/parse-return', formData, {
+      await api.post('/gst/parse-return', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}` 
+          Authorization: `Bearer ${token}` 
         }
       });
       onSuccess();
@@ -225,6 +229,7 @@ function UploadGstModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
 }
 
 function NewFilingModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+  const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
   const [formData, setFormData] = useState({
@@ -241,9 +246,7 @@ function NewFilingModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -267,9 +270,7 @@ function NewFilingModal({ onClose, onSuccess }: { onClose: () => void, onSuccess
         totalTaxPayable: formData.totalTaxPayable ? Number(formData.totalTaxPayable) : 0
       };
 
-      await axios.post('/api/v1/gst/returns', payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/gst/returns', payload);
       onSuccess();
     } catch (error: any) {
       console.error('Failed to create GST return', error);

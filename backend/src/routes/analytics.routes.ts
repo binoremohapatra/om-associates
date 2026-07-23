@@ -7,7 +7,7 @@ import { UserRole } from '@prisma/client';
 const router = Router();
 
 router.use(authenticate);
-router.use(requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.CLIENT));
+router.use(requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT));
 
 router.get('/dashboard', AnalyticsController.getDashboardData);
 

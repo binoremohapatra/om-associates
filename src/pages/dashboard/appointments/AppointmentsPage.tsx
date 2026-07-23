@@ -1,5 +1,6 @@
+import { api } from '@/lib/api';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
 import { Calendar as CalendarIcon, Clock, Video, User, X } from 'lucide-react';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { format, isFuture } from 'date-fns';
@@ -13,9 +14,7 @@ export default function AppointmentsPage() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('/api/v1/appointments', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/appointments');
       if (response.data.success) {
         setAppointments(response.data.data);
       }
@@ -163,9 +162,7 @@ function ScheduleModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('/api/v1/clients', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get('/clients');
         if (response.data.success) {
           setClients(response.data.data);
           if (response.data.data.length > 0) {
@@ -183,9 +180,7 @@ function ScheduleModal({ onClose, onSuccess }: { onClose: () => void, onSuccess:
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('/api/v1/appointments', formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post('/appointments', formData);
       onSuccess();
     } catch (error) {
       console.error('Failed to schedule', error);
