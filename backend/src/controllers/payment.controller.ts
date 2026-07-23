@@ -33,7 +33,7 @@ export class PaymentController {
             const monthName = inv.paidAt.toLocaleString('default', { month: 'short' });
             revenueByMonth[monthName] = (revenueByMonth[monthName] || 0) + Number(inv.totalPaise) / 100;
           }
-        } else if (inv.status === 'SENT' || inv.status === 'PENDING') {
+        } else if (inv.status === 'SENT') {
           pendingBillsPaise += inv.totalPaise;
           if (inv.dueDate && inv.dueDate < now) {
             overdueInvoices++;
