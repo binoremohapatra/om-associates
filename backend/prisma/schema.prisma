@@ -140,6 +140,7 @@ model Organization {
 
 model User {
   id             String       @id @default(cuid())
+  userCode       String?      @unique
   organizationId String
   email          String       @unique
   name           String

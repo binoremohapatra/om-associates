@@ -21,8 +21,10 @@ export class AuthService {
       });
     }
 
+    const userCode = 'USR-' + Math.floor(10000 + Math.random() * 90000).toString();
     const user = await prisma.user.create({
       data: {
+        userCode,
         email,
         passwordHash,
         name,
@@ -150,8 +152,10 @@ export class AuthService {
         });
       }
 
+      const userCode = 'USR-' + Math.floor(10000 + Math.random() * 90000).toString();
       user = await prisma.user.create({
         data: {
+          userCode,
           email,
           name,
           avatarUrl,
