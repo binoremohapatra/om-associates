@@ -62,40 +62,40 @@ export default function ImportExportPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar p-8 flex flex-col h-full">
-      <div className="flex items-center justify-between mb-8 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20">
-            <Globe2 className="w-6 h-6 text-[#C9A94B]" />
+    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-8 shrink-0 gap-4 w-full">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20 shrink-0">
+            <Globe2 className="w-5 h-5 md:w-6 md:h-6 text-[#C9A94B]" />
           </div>
           <div>
-            <h1 className="text-3xl font-display font-medium text-white mb-1">Import / Export</h1>
-            <p className="text-slate-500">Manage IEC Registrations, LUTs, and Shipping Bills.</p>
+            <h1 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5 md:mb-1">Import / Export</h1>
+            <p className="text-xs md:text-sm text-slate-500">Manage IEC Registrations, LUTs, and Shipping Bills.</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <button 
             onClick={() => setIsUploadModalOpen(true)}
-            className="px-4 py-2 bg-[#111111] border border-[#C9A94B]/30 text-[#C9A94B] font-medium rounded-xl hover:bg-[#C9A94B]/10 transition-colors flex items-center gap-2 whitespace-nowrap"
+            className="w-full sm:w-auto px-3 py-2 md:px-4 md:py-2 bg-[#111111] border border-[#C9A94B]/30 text-[#C9A94B] text-sm md:text-base font-medium rounded-xl hover:bg-[#C9A94B]/10 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <Upload className="w-4 h-4" /> Upload Document
+            <Upload className="w-4 h-4" /> <span className="inline">Upload Document</span>
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors whitespace-nowrap"
+            className="w-full sm:w-auto px-3 py-2 md:px-4 md:py-2 bg-[#C9A94B] text-black text-sm md:text-base font-medium rounded-xl hover:bg-[#E8C96B] transition-colors whitespace-nowrap text-center"
           >
             File New Record
           </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 mb-6 shrink-0">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex items-center gap-4 mb-4 md:mb-6 shrink-0 w-full">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input 
             type="text"
             placeholder="Search by Document Number or Port Code..."
-            className="w-full bg-[#111111] border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C9A94B]/50 transition-colors"
+            className="w-full bg-[#111111] border border-white/10 rounded-xl py-2 pl-9 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C9A94B]/50 transition-colors"
           />
         </div>
       </div>
@@ -161,8 +161,8 @@ export default function ImportExportPage() {
       </div>
 
       {/* Latest DGFT Trade Notices — Live from API */}
-      <div className="mt-8 px-6 pb-12">
-        <div className="p-5 rounded-2xl bg-[#111111] border border-white/[0.07]">
+      <div className="mt-4 md:mt-8 md:px-6 pb-4 md:pb-12">
+        <div className="p-4 md:p-5 rounded-2xl bg-[#111111] border border-white/[0.07]">
           <h3 className="text-sm font-medium text-white mb-1">Latest DGFT Trade Notices</h3>
           <p className="text-xs text-slate-600 mb-4">Live updates from the Directorate General of Foreign Trade official portal.</p>
           <div className="flex flex-col gap-2 max-h-64 overflow-y-auto custom-scrollbar">

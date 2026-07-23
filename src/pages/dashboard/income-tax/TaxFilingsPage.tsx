@@ -42,25 +42,25 @@ export default function TaxFilingsPage() {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar pb-12 flex flex-col h-full">
       {/* Controls */}
-      <div className="flex items-center gap-4 mb-6 shrink-0 justify-between">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mb-4 md:mb-6 shrink-0 justify-between w-full">
+        <div className="relative w-full sm:flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input 
             type="text"
             placeholder="Search by PAN or Client Name..."
-            className="w-full bg-[#111111] border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C9A94B]/50 transition-colors"
+            className="w-full bg-[#111111] border border-white/10 rounded-xl py-2 pl-9 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C9A94B]/50 transition-colors"
           />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button 
             onClick={() => setIsUploadModalOpen(true)}
-            className="px-4 py-2 bg-[#111111] border border-[#C9A94B]/30 text-[#C9A94B] font-medium rounded-xl hover:bg-[#C9A94B]/10 transition-colors flex items-center gap-2 whitespace-nowrap"
+            className="flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 bg-[#111111] border border-[#C9A94B]/30 text-[#C9A94B] text-sm md:text-base font-medium rounded-xl hover:bg-[#C9A94B]/10 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <Upload className="w-4 h-4" /> Upload ITR-V
+            <Upload className="w-4 h-4" /> <span className="hidden sm:inline">Upload</span> ITR-V
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors whitespace-nowrap"
+            className="flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 bg-[#C9A94B] text-black text-sm md:text-base font-medium rounded-xl hover:bg-[#E8C96B] transition-colors whitespace-nowrap text-center"
           >
             Record Filing
           </button>

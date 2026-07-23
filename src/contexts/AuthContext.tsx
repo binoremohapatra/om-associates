@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
 interface Organization {
@@ -12,6 +12,7 @@ interface User {
   name: string;
   phone?: string;
   jobTitle?: string;
+  avatarUrl?: string;
   role: string;
   organizationId: string;
   organization?: Organization;

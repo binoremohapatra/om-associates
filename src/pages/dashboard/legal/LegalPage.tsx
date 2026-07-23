@@ -54,20 +54,20 @@ export default function LegalPage() {
   };
 
   return (
-    <MagicBentoGrid className="flex flex-col shrink-0 w-full p-4 sm:p-6 lg:p-8 pb-12 gap-6">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20">
-            <Scale className="w-6 h-6 text-[#C9A94B]" />
+    <MagicBentoGrid className="flex flex-col shrink-0 w-full p-4 sm:p-6 lg:p-8 pb-12 gap-4 md:gap-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-8 gap-4 w-full">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20 shrink-0">
+            <Scale className="w-5 h-5 md:w-6 md:h-6 text-[#C9A94B]" />
           </div>
           <div>
-            <h1 className="text-3xl font-display font-medium text-white mb-1">Legal Services</h1>
-            <p className="text-slate-500">Track litigations, notices, and upcoming hearings.</p>
+            <h1 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5 md:mb-1">Legal Services</h1>
+            <p className="text-xs md:text-sm text-slate-500">Track litigations, notices, and upcoming hearings.</p>
           </div>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors"
+          className="w-full sm:w-auto px-4 py-2 bg-[#C9A94B] text-black text-sm md:text-base font-medium rounded-xl hover:bg-[#E8C96B] transition-colors"
         >
           Add Case Record
         </button>
@@ -135,7 +135,7 @@ export default function LegalPage() {
       </div>
 
       {/* Latest MCA Circulars â€” Live from API */}
-      <div className="mt-8">
+      <div className="mt-4 md:mt-8">
         <BentoCard title="Latest MCA Circulars & Notifications" description="Live updates from the Ministry of Corporate Affairs official portal." size="lg">
           <div className="mt-4 flex flex-col gap-2 max-h-64 overflow-y-auto custom-scrollbar">
             {newsLoading ? (

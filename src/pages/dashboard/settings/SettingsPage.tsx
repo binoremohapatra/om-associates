@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, User, Building2, Shield, CreditCard, Bell, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../../lib/utils';
@@ -12,6 +12,15 @@ const TABS = [
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general');
+
+  useEffect(() => {
+    setTimeout(() => {
+      const activeElement = document.getElementById(`setting-tab-${activeTab}`);
+      if (activeElement) {
+        activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 100);
+  }, [activeTab]);
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -31,6 +40,7 @@ export default function SettingsPage() {
                 return (
                   <button
                     key={tab.id}
+                    id={`setting-tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left whitespace-nowrap lg:whitespace-normal",
@@ -80,11 +90,11 @@ function GeneralSettings() {
     <div className="space-y-8">
       {/* Profile Section */}
       <section className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="px-6 py-5 border-b border-white/10">
+        <div className="px-4 md:px-6 py-4 md:py-5 border-b border-white/10">
           <h3 className="text-lg font-medium text-white">Personal Information</h3>
           <p className="text-sm text-slate-400 mt-1">Update your personal profile details.</p>
         </div>
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-6 space-y-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C9A94B] to-[#E8C96B] p-[2px] shrink-0">
               <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center">
@@ -110,8 +120,8 @@ function GeneralSettings() {
             </div>
           </div>
         </div>
-        <div className="px-6 py-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
-          <button className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors">
+        <div className="px-4 md:px-6 py-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
+          <button className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors whitespace-nowrap">
             Save Changes
           </button>
         </div>
@@ -119,11 +129,11 @@ function GeneralSettings() {
 
       {/* Organization Section */}
       <section className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="px-6 py-5 border-b border-white/10">
+        <div className="px-4 md:px-6 py-4 md:py-5 border-b border-white/10">
           <h3 className="text-lg font-medium text-white">Organization Details</h3>
           <p className="text-sm text-slate-400 mt-1">Manage your firm's details and GSTIN.</p>
         </div>
-        <div className="p-6 space-y-6">
+        <div className="p-4 md:p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Firm Name</label>
@@ -135,8 +145,8 @@ function GeneralSettings() {
             </div>
           </div>
         </div>
-        <div className="px-6 py-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
-          <button className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors">
+        <div className="px-4 md:px-6 py-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
+          <button className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors whitespace-nowrap">
             Save Changes
           </button>
         </div>

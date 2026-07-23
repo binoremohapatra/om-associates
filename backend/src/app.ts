@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import passport from 'passport';
+import path from 'path';
 import './config/passport';
 import { config } from './config';
 import { requestId, httpLogger } from './middleware/request';
@@ -62,6 +63,9 @@ apiRouter.use('/news', newsRoutes);
 apiRouter.use('/dashboard', dashboardRoutes);
 
 app.use('/api/v1', apiRouter);
+
+// ── Static Files (Uploads) ────────────────────────────────────────────────────
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // ── 404 & Global Error Handler ────────────────────────────────────────────────
 app.use((req, res, next) => {

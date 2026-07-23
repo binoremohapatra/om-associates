@@ -141,8 +141,8 @@ export default function AnalyticsDashboardPage() {
               <BarChart2 className="w-6 h-6 text-[#C9A94B]" />
             </div>
             <div>
-              <h1 className="text-3xl font-display font-medium text-white mb-1">Analytics Dashboard</h1>
-              <p className="text-slate-500">Your tax intelligence hub, revenue trends, and compliance scores.</p>
+              <h1 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5 md:mb-1">Analytics Dashboard</h1>
+              <p className="text-xs md:text-sm text-slate-500">Your tax intelligence hub, revenue trends, and compliance scores.</p>
             </div>
           </div>
         </div>
@@ -152,13 +152,13 @@ export default function AnalyticsDashboardPage() {
             
             {/* Revenue Line Chart */}
             <BentoCard className="lg:col-span-3 p-0" noPadding>
-              <div className="p-8 pb-0">
-                <div className="flex items-center justify-between mb-6">
+              <div className="p-4 md:p-8 pb-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-3">
                   <div>
-                    <h3 className="font-display font-bold text-xl text-white mb-1">Revenue vs Tax Liability</h3>
-                    <p className="text-sm text-slate-400 mt-0.5">Last 6 months · FY 2025-26</p>
+                    <h3 className="font-display font-bold text-lg md:text-xl text-white mb-1">Revenue vs Tax Liability</h3>
+                    <p className="text-xs md:text-sm text-slate-400 mt-0.5">Last 6 months · FY 2025-26</p>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs text-slate-400">
                     <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-sky-400 inline-block" />Revenue</span>
                     <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-violet-400 inline-block" />Tax</span>
                     <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-emerald-400 inline-block" />Savings</span>
@@ -191,11 +191,11 @@ export default function AnalyticsDashboardPage() {
 
             {/* Tax Breakdown Pie */}
             <BentoCard className="lg:col-span-1" noPadding>
-              <div className="p-8 pb-0">
-                <h3 className="font-display font-bold text-xl text-white mb-1">Tax Breakdown</h3>
-                <p className="text-sm text-slate-400">Current FY distribution</p>
+              <div className="p-4 md:p-8 pb-0">
+                <h3 className="font-display font-bold text-lg md:text-xl text-white mb-1">Tax Breakdown</h3>
+                <p className="text-xs md:text-sm text-slate-400">Current FY distribution</p>
               </div>
-              <div className="px-8 mt-6">
+              <div className="px-4 md:px-8 mt-4 md:mt-6">
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
                     <Pie
@@ -232,11 +232,11 @@ export default function AnalyticsDashboardPage() {
 
             {/* Compliance Score Ring */}
             <BentoCard className="lg:col-span-1" noPadding>
-              <div className="p-8 pb-4 text-center">
-                <h3 className="font-display font-bold text-xl text-white mb-1">Compliance Score</h3>
-                <p className="text-sm text-slate-400">Based on filing accuracy & timeliness</p>
+              <div className="p-4 md:p-8 pb-4 text-center">
+                <h3 className="font-display font-bold text-lg md:text-xl text-white mb-1">Compliance Score</h3>
+                <p className="text-xs md:text-sm text-slate-400">Based on filing accuracy & timeliness</p>
               </div>
-              <div className="px-8 pb-8 flex flex-col items-center justify-center gap-6">
+              <div className="px-4 md:px-8 pb-4 md:pb-8 flex flex-col items-center justify-center gap-6">
                 <ComplianceRing score={compliance.score} />
                 <div className="w-full grid grid-cols-2 gap-3 mt-4">
                   {[
@@ -256,13 +256,13 @@ export default function AnalyticsDashboardPage() {
 
             {/* Activity Feed */}
             <BentoCard className="lg:col-span-1" noPadding>
-              <div className="p-8 pb-6">
+              <div className="p-4 md:p-8 pb-4 md:pb-6">
                 <div className="flex items-center gap-2">
                   <Activity size={20} className="text-[#C9A94B]" />
-                  <h3 className="font-display font-bold text-xl text-white">Recent Activity</h3>
+                  <h3 className="font-display font-bold text-lg md:text-xl text-white">Recent Activity</h3>
                 </div>
               </div>
-              <div className="px-8 pb-8 flex flex-col gap-5">
+              <div className="px-4 md:px-8 pb-4 md:pb-8 flex flex-col gap-4 md:gap-5">
                 {recentActivity.map((item, i) => {
                   const cfg = ACTIVITY_ICONS[item.type as keyof typeof ACTIVITY_ICONS] || ACTIVITY_ICONS.info;
                   const Icon = cfg.Icon;

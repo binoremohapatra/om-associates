@@ -87,20 +87,20 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20">
-            <CalendarIcon className="w-6 h-6 text-[#C9A94B]" />
+    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4 w-full">
+        <div className="flex items-center gap-3 md:gap-4 w-full">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20 shrink-0">
+            <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-[#C9A94B]" />
           </div>
           <div>
-            <h1 className="text-3xl font-display font-medium text-white mb-1">Appointments</h1>
-            <p className="text-slate-500">Manage client meetings and consultations.</p>
+            <h1 className="text-2xl md:text-3xl font-display font-medium text-white mb-0.5 md:mb-1">Appointments</h1>
+            <p className="text-xs md:text-sm text-slate-500">Manage client meetings and consultations.</p>
           </div>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-[#C9A94B] text-black font-medium rounded-xl hover:bg-[#E8C96B] transition-colors"
+          className="w-full sm:w-auto px-4 py-2 bg-[#C9A94B] text-black text-sm md:text-base font-medium rounded-xl hover:bg-[#E8C96B] transition-colors shrink-0"
         >
           Schedule Meeting
         </button>
@@ -112,7 +112,7 @@ export default function AppointmentsPage() {
         <>
           <h2 className="text-lg font-medium text-white mb-4">Upcoming Meetings</h2>
           {upcoming.length === 0 ? (
-            <div className="p-8 border border-white/5 rounded-2xl bg-[#111111] text-center text-slate-500 mb-10">
+            <div className="p-6 md:p-8 border border-white/5 rounded-2xl bg-[#111111] text-center text-sm md:text-base text-slate-500 mb-8 md:mb-10">
               No upcoming meetings scheduled.
             </div>
           ) : (
@@ -123,7 +123,7 @@ export default function AppointmentsPage() {
 
           <h2 className="text-lg font-medium text-white mb-4">Past Meetings</h2>
           {past.length === 0 ? (
-            <div className="p-8 border border-white/5 rounded-2xl bg-[#111111] text-center text-slate-500">
+            <div className="p-6 md:p-8 border border-white/5 rounded-2xl bg-[#111111] text-center text-sm md:text-base text-slate-500">
               No past meetings found.
             </div>
           ) : (

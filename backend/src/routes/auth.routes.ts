@@ -1,5 +1,8 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import passport from 'passport';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { AuthController } from '../controllers/auth.controller';
 import { validate } from '../middleware/request';
 import { authenticate } from '../middleware/auth';
@@ -44,6 +47,17 @@ router.post('/refresh', validate(refreshSchema), AuthController.refresh);
 router.post('/logout', authenticate, AuthController.logout);
 router.get('/me', authenticate, AuthController.me);
 router.put('/profile', authenticate, AuthController.updateProfile);
+
+// Avatar upload
+const avatarUploadDir = path.join(process.cwd(), 'uploads', 'avatars');
+if (!fs.existsSync(avatarUploadDir)) fs.mkdirSync(avatarUploadDir, { recursive: true });
+
+const avatarStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, avatarUploadDir),
+  filename: (req, _file, cb) => cb(null, `avatar_${(req as any).user?.id}_${Date.now()}.jpg`),
+});
+const avatarUpload = multer({ storage: avatarStorage, limits: { fileSize: 5 * 1024 * 1024 } });
+router.post('/profile/avatar', authenticate, avatarUpload.single('avatar'), AuthController.uploadAvatar);
 router.post('/forgot-password', validate(forgotPasswordSchema), AuthController.forgotPassword);
 router.post('/reset-password', validate(resetPasswordSchema), AuthController.resetPassword);
 router.post('/verify-email', validate(verifyEmailSchema), AuthController.verifyEmail);

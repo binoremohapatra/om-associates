@@ -1,10 +1,11 @@
-﻿import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';
 import { sendSuccess, sendCreated, sendNoContent } from '../utils/helpers';
 import { UnauthorizedError, ConflictError, BadRequestError } from '../types/errors';
 import { UserRole, AuthProvider } from '@prisma/client';
 import { config } from '../config';
+import path from 'path';
 
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -169,6 +170,22 @@ export class AuthController {
       const user = await prisma.user.update({
         where: { id: req.user!.id },
         data: { name, phone, jobTitle },
+        select: { id: true, email: true, name: true, phone: true, jobTitle: true, avatarUrl: true, role: true, organizationId: true, authProvider: true, organization: true },
+      });
+      sendSuccess(res, { user });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) throw new BadRequestError('No image file uploaded');
+      // The file is saved to uploads/avatars/ by multer
+      const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+      const user = await prisma.user.update({
+        where: { id: req.user!.id },
+        data: { avatarUrl },
         select: { id: true, email: true, name: true, phone: true, jobTitle: true, avatarUrl: true, role: true, organizationId: true, authProvider: true, organization: true },
       });
       sendSuccess(res, { user });

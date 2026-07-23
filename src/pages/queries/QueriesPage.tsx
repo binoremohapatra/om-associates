@@ -184,30 +184,30 @@ export default function QueriesPage() {
         </div>
 
         {/* Right Area - Chat Interface */}
-        <div className={`flex-1 flex flex-col bg-[#0a0a0c] transition-all ${!activeQueryId ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col bg-[#0a0a0c] transition-all min-w-0 w-full ${!activeQueryId ? 'hidden md:flex' : 'flex'}`}>
           {activeQuery ? (
             <>
               {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-white/5 bg-[#111111] flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-4">
+              <div className="px-4 md:px-6 py-3 md:py-4 border-b border-white/5 bg-[#111111] flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3 md:gap-4 w-full min-w-0">
                   <button 
                     onClick={() => setActiveQueryId(null)}
-                    className="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+                    className="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 shrink-0"
                   >
                     <ChevronLeft size={20} />
                   </button>
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C9A94B] to-[#E8C96B] flex items-center justify-center shadow-[0_0_15px_rgba(201,169,75,0.2)]">
+                  <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-[#C9A94B] to-[#E8C96B] flex items-center justify-center shadow-[0_0_15px_rgba(201,169,75,0.2)]">
                     <Sparkles className="text-black" size={20} />
                   </div>
-                  <div>
-                    <h2 className="text-white font-medium">{activeQuery.title}</h2>
-                    <p className="text-xs text-slate-400">TaxOS AI Assistant</p>
+                  <div className="min-w-0 flex-1 pr-2">
+                    <h2 className="text-white font-medium text-sm md:text-base truncate">{activeQuery.title}</h2>
+                    <p className="text-xs text-slate-400 truncate">TaxOS AI Assistant</p>
                   </div>
                 </div>
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 custom-scrollbar">
                 {isLoading ? (
                   <div className="h-full flex items-center justify-center">
                     <Loader2 className="animate-spin text-[#C9A94B]" size={32} />
@@ -224,7 +224,7 @@ export default function QueriesPage() {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-[#C9A94B]' : 'bg-[#111] border border-[#C9A94B]/30 text-[#C9A94B]'}`}>
                         {msg.role === 'user' ? <User size={16} className="text-black" /> : <Bot size={16} />}
                       </div>
-                      <div className={`p-4 rounded-2xl text-[14px] leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-[#C9A94B] text-black rounded-tr-none font-medium' : 'bg-[#161618] border border-white/10 text-slate-300 rounded-tl-none'}`}>
+                      <div className={`p-3 md:p-4 rounded-2xl text-[14px] leading-relaxed shadow-sm break-words min-w-0 ${msg.role === 'user' ? 'bg-[#C9A94B] text-black rounded-tr-none font-medium' : 'bg-[#161618] border border-white/10 text-slate-300 rounded-tl-none'}`}>
                         {msg.content}
                       </div>
                     </motion.div>
@@ -251,7 +251,7 @@ export default function QueriesPage() {
               </div>
 
               {/* Chat Input */}
-              <div className="p-4 border-t border-white/5 bg-[#111111]">
+              <div className="p-3 md:p-4 border-t border-white/5 bg-[#111111]">
                 <div className="flex items-end gap-2 bg-[#0a0a0c] border border-white/10 rounded-2xl p-2 focus-within:border-[#C9A94B]/50 transition-colors">
                   <button className="p-3 text-slate-400 hover:text-[#C9A94B] transition-colors rounded-xl hover:bg-white/5 shrink-0">
                     <Paperclip size={20} />
@@ -265,8 +265,8 @@ export default function QueriesPage() {
                         handleSend();
                       }
                     }}
-                    placeholder="Reply or ask another question..."
-                    className="flex-grow bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 resize-none max-h-32 py-3 px-2 text-sm"
+                    placeholder="Type a message..."
+                    className="flex-grow bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 resize-none max-h-32 py-3 px-2 text-sm custom-scrollbar"
                     rows={1}
                     disabled={isSending}
                   />

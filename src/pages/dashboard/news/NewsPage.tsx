@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Newspaper, Clock, ArrowUpRight, RefreshCw, AlertCircle, ExternalLink,
   Search, Bookmark, BookmarkCheck, Share2, FileText, Grid, List, Timeline,
@@ -288,6 +288,15 @@ export default function NewsPage() {
     fetchNews({ dept: deptFilter, category: categoryFilter, search, page });
   }, [deptFilter, categoryFilter, page, fetchNews]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      const el = document.getElementById(`dept-filter-${deptFilter}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 100);
+  }, [deptFilter]);
+
   const handleSearch = (val: string) => {
     setSearch(val);
     clearTimeout(searchTimeout.current);
@@ -313,33 +322,33 @@ export default function NewsPage() {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#0D0D0F] via-[#111119] to-[#0D0D0F] border-b border-white/[0.05] px-8 pt-8 pb-6">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#0D0D0F] via-[#111119] to-[#0D0D0F] border-b border-white/[0.05] px-4 md:px-8 pt-6 md:pt-8 pb-4 md:pb-6">
         <div className="absolute inset-0 bg-gradient-to-r from-[#C9A94B]/3 via-transparent to-blue-500/3 pointer-events-none" />
         <div className="relative max-w-6xl">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20">
-                <Newspaper className="w-6 h-6 text-[#C9A94B]" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-4 w-full">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#C9A94B]/10 flex items-center justify-center border border-[#C9A94B]/20 shrink-0">
+                <Newspaper className="w-5 h-5 md:w-6 md:h-6 text-[#C9A94B]" />
               </div>
               <div>
-                <h1 className="text-3xl font-display font-bold text-white">Government Updates</h1>
-                <p className="text-slate-500 text-sm mt-0.5">Live feed from GST Council · CBIC · Income Tax · DGFT · MCA</p>
+                <h1 className="text-2xl md:text-3xl font-display font-bold text-white">Government Updates</h1>
+                <p className="text-slate-500 text-[10px] md:text-sm mt-0.5">Live feed from GST Council · CBIC · Income Tax · DGFT · MCA</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-row items-center gap-2 md:gap-3 w-full sm:w-auto">
               {lastSync && (
-                <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-600">
+                <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-600 mr-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Synced {formatDistanceToNow(new Date(lastSync), { addSuffix: true })}
                 </div>
               )}
               <button onClick={handleSync} disabled={syncing}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C9A94B]/10 hover:bg-[#C9A94B]/20 border border-[#C9A94B]/20 text-[#C9A94B] text-xs font-medium transition-all disabled:opacity-50">
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 rounded-xl bg-[#C9A94B]/10 hover:bg-[#C9A94B]/20 border border-[#C9A94B]/20 text-[#C9A94B] text-[11px] md:text-xs font-medium transition-all disabled:opacity-50">
                 <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
                 {syncing ? 'Syncing...' : 'Sync Now'}
               </button>
               <button onClick={() => setShowBookmarks(!showBookmarks)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-medium transition-all ${showBookmarks ? 'bg-[#C9A94B]/20 border-[#C9A94B]/40 text-[#C9A94B]' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}>
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 rounded-xl border text-[11px] md:text-xs font-medium transition-all ${showBookmarks ? 'bg-[#C9A94B]/20 border-[#C9A94B]/40 text-[#C9A94B]' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'}`}>
                 <Bookmark className="w-3.5 h-3.5" />
                 Bookmarks ({bookmarkedIds.size})
               </button>
@@ -387,20 +396,20 @@ export default function NewsPage() {
       </div>
 
       {/* Controls */}
-      <div className="sticky top-0 z-20 bg-[#0D0D0F]/95 backdrop-blur border-b border-white/[0.05] px-8 py-3">
-        <div className="flex items-center gap-3 flex-wrap">
+      <div className="sticky top-0 z-20 bg-[#0D0D0F]/95 backdrop-blur border-b border-white/[0.05] px-4 md:px-8 py-3">
+        <div className="flex items-center gap-3 flex-wrap w-full">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <div className="relative w-full sm:w-auto sm:flex-1 min-w-[200px] max-w-full sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
             <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search notifications..."
               className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#C9A94B]/40 transition-colors" />
           </div>
 
           {/* Dept Filter */}
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto custom-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 w-[calc(100%+2rem)] sm:w-auto shrink-0">
             {DEPT_FILTERS.map(d => (
-              <button key={d.slug} onClick={() => { setDeptFilter(d.slug); setPage(1); }}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${deptFilter === d.slug ? 'bg-[#C9A94B]/20 text-[#C9A94B] border border-[#C9A94B]/30' : 'bg-white/[0.04] text-slate-500 border border-white/[0.07] hover:text-white'}`}>
+              <button key={d.slug} id={`dept-filter-${d.slug}`} onClick={() => { setDeptFilter(d.slug); setPage(1); }}
+                className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${deptFilter === d.slug ? 'bg-[#C9A94B]/20 text-[#C9A94B] border border-[#C9A94B]/30' : 'bg-white/[0.04] text-slate-500 border border-white/[0.07] hover:text-white'}`}>
                 {d.icon} {d.label}
               </button>
             ))}
@@ -427,7 +436,7 @@ export default function NewsPage() {
       </div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         {loading ? (
           <div className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5' : 'flex flex-col gap-3'}`}>
             {Array.from({ length: 12 }).map((_, i) => (

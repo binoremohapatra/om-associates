@@ -21,33 +21,33 @@ export default function GstLayout() {
   return (
     <div className="flex flex-col shrink-0 min-h-0 w-full">
       {/* Module Header & Subnav */}
-      <div className="shrink-0 pt-6 px-8 border-b border-white/5 bg-[#0D0D0F]">
-        <div className="flex items-center justify-between mb-6">
+      <div className="shrink-0 pt-4 px-4 md:pt-6 md:px-8 border-b border-white/5 bg-[#0D0D0F]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-4">
           <div>
-            <h1 className="text-3xl font-display font-medium text-white mb-1">GST Command Centre</h1>
-            <p className="text-slate-400">Manage returns, challans, and compliance across all clients.</p>
+            <h1 className="text-2xl md:text-3xl font-display font-medium text-white mb-1">GST Command Centre</h1>
+            <p className="text-xs md:text-sm text-slate-400">Manage returns, challans, and compliance across all clients.</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 w-full md:w-auto">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
                 type="text" 
                 placeholder="Search GSTIN or Client..."
-                className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#C9A94B] w-64 transition-colors"
+                className="pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#C9A94B] w-full sm:w-64 transition-colors text-sm"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setIsUploadModalOpen(true)}
-                className="px-4 py-2 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-all flex items-center gap-2"
+                className="flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 bg-white/5 border border-white/10 text-white text-sm font-medium rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Upload Return
+                <span className="hidden sm:inline">Upload</span>
               </button>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-gradient-to-r from-[#E8C96B] to-[#C9A94B] text-black font-medium rounded-xl hover:shadow-[0_0_20px_rgba(201,169,75,0.3)] transition-all"
+                className="flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 bg-gradient-to-r from-[#E8C96B] to-[#C9A94B] text-black text-sm font-medium rounded-xl hover:shadow-[0_0_20px_rgba(201,169,75,0.3)] transition-all text-center"
               >
                 New Filing
               </button>
@@ -56,7 +56,7 @@ export default function GstLayout() {
         </div>
 
         {/* Sub Navigation */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {gstNavItems.map((item) => {
             // Exact match for overview, partial for others
             const isActive = item.path === '/gst' 
@@ -64,31 +64,14 @@ export default function GstLayout() {
               : location.pathname.startsWith(item.path);
 
             return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex items-center gap-2 pb-4 text-sm font-medium transition-colors relative",
-                  isActive ? "text-[#C9A94B]" : "text-slate-400 hover:text-white"
-                )}
-              >
-                <item.icon className="w-4 h-4" />
-                {item.name}
-                {isActive && (
-                  <motion.div 
-                    layoutId="gst-subnav-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C9A94B]"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </NavLink>
+              <GstNavItem key={item.path} item={item} isActive={isActive} />
             );
           })}
         </div>
       </div>
 
       {/* Module Content */}
-      <div className="flex-1 w-full bg-[#09090b] p-8 pb-12">
+      <div className="flex-1 w-full bg-[#09090b] p-4 md:p-8 pb-12">
         <Outlet />
       </div>
 
@@ -114,6 +97,44 @@ export default function GstLayout() {
         />
       )}
     </div>
+  );
+}
+
+function GstNavItem({ item, isActive }: { item: any, isActive: boolean }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (isActive && ref.current) {
+      const timeout = setTimeout(() => {
+        ref.current?.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest'
+        });
+      }, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [isActive]);
+
+  return (
+    <NavLink
+      ref={ref}
+      to={item.path}
+      className={cn(
+        "flex items-center gap-2 pb-4 text-sm font-medium transition-colors relative whitespace-nowrap shrink-0",
+        isActive ? "text-[#C9A94B]" : "text-slate-400 hover:text-white"
+      )}
+    >
+      <item.icon className="w-4 h-4" />
+      {item.name}
+      {isActive && (
+        <motion.div 
+          layoutId="gst-subnav-indicator"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C9A94B]"
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        />
+      )}
+    </NavLink>
   );
 }
 
