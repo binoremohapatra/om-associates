@@ -40,7 +40,7 @@ export const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
         <MagicBentoCard
           className="h-full w-full backdrop-blur-2xl border-white/[0.08]"
           glowColor="201, 169, 75"
-          enableStars={true}
+          enableStars={false}
           enableBorderGlow={true}
           enableTilt={true}
           enableMagnetism={false} // Disable magnetism for large cards to prevent layout jitter

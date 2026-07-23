@@ -4,6 +4,7 @@ import DashboardNavbar from './DashboardNavbar';
 import Sidebar from './Sidebar';
 import { FloatingDock } from '../ui/floating-dock';
 import ShapeGrid from '../ui/ShapeGrid';
+import SplashCursor from '../ui/SplashCursor';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   LayoutDashboard, Landmark, Briefcase, Settings, Scale, MessageCircle, Newspaper,
@@ -34,6 +35,18 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-black overflow-hidden relative">
+      <SplashCursor 
+        DENSITY_DISSIPATION={3.5}
+        VELOCITY_DISSIPATION={2}
+        PRESSURE={0.1}
+        CURL={3}
+        SPLAT_RADIUS={0.2}
+        SPLAT_FORCE={6000}
+        COLOR_UPDATE_SPEED={10}
+        SHADING={true}
+        RAINBOW_MODE={false}
+        COLOR="#C9A94B"
+      />
       <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
         <ShapeGrid 
           speed={0.5}
