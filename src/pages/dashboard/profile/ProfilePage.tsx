@@ -171,7 +171,8 @@ export default function ProfilePage() {
         ctx.fillText(user!.jobTitle ? user!.jobTitle.toUpperCase() : 'AUTHORIZED PERSONNEL', 256, 600);
         ctx.fillStyle = '#555';
         ctx.font = '20px monospace';
-        ctx.fillText(`SEC-ID: ${user!.id?.substring(0, 8).toUpperCase()}`, 256, 700);
+        const displayId = user!.userCode || 'USR-' + user!.id?.substring(user!.id.length - 6).toUpperCase();
+        ctx.fillText(`ID: ${displayId}`, 256, 700);
         setFrontImage(canvas.toDataURL('image/png'));
       }
 
@@ -288,7 +289,11 @@ export default function ProfilePage() {
             <div className="min-w-0 flex-1">
               <p className="text-white font-medium truncate">{user.name}</p>
               <p className="text-sm text-slate-400 truncate">{user.email}</p>
-              <p className="text-xs text-[#C9A94B] mt-1 uppercase tracking-widest">{user.role}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-[#C9A94B] uppercase tracking-widest">{user.role}</p>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <p className="text-xs text-slate-500 font-mono tracking-widest">ID: {user.userCode || 'USR-' + user.id.substring(user.id.length - 6).toUpperCase()}</p>
+              </div>
             </div>
             {!isEditing && (
               <button
