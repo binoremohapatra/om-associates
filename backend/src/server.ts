@@ -10,7 +10,6 @@ import documentRoutes from './routes/document.routes';
 import paymentRoutes from './routes/payment.routes';
 import incomeTaxRoutes from './routes/income-tax.routes';
 import newsRoutes from './routes/news.routes';
-import userRoutes from './routes/user.routes';
 import appointmentRoutes from './routes/appointment.routes';
 import legalRoutes from './routes/legal.routes';
 import importExportRoutes from './routes/import-export.routes';
@@ -37,7 +36,6 @@ async function bootstrap() {
     app.use('/api/v1/payments', paymentRoutes);
     app.use('/api/v1/income-tax', incomeTaxRoutes);
     app.use('/api/v1/news', newsRoutes);
-    app.use('/api/v1/user', userRoutes);
     app.use('/api/v1/appointments', appointmentRoutes);
     app.use('/api/v1/legal', legalRoutes);
     app.use('/api/v1/import-export', importExportRoutes);

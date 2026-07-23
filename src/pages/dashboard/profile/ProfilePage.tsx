@@ -56,7 +56,7 @@ export default function ProfilePage() {
   const fetchSessions = async () => {
     try {
       setIsLoadingSessions(true);
-      const res = await api.get('/user/sessions');
+      const res = await api.get('/users/sessions');
       setSessions(res.data.data.sessions);
     } catch (err) {
       console.error('Failed to fetch sessions', err);
@@ -70,7 +70,7 @@ export default function ProfilePage() {
     if (!user) return;
     try {
       setIsSaving(true);
-      const res = await api.patch('/user/profile', formData);
+      const res = await api.patch('/users/profile', formData);
       if (res.data.success) {
         updateUser({ ...user, ...res.data.data.user });
         setIsEditing(false);
@@ -94,7 +94,7 @@ export default function ProfilePage() {
     }
     try {
       setIsChangingPassword(true);
-      await api.post('/user/change-password', {
+      await api.post('/users/change-password', {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword
       });
@@ -107,21 +107,10 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await api.post('/auth/logout');
-      logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed', error);
-      logout();
-      navigate('/login');
-    }
-  };
 
   const handleRevokeSession = async (sessionId: string) => {
     try {
-      await api.delete(`/user/sessions/${sessionId}`);
+      await api.delete(`/users/sessions/${sessionId}`);
       setSessions(sessions.filter(s => s.id !== sessionId));
     } catch (err) {
       console.error('Failed to revoke session', err);
