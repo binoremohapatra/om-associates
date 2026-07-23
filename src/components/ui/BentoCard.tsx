@@ -3,6 +3,7 @@ import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 import { MagicBentoCard } from './MagicBento';
+import { GlowingEffect } from './glowing-effect';
 
 interface BentoCardProps extends HTMLMotionProps<'div'> {
   className?: string;
@@ -27,12 +28,15 @@ export const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
       <motion.div
         ref={ref}
         className={cn(
-          'group relative transition-all duration-500 flex flex-col',
+          'group relative transition-all duration-500 flex flex-col rounded-3xl',
           sizeClasses[size],
           className
         )}
         {...props}
       >
+        <div className="absolute inset-0 z-0">
+          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
+        </div>
         <MagicBentoCard
           className="h-full w-full backdrop-blur-2xl border-white/[0.08]"
           glowColor="201, 169, 75"
