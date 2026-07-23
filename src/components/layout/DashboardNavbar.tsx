@@ -25,17 +25,17 @@ export default function DashboardNavbar() {
   return (
     <header className="border-b border-white/5 bg-[#0D0D0F]/95 backdrop-blur-xl sticky top-0 z-30 px-3 sm:px-6 flex items-center gap-3" style={{ height: 'clamp(56px, 7vw, 80px)' }}>
 
-      {/* Left: Company Logo */}
-      <Link to="/dashboard" className="flex items-center gap-2 shrink-0 group">
+      {/* Left: Company Logo (Mobile Only) */}
+      <Link to="/dashboard" className="flex md:hidden items-center gap-2 shrink-0 group">
         <img
           src="/logo.png"
           alt="Om Associates"
-          className="h-8 w-auto filter drop-shadow-[0_0_10px_rgba(201,169,75,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(201,169,75,0.7)]"
+          className="w-10 h-10 object-contain filter drop-shadow-[0_0_10px_rgba(201,169,75,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(201,169,75,0.7)]"
         />
       </Link>
 
       {/* Divider */}
-      <div className="w-px h-7 bg-white/10 shrink-0" />
+      <div className="w-px h-7 bg-white/10 shrink-0 md:hidden" />
 
       {/* Center: Search Bar */}
       <div className="hidden sm:flex flex-1 min-w-0">

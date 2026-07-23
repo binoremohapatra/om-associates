@@ -60,7 +60,8 @@ export default function Sidebar() {
               key={link.name}
               to={link.path}
               className={({ isActive }) => cn(
-                "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group relative",
+                "flex items-center rounded-xl transition-all duration-300 group relative",
+                isCollapsed ? "w-11 h-11 justify-center p-0 mx-auto" : "gap-4 px-4 py-3 w-full justify-start",
                 isActive 
                   ? "bg-[#C9A94B]/10 text-[#C9A94B] shadow-[inset_0_0_0_1px_rgba(201,169,75,0.2)]" 
                   : "text-slate-400 hover:text-white hover:bg-white/5"
