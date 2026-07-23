@@ -61,7 +61,7 @@ export default function Navbar() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between" style={{ height: '80px' }}>
+          <div className="flex items-center justify-between" style={{ height: 'clamp(60px, 8vw, 80px)' }}>
 
             {/* Logo */}
             <Link to="/" className="flex items-center group flex-shrink-0">
@@ -69,7 +69,7 @@ export default function Navbar() {
                 src="/logo.png"
                 alt="Om Associates"
                 className="w-auto"
-                style={{ height: '64px' }}
+                style={{ height: 'clamp(44px, 7vw, 64px)' }}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               />

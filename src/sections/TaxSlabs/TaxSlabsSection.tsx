@@ -13,7 +13,7 @@ function SlabBar({ slab, maxRate, delay }: { slab: typeof TAX_SLABS_NEW[0]; maxR
       variants={fadeInUp}
       className="flex items-center gap-4 group"
     >
-      <div className="w-28 text-xs font-mono text-slate-500 dark:text-slate-400 text-right flex-shrink-0">{slab.range}</div>
+      <div className="w-20 sm:w-28 text-xs font-mono text-slate-500 dark:text-slate-400 text-right flex-shrink-0">{slab.range}</div>
       <div className="flex-1 relative h-9 flex items-center">
         <div className="absolute inset-y-0 left-0 right-0 rounded-lg" style={{ background: 'rgba(46,46,58,0.6)' }} />
         <motion.div
@@ -119,15 +119,15 @@ export default function TaxSlabsSection() {
           className="text-center mb-12 flex flex-col items-center gap-4"
         >
           <span className="badge-gold">FY 2025-26</span>
-          <h2 className="font-display text-4xl sm:text-5xl" style={{ color: '#F5F5F7' }}>
+          <h2 className="font-display" style={{ color: '#F5F5F7', fontSize: 'clamp(1.75rem, 4vw + 0.3rem, 3.5rem)' }}>
             Compare Tax Regimes
           </h2>
-          <p className="text-lg max-w-xl" style={{ color: '#9898AA' }}>
+          <p className="max-w-xl" style={{ color: '#9898AA', fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.1rem)' }}>
             Understand how the New and Old tax regimes differ and find which one saves you more.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
           {/* Left: Slab bars */}
           <motion.div
             initial={{ opacity: 0, x: -32 }}

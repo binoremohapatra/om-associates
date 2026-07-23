@@ -91,17 +91,17 @@ export default function DashboardPage() {
         className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10"
       >
         {/* Header section (already done in layout/navbar but keeping a welcome message here) */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-display font-bold text-white mb-2">Welcome back, {userName}</h1>
-          <p className="text-slate-400">Here's what's happening with your business compliance.</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-display font-bold text-white mb-1 sm:mb-2" style={{ fontSize: 'clamp(1.5rem, 3vw + 0.3rem, 2rem)' }}>Welcome back, {userName}</h1>
+          <p className="text-slate-400" style={{ fontSize: 'clamp(0.8rem, 1.2vw + 0.1rem, 0.95rem)' }}>Here's what's happening with your business compliance.</p>
         </div>
 
         <MagicBentoGrid 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6 auto-rows-[minmax(180px,auto)]"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 auto-rows-[minmax(160px,auto)]"
         >
           {/* 1. Business Summary */}
           <BentoCard size="xl" title="Business Health Summary" description="Overview of your current compliance standing." className="xl:col-span-4" icon={<ShieldCheck size={24} />}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
                 <p className="text-slate-400 text-sm mb-1">GST Status</p>
                 <p className="text-xl font-bold text-emerald-400">{data.businessStatus.gst}</p>

@@ -37,7 +37,7 @@ export default function GSTNewsSection() {
         >
           <div>
             <span className="badge-gold mb-3" style={{ background: 'rgba(201,169,75,0.08)', border: '1px solid rgba(201,169,75,0.2)', color: '#E8C96B' }}>Curated Updates</span>
-            <h2 className="font-display text-4xl sm:text-5xl" style={{ color: `#F5F5F7` }}>
+            <h2 className="font-display" style={{ color: `#F5F5F7`, fontSize: 'clamp(1.75rem, 4vw + 0.3rem, 3.5rem)' }}>
               Stay{' '}
               <span style={{
                 background: 'linear-gradient(135deg, #E8C96B, #C9A94B)',
@@ -50,7 +50,7 @@ export default function GSTNewsSection() {
               Preview our real-time news aggregation feature available in the Client Portal. We keep you updated on all critical GST, Income Tax, and MCA announcements.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               disabled={!canPrev}
               onClick={() => setActiveIdx(i => i - 1)}
@@ -70,7 +70,7 @@ export default function GSTNewsSection() {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5">
           {/* Featured story */}
           <motion.div
             initial={{ opacity: 0, x: -24 }}

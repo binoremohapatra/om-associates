@@ -52,14 +52,16 @@
 
   html {
     scroll-behavior: smooth;
-    /* Responsive root font-size scaling for Tailwind rem units */
-    font-size: 13px; /* Mobile first */
+    /* Fluid root font-size — scales smoothly from mobile to desktop */
+    font-size: clamp(13px, 1.3vw + 9px, 18px);
   }
 
-  @media (min-width: 640px) { html { font-size: 14px; } }
-  @media (min-width: 768px) { html { font-size: 15px; } }
-  @media (min-width: 1024px) { html { font-size: 16px; } } /* Standard Desktop */
-  @media (min-width: 1536px) { html { font-size: 18px; } } /* 2xl screens */
+  /* Explicit breakpoint overrides for safety */
+  @media (max-width: 400px)  { html { font-size: 13px; } }
+  @media (min-width: 640px)  { html { font-size: 14px; } }
+  @media (min-width: 768px)  { html { font-size: 15px; } }
+  @media (min-width: 1024px) { html { font-size: 16px; } }
+  @media (min-width: 1536px) { html { font-size: 18px; } }
 
   body {
     font-family: 'Inter', sans-serif;
@@ -68,6 +70,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+    width: 100%;
   }
 
   /* Premium gold scrollbar */
@@ -96,11 +101,16 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 @layer components {
 
-  /* ─── TYPOGRAPHY ──────────────────────────────────── */
+  /* ─── FLUID TYPOGRAPHY ─────────────────────────────── */
   .font-display {
     font-family: 'Playfair Display', Georgia, serif;
   }
@@ -109,12 +119,20 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.1;
+    font-size: clamp(2rem, 5vw + 0.5rem, 5rem);
   }
   .heading-lg {
     font-family: 'Playfair Display', Georgia, serif;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.2;
+    font-size: clamp(1.5rem, 3vw + 0.5rem, 3rem);
+  }
+  .heading-md {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.3;
+    font-size: clamp(1.1rem, 2vw + 0.3rem, 2rem);
   }
   .data-value {
     font-family: 'JetBrains Mono', monospace;
@@ -138,7 +156,7 @@
   .card {
     position: relative;
     background: var(--bg-card);
-    border-radius: 24px;
+    border-radius: clamp(16px, 2vw, 24px);
     overflow: hidden;
     border: 1px solid var(--border-subtle);
     box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2);
@@ -148,7 +166,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 24px;
+    border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, rgba(201,169,75,0.3), transparent 50%, rgba(201,169,75,0.1));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -171,7 +189,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     background: rgba(20,20,24,0.7);
-    border-radius: 24px;
+    border-radius: clamp(16px, 2vw, 24px);
     border: 1px solid rgba(201,169,75,0.12);
     box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(232,201,107,0.08);
     transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
@@ -195,7 +213,8 @@
 
   /* Luxury bento card */
   .card-bento {
-    @apply card-glass p-6 flex flex-col gap-4 cursor-default group;
+    @apply card-glass flex flex-col gap-4 cursor-default group;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
   }
 
   /* ─── BUTTONS ──────────────────────────────────────── */
@@ -205,12 +224,13 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.8125rem 1.75rem; /* ~13px 28px based on 16px root */
+    padding: clamp(0.625rem, 1.5vw, 0.8125rem) clamp(1rem, 3vw, 1.75rem);
     border-radius: 0.75rem;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.875rem);
     letter-spacing: 0.03em;
     color: #0D0D0F;
     background: linear-gradient(135deg, #C9A94B 0%, #E8C96B 40%, #C9A94B 100%);
@@ -221,6 +241,8 @@
     cursor: pointer;
     border: none;
     text-decoration: none;
+    min-height: 44px;
+    white-space: nowrap;
   }
   .btn-gold::before {
     content: '';
@@ -243,12 +265,13 @@
   .btn-glass {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.75rem; /* ~12px 28px */
+    padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.75rem);
     border-radius: 0.75rem;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.875rem);
     letter-spacing: 0.03em;
     color: #E8C96B;
     background: rgba(201,169,75,0.06);
@@ -258,6 +281,8 @@
     transition: all 0.3s ease;
     cursor: pointer;
     text-decoration: none;
+    min-height: 44px;
+    white-space: nowrap;
   }
   .btn-glass:hover {
     background: rgba(201,169,75,0.12);
@@ -284,6 +309,7 @@
     text-decoration: none;
     position: relative;
     transition: color 0.25s ease;
+    min-height: 44px;
   }
   .btn-ghost::after {
     content: '';
@@ -305,16 +331,17 @@
   /* ─── INPUTS ───────────────────────────────────────── */
   .input-field {
     width: 100%;
-    padding: 0.8125rem 1rem;
+    padding: clamp(0.65rem, 1.5vw, 0.8125rem) 1rem;
     border-radius: 0.75rem;
     font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
+    font-size: clamp(0.85rem, 1.5vw, 0.875rem);
     background: rgba(20,20,24,0.6);
     color: #F5F5F7;
     border: 1px solid rgba(201,169,75,0.15);
     backdrop-filter: blur(8px);
     outline: none;
     transition: all 0.25s ease;
+    min-height: 44px;
   }
   .input-field::placeholder { color: #68687C; }
   .input-field:focus {
@@ -328,6 +355,7 @@
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.04em;
+    white-space: nowrap;
   }
   .badge-gold {
     @apply badge;
@@ -368,7 +396,14 @@
 
   /* ─── LAYOUT ───────────────────────────────────────── */
   .section {
-    @apply py-24 px-4 sm:px-6 lg:px-8;
+    @apply px-4 sm:px-6 lg:px-8;
+    padding-top: clamp(3rem, 6vw, 6rem);
+    padding-bottom: clamp(3rem, 6vw, 6rem);
+  }
+  .section-lg {
+    @apply px-4 sm:px-6 lg:px-8;
+    padding-top: clamp(4rem, 8vw, 8rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
   }
   .container-app {
     @apply max-w-7xl mx-auto;
@@ -403,10 +438,26 @@
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
   }
+
+  /* Safe area insets for mobile notch/home indicator */
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
+  .safe-top    { padding-top: env(safe-area-inset-top, 0); }
 }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
+
+  /* Fluid text sizes */
+  .text-fluid-xs  { font-size: clamp(0.7rem,  1vw + 0.3rem, 0.8rem); }
+  .text-fluid-sm  { font-size: clamp(0.8rem,  1.2vw + 0.3rem, 0.95rem); }
+  .text-fluid-base{ font-size: clamp(0.9rem,  1.5vw + 0.3rem, 1.1rem); }
+  .text-fluid-lg  { font-size: clamp(1rem,    2vw + 0.2rem, 1.25rem); }
+  .text-fluid-xl  { font-size: clamp(1.2rem,  2.5vw + 0.2rem, 1.5rem); }
+  .text-fluid-2xl { font-size: clamp(1.4rem,  3vw + 0.3rem, 2rem); }
+  .text-fluid-3xl { font-size: clamp(1.75rem, 4vw + 0.3rem, 2.5rem); }
+  .text-fluid-4xl { font-size: clamp(2rem,    5vw + 0.3rem, 3rem); }
+  .text-fluid-5xl { font-size: clamp(2.2rem,  6vw + 0.2rem, 4rem); }
+  .text-fluid-6xl { font-size: clamp(2.5rem,  7vw + 0.2rem, 5rem); }
 
   @keyframes shimmer {
     0%   { background-position: -200% 0; }

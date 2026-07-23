@@ -102,11 +102,11 @@ export default function AnalyticsSection() {
           className="text-center mb-12"
         >
           <span className="badge-gold mb-4">Analytics Dashboard</span>
-          <h2 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: `#F5F5F7` }}>
+          <h2 className="font-display mb-4" style={{ color: `#F5F5F7`, fontSize: 'clamp(1.75rem, 4vw + 0.3rem, 3.5rem)' }}>
             Your Tax{' '}
             <span className="gradient-text">Intelligence Hub</span>
           </h2>
-          <p className=" text-lg max-w-2xl mx-auto">
+          <p className="max-w-2xl mx-auto" style={{ fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.1rem)' }}>
             Revenue trends, tax liability breakdown, compliance scores, and real-time activity — in one beautiful dashboard.
           </p>
         </motion.div>
@@ -124,7 +124,7 @@ export default function AnalyticsSection() {
                 <h3 className="font-semibold text-navy-900 dark:text-white">Revenue vs Tax Liability</h3>
                 <p className="text-xs text-slate-400 mt-0.5">Last 6 months · FY 2025-26</p>
               </div>
-              <div className="flex items-center gap-4 text-xs text-slate-400">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-400">
                 <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-sky-400 inline-block" />Revenue</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-violet-400 inline-block" />Tax</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 rounded bg-emerald-400 inline-block" />Savings</span>

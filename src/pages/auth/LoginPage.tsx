@@ -91,7 +91,7 @@ export default function LoginPage() {
       style={{ background: '#0D0D0F' }}
     >
       {/* ─── LEFT PANEL ─────────────────────────────────────── */}
-      <div className="hidden lg:flex relative w-1/2 flex-col justify-between p-14 overflow-hidden">
+      <div className="hidden lg:flex relative w-1/2 flex-col justify-between overflow-hidden" style={{ padding: 'clamp(2rem, 4vw, 3.5rem)' }}>
         {/* Luxury background */}
         <div className="absolute inset-0 z-0">
           <Hyperspeed effectOptions={hyperspeedOptions} />
@@ -180,8 +180,8 @@ export default function LoginPage() {
 
       {/* ─── RIGHT PANEL ─────────────────────────────────────── */}
       <div
-        className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative"
-        style={{ background: 'linear-gradient(180deg, #0D0D0F 0%, #141418 100%)' }}
+        className="w-full lg:w-1/2 flex items-center justify-center relative"
+        style={{ background: 'linear-gradient(180deg, #0D0D0F 0%, #141418 100%)', padding: 'clamp(1rem, 4vw, 3rem)' }}
       >
         {/* Gold orb */}
         <div
@@ -195,9 +195,9 @@ export default function LoginPage() {
         />
 
         {/* Mobile logo */}
-        <div className="absolute top-8 left-0 right-0 flex justify-center lg:hidden">
+        <div className="absolute top-5 left-0 right-0 flex justify-center lg:hidden">
           <Link to="/">
-            <img src="/logo.png" alt="Om Associates" style={{ height: '56px', width: 'auto' }} />
+            <img src="/logo.png" alt="Om Associates" style={{ height: 'clamp(40px, 8vw, 56px)', width: 'auto' }} />
           </Link>
         </div>
 
@@ -205,17 +205,18 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-md mt-16 lg:mt-0"
+          className="w-full max-w-md mt-20 sm:mt-16 lg:mt-0"
         >
           {/* Glass card */}
           <div
-            className="rounded-3xl p-8 sm:p-10"
+            className="rounded-3xl"
             style={{
               background:           'rgba(20,20,24,0.8)',
               border:               '1px solid rgba(201,169,75,0.12)',
               backdropFilter:       'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
               boxShadow:            '0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,169,75,0.1)',
+              padding: 'clamp(1.25rem, 4vw, 2.5rem)',
             }}
           >
             {/* Card top shimmer */}

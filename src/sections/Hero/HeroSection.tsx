@@ -61,7 +61,7 @@ export default function HeroSection() {
         }}
       />
 
-      <motion.div style={{ y, opacity }} className="relative z-10 w-full pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div style={{ y, opacity }} className="relative z-10 w-full pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center gap-8">
 
           {/* Gold dot separator */}
@@ -82,12 +82,13 @@ export default function HeroSection() {
             className="max-w-4xl"
           >
             <h1
-              className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl"
+              className="font-display"
               style={{
                 color:       '#F5F5F7',
                 lineHeight:  1.05,
                 letterSpacing: '-0.02em',
                 fontWeight:  700,
+                fontSize:    'clamp(2rem, 6vw + 0.5rem, 5.5rem)',
               }}
             >
               Precision in Tax.{' '}
@@ -110,8 +111,8 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="text-lg sm:text-xl leading-relaxed max-w-2xl"
-            style={{ color: '#9898AA' }}
+            className="leading-relaxed max-w-2xl text-center"
+            style={{ color: '#9898AA', fontSize: 'clamp(0.95rem, 1.5vw + 0.3rem, 1.25rem)' }}
           >
             End-to-end GST filing, Income Tax advisory, TDS compliance, and AI-powered financial consulting — 
             delivered by India's most trusted tax professionals.
@@ -122,32 +123,36 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4 pt-2"
+            className="flex flex-col xs:flex-row sm:flex-row gap-3 sm:gap-4 pt-2 w-full sm:w-auto"
           >
             <Link
               to="/login"
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-sm transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl font-semibold transition-all duration-300"
               style={{
                 background:   'linear-gradient(135deg, #C9A94B 0%, #E8C96B 50%, #C9A94B 100%)',
                 backgroundSize: '200% auto',
                 color:        '#0D0D0F',
                 boxShadow:    '0 8px 32px rgba(201,169,75,0.35)',
                 letterSpacing:'0.03em',
+                padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem)',
+                fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)',
               }}
             >
               Book a Consultation
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
             </Link>
 
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-sm transition-all duration-300 hover:bg-white/5"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl font-semibold transition-all duration-300 hover:bg-white/5"
               style={{
                 background:   'rgba(201,169,75,0.06)',
                 border:       '1px solid rgba(201,169,75,0.25)',
                 color:        '#E8C96B',
                 backdropFilter: 'blur(12px)',
                 letterSpacing: '0.03em',
+                padding: 'clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem)',
+                fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)',
               }}
             >
               Explore Platform
@@ -171,20 +176,21 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.1 }}
-            className="flex flex-wrap items-center justify-center gap-4 mt-4"
+            className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-4"
           >
             {TRUST_BADGES.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full font-medium"
                 style={{
                   background:   'rgba(20,20,24,0.7)',
                   border:       '1px solid rgba(201,169,75,0.12)',
                   color:        '#9898AA',
                   backdropFilter: 'blur(8px)',
+                  fontSize: 'clamp(0.65rem, 1.2vw, 0.75rem)',
                 }}
               >
-                <Icon size={13} style={{ color: '#C9A94B' }} />
+                <Icon size={12} style={{ color: '#C9A94B', flexShrink: 0 }} />
                 {label}
               </div>
             ))}

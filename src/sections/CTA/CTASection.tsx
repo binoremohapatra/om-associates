@@ -17,14 +17,15 @@ export default function CTASection() {
           initial={{ opacity: 0, y: 32 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto text-center flex flex-col items-center p-12 md:p-16 rounded-[40px]"
+          className="max-w-4xl mx-auto text-center flex flex-col items-center rounded-[32px] sm:rounded-[40px]"
           style={{
             background: 'linear-gradient(180deg, rgba(20,20,24,0.8) 0%, rgba(13,13,15,1) 100%)',
             border: '1px solid rgba(201,169,75,0.15)',
             boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(201,169,75,0.1)',
+            padding: 'clamp(1.5rem, 5vw, 4rem)',
           }}
         >
-          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ color: '#F5F5F7', lineHeight: 1.1 }}>
+          <h2 className="font-display font-bold mb-4 sm:mb-6" style={{ color: '#F5F5F7', lineHeight: 1.1, fontSize: 'clamp(1.75rem, 5vw + 0.3rem, 4rem)' }}>
             Need Expert Tax &{' '}
             <span style={{
               background: 'linear-gradient(135deg, #E8C96B, #C9A94B)',
@@ -34,7 +35,7 @@ export default function CTASection() {
             }}>Legal Assistance?</span>
           </h2>
           
-          <p className="text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed" style={{ color: '#9898AA' }}>
+          <p className="max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed" style={{ color: '#9898AA', fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.25rem)' }}>
             Book a consultation with OMM Associates today and let our experts handle your taxation, GST, legal compliance and business registration needs.
           </p>
 

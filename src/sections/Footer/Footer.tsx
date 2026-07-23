@@ -47,7 +47,7 @@ export default function Footer() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 lg:grid-cols-6 gap-12 mb-16"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 sm:gap-10 lg:gap-12 mb-12 sm:mb-16"
         >
           {/* Brand column */}
           <motion.div variants={fadeInUp} className="lg:col-span-2 flex flex-col gap-6">
@@ -56,7 +56,7 @@ export default function Footer() {
               <img
                 src="/logo.png"
                 alt="Om Associates"
-                style={{ height: '80px', width: 'auto' }}
+                style={{ height: 'clamp(50px, 8vw, 80px)', width: 'auto' }}
               />
             </a>
 

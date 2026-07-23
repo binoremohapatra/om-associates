@@ -27,11 +27,12 @@ function FeatureStackedCard({ feature, index }: FeatureCardProps) {
 
   return (
     <div
-      className="group relative flex flex-col md:flex-row items-center gap-8 p-10 md:p-14 rounded-3xl overflow-hidden w-full max-w-4xl mx-auto"
+      className="group relative flex flex-col md:flex-row items-center gap-5 md:gap-8 rounded-3xl overflow-hidden w-full max-w-4xl mx-auto"
       style={{
         background:   'rgba(20,20,24,0.95)',
         border:       '1px solid rgba(201,169,75,0.15)',
         boxShadow:    '0 20px 40px rgba(0,0,0,0.5)',
+        padding: 'clamp(1.25rem, 3.5vw, 3.5rem)',
       }}
     >
       {/* Radial glow overlay */}
@@ -44,25 +45,27 @@ function FeatureStackedCard({ feature, index }: FeatureCardProps) {
 
       {/* Icon */}
       <div
-        className="relative w-24 h-24 rounded-3xl flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110"
+        className="relative rounded-3xl flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110"
         style={{
           background: `rgba(201,169,75,0.1)`,
           border:     `1px solid rgba(201,169,75,0.15)`,
           boxShadow:  'inset 0 1px 0 rgba(232,201,107,0.1)',
+          width: 'clamp(64px, 8vw, 96px)',
+          height: 'clamp(64px, 8vw, 96px)',
         }}
       >
-        {Icon && <Icon size={48} style={{ color: iconColor }} strokeWidth={1.5} />}
+        {Icon && <Icon style={{ color: iconColor, width: 'clamp(32px, 5vw, 48px)', height: 'clamp(32px, 5vw, 48px)' }} strokeWidth={1.5} />}
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col gap-4 text-center md:text-left">
+      <div className="flex-1 flex flex-col gap-3 text-center md:text-left">
         <h3
-          className="font-display text-3xl font-bold transition-colors duration-200"
-          style={{ color: '#F5F5F7' }}
+          className="font-display font-bold transition-colors duration-200"
+          style={{ color: '#F5F5F7', fontSize: 'clamp(1.1rem, 2.5vw + 0.2rem, 1.875rem)' }}
         >
           {feature.title}
         </h3>
-        <p className="text-lg leading-relaxed" style={{ color: '#9898AA' }}>
+        <p style={{ color: '#9898AA', lineHeight: '1.7', fontSize: 'clamp(0.85rem, 1.5vw + 0.1rem, 1.125rem)' }}>
           {feature.desc}
         </p>
       </div>

@@ -22,9 +22,9 @@ export default function DashboardNavbar() {
   };
 
   return (
-    <header className="h-20 border-b border-white/5 bg-[#0D0D0F]/95 backdrop-blur-xl sticky top-0 z-30 px-6 flex items-center justify-between">
-      {/* Search Bar */}
-      <div className="flex-1 max-w-xl">
+    <header className="border-b border-white/5 bg-[#0D0D0F]/95 backdrop-blur-xl sticky top-0 z-30 px-3 sm:px-6 flex items-center justify-between" style={{ height: 'clamp(56px, 7vw, 80px)' }}>
+      {/* Search Bar — hidden on xs, visible sm+ */}
+      <div className="hidden sm:flex flex-1 max-w-xl">
         <div className="flex items-center">
           <GooeyInput
             placeholder="Search documents, services, GST filings..."
@@ -40,7 +40,7 @@ export default function DashboardNavbar() {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-4 ml-6">
+      <div className="flex items-center gap-2 sm:gap-4 ml-2 sm:ml-6">
         <button className="p-2.5 rounded-xl text-slate-400 hover:text-[#C9A94B] hover:bg-[#C9A94B]/10 transition-all">
           <HelpCircle size={20} />
         </button>
