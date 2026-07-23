@@ -34,7 +34,7 @@ export const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
         )}
         {...props}
       >
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 rounded-[inherit]">
           <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
         </div>
         <MagicBentoCard
