@@ -50,9 +50,7 @@ export class AuthController {
         return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
 
-      if (!user.emailVerified) {
-        return res.status(403).json({ success: false, error: 'Email not verified', errorCode: 'NOT_VERIFIED' });
-      }
+      // Email verification check bypassed for direct login
 
       const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
 
