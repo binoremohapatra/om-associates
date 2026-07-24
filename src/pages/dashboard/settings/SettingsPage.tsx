@@ -137,7 +137,7 @@ function GeneralSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Firm Name</label>
-              <input type="text" defaultValue="Om Associates" className="w-full bg-[#0D0D0F] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
+              <input type="text" defaultValue="OM Associates" className="w-full bg-[#0D0D0F] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">GSTIN</label>
@@ -226,7 +226,7 @@ function NotificationSettings() {
           {[
             { id: 'tax', title: 'Tax Filing Updates', desc: 'Get notified when your tax filings are processed.', active: prefs.tax },
             { id: 'gst', title: 'GST Due Dates', desc: 'Reminders about upcoming GST filing deadlines.', active: prefs.gst },
-            { id: 'marketing', title: 'Marketing Communications', desc: 'News and feature updates from Om Associates.', active: prefs.marketing },
+            { id: 'marketing', title: 'Marketing Communications', desc: 'News and feature updates from OM Associates.', active: prefs.marketing },
           ].map((item) => (
             <div key={item.id} className="p-6 flex items-start sm:items-center justify-between gap-4">
               <div>

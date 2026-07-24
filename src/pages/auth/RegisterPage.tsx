@@ -101,7 +101,7 @@ export default function RegisterPage() {
           <Link to="/" className="inline-block hover:scale-105 transition-transform duration-500">
             <img
               src="/logo.png"
-              alt="Om Associates"
+              alt="OM Associates"
               style={{
                 height: '280px',
                 width:  'auto',

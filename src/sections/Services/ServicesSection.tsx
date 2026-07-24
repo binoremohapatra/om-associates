@@ -95,7 +95,7 @@ export default function ServicesSection() {
             }}>Service Portfolio</span>
           </h2>
           <p className="max-w-2xl mx-auto" style={{ color: '#9898AA', fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.1rem)' }}>
-            From lighting-fast GST registrations to complex corporate legal matters, Om Associates brings precision and authority to every engagement.
+            From lighting-fast GST registrations to complex corporate legal matters, OM Associates brings precision and authority to every engagement.
           </p>
         </motion.div>
 

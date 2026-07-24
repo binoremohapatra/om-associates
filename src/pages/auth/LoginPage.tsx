@@ -107,7 +107,7 @@ export default function LoginPage() {
           <Link to="/" className="inline-block hover:scale-105 transition-transform duration-500">
             <img
               src="/logo.png"
-              alt="Om Associates"
+              alt="OM Associates"
               style={{
                 height: '280px',
                 width:  'auto',
@@ -201,7 +201,7 @@ export default function LoginPage() {
         {/* Mobile logo */}
         <div className="absolute top-5 left-0 right-0 flex justify-center lg:hidden">
           <Link to="/">
-            <img src="/logo.png" alt="Om Associates" style={{ height: 'clamp(40px, 8vw, 56px)', width: 'auto' }} />
+            <img src="/logo.png" alt="OM Associates" style={{ height: 'clamp(40px, 8vw, 56px)', width: 'auto' }} />
           </Link>
         </div>
 
@@ -235,7 +235,7 @@ export default function LoginPage() {
                 Welcome Back
               </h1>
               <p className="text-sm" style={{ color: '#68687C' }}>
-                Sign in to your Om Associates account
+                Sign in to your OM Associates account
               </p>
               <GoldDivider className="mt-4" />
             </div>
@@ -386,7 +386,7 @@ export default function LoginPage() {
 
             {/* Register link */}
             <p className="text-center text-sm mt-6" style={{ color: '#3E3E4E' }}>
-              New to Om Associates?{' '}
+              New to OM Associates?{' '}
               <Link
                 to="/register"
                 className="font-medium transition-colors duration-200"

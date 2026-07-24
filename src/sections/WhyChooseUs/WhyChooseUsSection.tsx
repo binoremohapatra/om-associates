@@ -49,7 +49,7 @@ export default function WhyChooseUsSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16 flex flex-col items-center gap-4"
         >
-          <span className="badge-gold" style={{ background: 'rgba(201,169,75,0.08)', border: '1px solid rgba(201,169,75,0.2)', color: '#E8C96B' }}>The Om Associates Advantage</span>
+          <span className="badge-gold" style={{ background: 'rgba(201,169,75,0.08)', border: '1px solid rgba(201,169,75,0.2)', color: '#E8C96B' }}>The OM Associates Advantage</span>
           <h2 className="font-display" style={{ color: '#F5F5F7', fontSize: 'clamp(1.75rem, 4vw + 0.3rem, 3.5rem)' }}>
             Why Choose{' '}
             <span style={{

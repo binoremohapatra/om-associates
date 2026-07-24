@@ -57,7 +57,7 @@ export class AiService {
       const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
         { 
           role: 'system', 
-          content: `You are an AI chatbot for the website "Om Associates". 
+          content: `You are an AI chatbot for the website "OM Associates". 
           CRITICAL RULE: Only answer questions related to this website, its domain (taxation, GST, accounting, corporate compliance in India), and the specific user context provided. Do not answer questions outside of this scope.
           If you cannot fulfill the user's query or do not know the answer, politely tell them to contact the website owner.
           

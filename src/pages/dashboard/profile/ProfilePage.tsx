@@ -171,7 +171,7 @@ export default function ProfilePage() {
         ctx.fillText(user!.name || 'User', 256, 470);
         ctx.fillStyle = '#C9A94B';
         ctx.font = 'bold 30px sans-serif';
-        ctx.fillText(user!.organization?.name || 'Om Associates', 256, 540);
+        ctx.fillText(user!.organization?.name || 'OM Associates', 256, 540);
         ctx.fillStyle = '#aaa';
         ctx.font = '24px sans-serif';
         ctx.fillText(user!.jobTitle ? user!.jobTitle.toUpperCase() : 'AUTHORIZED PERSONNEL', 256, 600);
@@ -448,7 +448,7 @@ export default function ProfilePage() {
             <h3 className="text-base font-medium text-white mb-4">Organization Profile</h3>
             <div className="p-4 rounded-xl border border-white/5 bg-black/40">
               <p className="text-sm text-slate-400 mb-1">Connected Enterprise</p>
-              <p className="text-white font-medium">{user.organization?.name || 'Om Associates'}</p>
+              <p className="text-white font-medium">{user.organization?.name || 'OM Associates'}</p>
               <p className="text-xs text-slate-500 mt-2">To manage organization details, please visit the Settings page.</p>
             </div>
           </BentoCard>

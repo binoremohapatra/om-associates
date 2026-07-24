@@ -16,7 +16,7 @@ export function PrivacyPolicy() {
       content={
         <>
           <p>Last updated: July 2026</p>
-          <p>At Om Associates, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your personal information when you use our services.</p>
+          <p>At OM Associates, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your personal information when you use our services.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">1. Information We Collect</h2>
           <p>We collect information you provide directly to us, such as when you create an account, request a consultation, or contact us for support. This includes personal and financial data necessary for taxation and legal services.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">2. How We Use Your Information</h2>
@@ -38,11 +38,11 @@ export function TermsOfService() {
       content={
         <>
           <p>Last updated: July 2026</p>
-          <p>Welcome to Om Associates. By accessing our website and using our services, you agree to be bound by these Terms of Service.</p>
+          <p>Welcome to OM Associates. By accessing our website and using our services, you agree to be bound by these Terms of Service.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">1. Acceptance of Terms</h2>
           <p>By using our platform, you acknowledge that you have read, understood, and agree to be bound by these terms.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">2. Description of Services</h2>
-          <p>Om Associates provides legal, taxation, GST, and corporate compliance consulting. The information provided on our platform does not constitute binding legal advice unless a formal client-attorney relationship is established.</p>
+          <p>OM Associates provides legal, taxation, GST, and corporate compliance consulting. The information provided on our platform does not constitute binding legal advice unless a formal client-attorney relationship is established.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">3. User Responsibilities</h2>
           <p>You agree to provide accurate and complete information required for tax filings and legal compliance. You are responsible for maintaining the confidentiality of your account credentials.</p>
         </>
@@ -78,7 +78,7 @@ export function DPDPCompliance() {
       content={
         <>
           <p>Last updated: July 2026</p>
-          <p>Om Associates is fully compliant with the Digital Personal Data Protection (DPDP) Act of India.</p>
+          <p>OM Associates is fully compliant with the Digital Personal Data Protection (DPDP) Act of India.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">1. Data Principal Rights</h2>
           <p>You have the right to access, correct, and erase your personal data stored with us. You also have the right to nominate consent managers as per the DPDP framework.</p>
           <h2 className="text-2xl font-bold text-white mt-8 mb-4">2. Data Fiduciary Obligations</h2>

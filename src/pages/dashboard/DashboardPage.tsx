@@ -168,7 +168,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h4 className="text-white font-medium text-lg">Senior Consultant</h4>
-                  <p className="text-slate-400 text-sm">Om Associates CA Firm</p>
+                  <p className="text-slate-400 text-sm">OM Associates CA Firm</p>
                 </div>
               </div>
               

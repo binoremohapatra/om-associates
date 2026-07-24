@@ -55,7 +55,7 @@ export default function Footer() {
             <a href="/" className="block w-fit">
               <img
                 src="/logo.png"
-                alt="Om Associates"
+                alt="OM Associates"
                 style={{ height: 'clamp(50px, 8vw, 80px)', width: 'auto' }}
               />
             </a>
@@ -67,7 +67,7 @@ export default function Footer() {
                 className="text-sm leading-relaxed max-w-xs"
                 style={{ color: '#68687C' }}
               >
-                OP. TRIPATHI ADVOCATE | Om Associates - Legal & Tax Consultants.<br />
+                OP. TRIPATHI ADVOCATE | OM Associates - Legal & Tax Consultants.<br />
                 Solutions That Build Trust.
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs" style={{ color: '#3E3E4E' }}>
-            © 2025 Om Associates. All rights reserved. · GSTIN: 29AABCT1234F1Z5
+            © 2025 OM Associates. All rights reserved. · GSTIN: 29AABCT1234F1Z5
           </p>
           <div className="flex items-center gap-4 text-xs" style={{ color: '#3E3E4E' }}>
             <span style={{ color: '#C9A94B' }}>🔒</span> SSL Secured

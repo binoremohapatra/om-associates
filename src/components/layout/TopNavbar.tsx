@@ -25,7 +25,7 @@ export default function TopNavbar() {
         <Link to="/dashboard" className="flex items-center gap-3 shrink-0 group">
           <img
             src="/logo.png"
-            alt="Om Associates"
+            alt="OM Associates"
             className="h-10 w-auto filter drop-shadow-[0_0_12px_rgba(201,169,75,0.3)] transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_20px_rgba(201,169,75,0.6)]"
           />
         </Link>

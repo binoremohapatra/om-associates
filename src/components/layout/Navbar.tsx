@@ -67,7 +67,7 @@ export default function Navbar() {
             <Link to="/" className="flex items-center group flex-shrink-0">
               <motion.img
                 src="/logo.png"
-                alt="Om Associates"
+                alt="OM Associates"
                 className="w-auto"
                 style={{ height: 'clamp(64px, 10vw, 96px)' }}
                 whileHover={{ scale: 1.03 }}
@@ -223,7 +223,7 @@ export default function Navbar() {
             style={{ background: '#0D0D0F' }}
           >
             <div className="absolute top-0 left-0 right-0 h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10 border-b" style={{ borderColor: 'rgba(201,169,75,0.15)' }}>
-              <span className="font-display font-bold text-xl" style={{ color: '#E8C96B' }}>Om Associates Services</span>
+              <span className="font-display font-bold text-xl" style={{ color: '#E8C96B' }}>OM Associates Services</span>
               <button
                 onClick={() => setFlowingMenuOpen(false)}
                 className="p-2.5 rounded-full transition-all duration-200 hover:bg-white/10"
