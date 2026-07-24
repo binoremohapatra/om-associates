@@ -76,7 +76,7 @@ export default function LuxuryBackground({ className = '' }: { className?: strin
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
     };
-  }, []);
+  }, [isLowEnd]);
 
   return (
     <div className={`absolute inset-0 overflow-hidden ${className}`}>

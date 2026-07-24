@@ -5,7 +5,7 @@ export function useAdaptivePerformance() {
 
   useEffect(() => {
     // 1. Check if the user has explicitly requested reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
     
     // 2. Simple heuristic for low-end devices
     const nav = navigator as any;
