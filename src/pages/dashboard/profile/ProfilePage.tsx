@@ -239,7 +239,7 @@ export default function ProfilePage() {
     <div className="flex-1 w-full overflow-y-auto custom-scrollbar bg-[#0D0D0F]">
 
       {/* ── Full-Width Badge Section ── */}
-      <div className="relative w-full bg-gradient-to-b from-[#111111] to-[#0D0D0F]" style={{ height: '80svh' }}>
+      <div className="relative w-full bg-gradient-to-b from-[#111111] to-[#0D0D0F] min-h-[600px] h-[100svh]">
         <div className="absolute top-4 md:top-8 left-4 md:left-8 z-10 pointer-events-none">
           <h1 className="text-2xl md:text-4xl font-display font-bold text-white mb-1">My Badge</h1>
           <p className="text-sm text-slate-400">Drag to interact with your secure pass.</p>
@@ -256,7 +256,7 @@ export default function ProfilePage() {
       </div>
 
       {/* ── Profile Details Section ── */}
-      <div className="w-full bg-[#0D0D0F] pb-28 md:pb-12 mt-[-5rem] relative z-20">
+      <div className="w-full bg-[#0D0D0F] pb-28 md:pb-12 relative z-20">
         <div className="max-w-2xl mx-auto px-4 md:px-8 py-8 md:py-10 flex flex-col gap-6">
 
           {/* Section Header */}
