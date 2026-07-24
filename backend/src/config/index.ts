@@ -81,9 +81,10 @@ export const config = {
   },
 
   ai: {
-    provider: optional('AI_PROVIDER', 'openai'), // openai | anthropic | stub
+    provider: optional('AI_PROVIDER', 'openai'), // openai | anthropic | gemini | stub
     openaiApiKey: process.env.OPENAI_API_KEY ?? '',
-    model: optional('AI_MODEL', 'gpt-4o-mini'),
+    geminiApiKey: process.env.GEMINI_API_KEY ?? '',
+    model: optional('AI_MODEL', 'gemini-3.6-flash'),
   },
 
   rateLimit: {
