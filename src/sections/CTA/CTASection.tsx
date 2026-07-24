@@ -36,7 +36,7 @@ export default function CTASection() {
           </h2>
           
           <p className="max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed" style={{ color: '#9898AA', fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.25rem)' }}>
-            Book a consultation with OMM Associates today and let our experts handle your taxation, GST, legal compliance and business registration needs.
+            Book a consultation with OM Associates today and let our experts handle your taxation, GST, legal compliance and business registration needs.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">

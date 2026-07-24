@@ -127,6 +127,8 @@ export default function HeroSection() {
           >
             <Link
               to="/login"
+              aria-label="Book a tax consultation"
+              title="Book a Consultation"
               className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl font-semibold transition-all duration-300"
               style={{
                 background:   'linear-gradient(135deg, #C9A94B 0%, #E8C96B 50%, #C9A94B 100%)',
@@ -139,11 +141,13 @@ export default function HeroSection() {
               }}
             >
               Book a Consultation
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" aria-hidden="true" />
             </Link>
 
             <Link
               to="/login"
+              aria-label="Explore the OM Associates platform"
+              title="Explore Platform"
               className="inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-2xl font-semibold transition-all duration-300 hover:bg-white/5"
               style={{
                 background:   'rgba(201,169,75,0.06)',

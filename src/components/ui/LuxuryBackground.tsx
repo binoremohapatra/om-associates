@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useAdaptivePerformance } from '../../hooks/useAdaptivePerformance';
 
 /**
  * LuxuryBackground — Premium charcoal + gold light rays
@@ -7,8 +8,10 @@ import { motion } from 'framer-motion';
  */
 export default function LuxuryBackground({ className = '' }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { isLowEnd } = useAdaptivePerformance();
 
   useEffect(() => {
+    if (isLowEnd) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -77,12 +80,22 @@ export default function LuxuryBackground({ className = '' }: { className?: strin
 
   return (
     <div className={`absolute inset-0 overflow-hidden ${className}`}>
-      {/* Canvas animated background */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ display: 'block' }}
-      />
+      {isLowEnd ? (
+        // Static premium gradient fallback for low-end devices
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 30%, #1c1812 0%, #0d0d0f 50%, #080809 100%)'
+          }}
+        />
+      ) : (
+        // Canvas animated background for capable devices
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
+          style={{ display: 'block' }}
+        />
+      )}
 
       {/* SVG noise texture overlay */}
       <div
@@ -95,31 +108,33 @@ export default function LuxuryBackground({ className = '' }: { className?: strin
       />
 
       {/* Rotating light rays */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          top: '-50%', left: '-50%',
-          width: '200%', height: '200%',
-          animation: 'rayRotate 40s linear infinite',
-          opacity: 0.03,
-        }}
-      >
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute top-1/2 left-1/2 origin-left"
-            style={{
-              width: '50%',
-              height: '1px',
-              background: 'linear-gradient(90deg, rgba(201,169,75,0.8), transparent)',
-              transform: `rotate(${i * 45}deg)`,
-            }}
-          />
-        ))}
-      </div>
+      {!isLowEnd && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: '-50%', left: '-50%',
+            width: '200%', height: '200%',
+            animation: 'rayRotate 40s linear infinite',
+            opacity: 0.03,
+          }}
+        >
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 left-1/2 origin-left"
+              style={{
+                width: '50%',
+                height: '1px',
+                background: 'linear-gradient(90deg, rgba(201,169,75,0.8), transparent)',
+                transform: `rotate(${i * 45}deg)`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Floating gold dust particles */}
-      {[...Array(12)].map((_, i) => (
+      {!isLowEnd && [...Array(12)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"

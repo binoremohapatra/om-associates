@@ -37,7 +37,7 @@ export default function AIAssistantPage() {
         </div>
         <div>
           <h1 className="text-2xl font-display font-bold text-white">AI Tax Assistant</h1>
-          <p className="text-slate-400 text-sm">Powered by OMM Associates Intelligence</p>
+          <p className="text-slate-400 text-sm">Powered by OM Associates Intelligence</p>
         </div>
       </div>
 

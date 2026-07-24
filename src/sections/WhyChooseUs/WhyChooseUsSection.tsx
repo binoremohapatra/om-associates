@@ -57,7 +57,7 @@ export default function WhyChooseUsSection() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-            }}>OMM Associates</span>
+            }}>OM Associates</span>
           </h2>
           <p className="max-w-2xl text-center" style={{ color: '#9898AA', fontSize: 'clamp(0.9rem, 1.5vw + 0.2rem, 1.1rem)' }}>
             We don't just file your returns; we partner with you to ensure long-term compliance, financial health, and legal security.

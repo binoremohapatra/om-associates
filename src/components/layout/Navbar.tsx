@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -137,7 +137,9 @@ export default function Navbar() {
                     background: mobileOpen ? 'rgba(201,169,75,0.08)' : 'transparent',
                     border:     '1px solid rgba(201,169,75,0.15)',
                   }}
-                  aria-label="Toggle menu"
+                  aria-label="Toggle navigation menu"
+                  aria-expanded={mobileOpen}
+                  aria-controls="mobile-nav"
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
@@ -161,11 +163,14 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-x-0 top-[80px] z-40 md:hidden"
+            role="navigation"
+            aria-label="Mobile navigation"
             style={{
               backdropFilter:       'blur(24px) saturate(180%)',
               WebkitBackdropFilter: 'blur(24px) saturate(180%)',

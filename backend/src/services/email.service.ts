@@ -15,7 +15,7 @@ export class EmailService {
       await resend.emails.send({
         from: fromEmail,
         to,
-        subject: 'Your OMM Associates Verification Code',
+        subject: 'Your OM Associates Verification Code',
         html: `
           <div style="font-family: sans-serif; padding: 20px;">
             <h2>Verify your email address</h2>
@@ -42,7 +42,7 @@ export class EmailService {
       await resend.emails.send({
         from: fromEmail,
         to,
-        subject: 'Reset your OMM Associates password',
+        subject: 'Reset your OM Associates password',
         html: `
           <div style="font-family: sans-serif; padding: 20px;">
             <h2>Password Reset Request</h2>

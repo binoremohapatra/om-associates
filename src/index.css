@@ -490,4 +490,27 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* ─── GPU ACCELERATION HINTS ──────────────────────── */
+  /* Applied to elements that animate — prevents repaints */
+  .will-animate {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  /* Remove will-change after animation to free GPU memory */
+  .animation-done {
+    will-change: auto;
+  }
+
+  /* ─── SCROLL ANIMATION ─────────────────────────────── */
+  /* Used by Dashboard news ticker — GPU composited */
+  @keyframes scroll {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes scroll { 0%, 100% { transform: translateY(0); } }
+  }
 }

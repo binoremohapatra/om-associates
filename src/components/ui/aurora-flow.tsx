@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree, Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import { createNoise3D } from 'simplex-noise';
+import { useAdaptivePerformance } from '../../hooks/useAdaptivePerformance';
 
-// Aurora-like flowing background optimized for OMM Associates
+// Aurora-like flowing background optimized for OM Associates
 export const AuroraBackground = () => {
   const { scene } = useThree();
   
@@ -73,7 +73,7 @@ export const AuroraBackground = () => {
           float aurora = (flow1 + flow2 + flow3) * 0.33 + 0.5;
           aurora = pow(aurora, 2.0);
           
-          // Aurora colors - OMM Associates Branding
+          // Aurora colors - OM Associates Branding
           vec3 navyBlue = vec3(0.059, 0.090, 0.165); // #0F172A
           vec3 skyBlue = vec3(0.220, 0.741, 0.973);  // #38BDF8
           vec3 accentBlue = vec3(0.376, 0.647, 0.980); // #60A5FA

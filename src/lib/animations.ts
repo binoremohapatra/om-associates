@@ -78,3 +78,20 @@ export const textReveal: Variants = {
   hidden: { opacity: 0, y: 20, rotateX: -20 },
   visible: { opacity: 1, y: 0, rotateX: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
 };
+
+// ── Reduced-Motion Safe Variants ─────────────────────────────────────────────
+// Use these for users who prefer reduced motion (prefers-reduced-motion: reduce)
+// or on low-end devices detected at runtime.
+
+export const fadeOnly: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit:    { opacity: 0, transition: { duration: 0.2 } },
+};
+
+export const pageTransitionReduced: Variants = {
+  hidden:  { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.25 } },
+  exit:    { opacity: 0, transition: { duration: 0.15 } },
+};
+

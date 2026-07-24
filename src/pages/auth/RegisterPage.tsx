@@ -150,7 +150,7 @@ export default function RegisterPage() {
           <GlassCard glowOnHover={false} className="w-full bg-navy-900/50">
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">Create an Account</h1>
-              <p className="text-slate-400 text-sm">Join OMM Associates today</p>
+              <p className="text-slate-400 text-sm">Join OM Associates today</p>
             </div>
 
             {error && (

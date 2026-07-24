@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransition, staggerContainer, fadeInUp } from '../../lib/animations';
@@ -6,8 +6,8 @@ import { BentoCard } from '../../components/ui/BentoCard';
 import { Tabs } from '../../components/ui/tabs';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
-  FileText, Calculator, TrendingUp, Clock, ShieldCheck, 
-  ArrowRight, Landmark, Briefcase, Download, Bot, 
+  FileText, Calculator, Clock, ShieldCheck, 
+  Landmark, Briefcase, Download, 
   Newspaper, CreditCard, Calendar, Upload, Scale, MessageSquare,
   MessageCircle, Mail, PhoneCall
 } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function DashboardPage() {
         const response = await api.get('/dashboard/summary');
         if (response.data.success) setDashboardData(response.data.data);
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        if (import.meta.env.DEV) console.error('Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -62,13 +62,13 @@ export default function DashboardPage() {
   const whatsappNumber = "919999999999";
   const emailAddress = "contact@omassociates.com";
 
-  const handleWhatsAppClick = () => {
-    window.open(`https://wa.me/${whatsappNumber}?text=Hi, I would like to book a consultation.`, '_blank');
-  };
+  const handleWhatsAppClick = useCallback(() => {
+    window.open(`https://wa.me/${whatsappNumber}?text=Hi, I would like to book a consultation.`, '_blank', 'noopener,noreferrer');
+  }, [whatsappNumber]);
 
-  const handleEmailClick = () => {
+  const handleEmailClick = useCallback(() => {
     window.location.href = `mailto:${emailAddress}?subject=Booking Consultation Request`;
-  };
+  }, [emailAddress]);
 
   return (
     <>
@@ -200,7 +200,6 @@ export default function DashboardPage() {
             </div>
           </BentoCard>
 
-          {/* 5. Live News Widget Ã¢â‚¬â€ fetched from API */}
           <BentoCard size="lg" title="Live Gov Updates" description="Official government notifications." className="xl:col-span-2" icon={<Newspaper size={24} />}>
             <div className="space-y-2 overflow-y-auto max-h-52 custom-scrollbar">
               {govNewsLoading ? (
@@ -226,7 +225,6 @@ export default function DashboardPage() {
             </div>
           </BentoCard>
 
-          {/* 6. Document Center */}
           <BentoCard size="md" title="Document Center" description="Recent uploads." className="xl:col-span-2" icon={<FileText size={24} />}>
             <div className="space-y-3">
               {dashboardData?.recentDocuments && dashboardData.recentDocuments.length > 0 ? dashboardData.recentDocuments.map((doc: any, i: number) => (
@@ -243,7 +241,6 @@ export default function DashboardPage() {
             </div>
           </BentoCard>
 
-          {/* 7. Payment Summary */}
           <BentoCard size="md" title="Payment Summary" description="Billing & Invoices." className="xl:col-span-2" icon={<CreditCard size={24} />}>
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-red-500/10 to-transparent border border-red-500/20">
@@ -260,7 +257,6 @@ export default function DashboardPage() {
             </div>
           </BentoCard>
 
-          {/* 8. Compliance Calendar */}
           <BentoCard size="md" title="Compliance Calendar" description="Upcoming deadlines." className="xl:col-span-2" icon={<Calendar size={24} />}>
             <div className="bg-[#111111] rounded-xl border border-white/10 p-4 h-full flex flex-col items-center justify-center">
                <div className="text-center space-y-2">
@@ -280,7 +276,6 @@ export default function DashboardPage() {
             </div>
           </BentoCard>
 
-          {/* 9. Government Updates Center Ã¢â‚¬â€ live data */}
           <BentoCard size="xl" title="Government Updates Center" description="Latest official circulars and notifications from 5 departments." className="xl:col-span-6">
             <div className="h-[420px] w-full mt-4">
               <Tabs
@@ -428,19 +423,6 @@ export default function DashboardPage() {
           </BentoCard>
         </MagicBentoGrid>
       </motion.div>
-      
-      {/* Required for the scrolling news animation */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes scroll {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-50%); }
-        }
-      `}} />
     </>
   );
 }
-
-
-
-
-

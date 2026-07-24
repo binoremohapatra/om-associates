@@ -3,24 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="TaxOS — India's most trusted business tax compliance platform. GST filing, income tax, TDS, AI advisory, and compliance monitoring for business owners." />
-    <meta name="keywords" content="GST filing India, business tax software, income tax calculator, GSTR-1 GSTR-3B, TDS compliance, tax deductions India" />
-    <meta property="og:title" content="Om Associates" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- SEO -->
+    <title>OM Associates — Trusted Tax, GST & Legal Consultants India</title>
+    <meta name="description" content="OM Associates — India's trusted CA firm for GST filing, income tax, TDS, legal compliance, business registration and AI advisory. Expert consultants in Delhi." />
+    <meta name="keywords" content="GST filing India, business tax software, income tax calculator, GSTR-1 GSTR-3B, TDS compliance, tax deductions India, CA firm Delhi" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://omassociates.in/" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="OM Associates — Tax, GST & Legal Consultants" />
     <meta property="og:description" content="End-to-end GST, income tax, and compliance management for Indian business owners. Powered by AI." />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#38BDF8" />
-    <!-- Preload fonts -->
+    <meta property="og:url" content="https://omassociates.in/" />
+    <meta property="og:site_name" content="OM Associates" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#C9A94B" />
+    <meta name="msapplication-TileColor" content="#0D0D0F" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- DNS Prefetch & Preconnect for fonts -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <title>Om Associates</title>
+
+    <!-- DNS Prefetch for API -->
+    <link rel="dns-prefetch" href="https://ui-avatars.com" />
+
+    <!-- Prevent FOUC: apply theme before paint -->
     <script>
-      // Apply theme before paint to prevent flash
       (function() {
-        const stored = localStorage.getItem('taxos-theme');
-        const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        const theme = stored || preferred;
-        if (theme === 'dark') document.documentElement.classList.add('dark');
+        try {
+          var stored = localStorage.getItem('taxos-theme');
+          var preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          var theme = stored || preferred;
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+        } catch(e) {}
       })();
     </script>
   </head>
