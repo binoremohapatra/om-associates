@@ -50,15 +50,7 @@ export default function DashboardPage() {
     fetchGovNews();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0D0D0F]">
-        <div className="w-12 h-12 border-4 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  // Define WhatsApp and Email links (placeholders for now)
+  // Define WhatsApp and Email links
   const whatsappNumber = "919999999999";
   const emailAddress = "contact@omassociates.com";
 
@@ -69,6 +61,14 @@ export default function DashboardPage() {
   const handleEmailClick = useCallback(() => {
     window.location.href = `mailto:${emailAddress}?subject=Booking Consultation Request`;
   }, [emailAddress]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0D0D0F]">
+        <div className="w-12 h-12 border-4 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <>
