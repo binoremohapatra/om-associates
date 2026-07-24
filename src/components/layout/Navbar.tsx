@@ -69,7 +69,7 @@ export default function Navbar() {
                 src="/logo.png"
                 alt="Om Associates"
                 className="w-auto"
-                style={{ height: 'clamp(44px, 7vw, 64px)' }}
+                style={{ height: 'clamp(64px, 10vw, 96px)' }}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               />
