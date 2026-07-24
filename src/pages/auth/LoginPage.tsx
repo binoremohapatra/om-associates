@@ -109,7 +109,7 @@ export default function LoginPage() {
               src="/logo.png"
               alt="Om Associates"
               style={{
-                height: '180px',
+                height: '280px',
                 width:  'auto',
                 filter: 'drop-shadow(0 0 32px rgba(201,169,75,0.4))',
               }}
@@ -127,7 +127,7 @@ export default function LoginPage() {
             <GoldDivider className="w-16" />
 
             <div className="mb-2">
-              <span className="text-sky-400 font-semibold tracking-wider uppercase text-sm">Welcome back</span>
+              <span className="text-[#C9A94B] font-semibold tracking-wider uppercase text-sm">Welcome back</span>
             </div>
 
             <h2
