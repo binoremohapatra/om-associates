@@ -75,7 +75,7 @@ export default function DashboardNavbar() {
               <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center overflow-hidden">
                 {user?.avatarUrl ? (
                   <img
-                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:4000${user.avatarUrl}`}
+                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1'}`.replace('/api/v1', '') + user.avatarUrl}
                     alt="avatar"
                     className="w-full h-full object-cover rounded-full"
                   />
