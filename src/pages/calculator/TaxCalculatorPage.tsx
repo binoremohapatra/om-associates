@@ -71,13 +71,13 @@ export default function TaxCalculatorPage() {
         <div className="flex bg-[#111111]/80 rounded-xl p-1 border border-white/10 relative w-full md:w-auto overflow-hidden">
           <button 
             onClick={() => setCalculatorType('income')}
-            className={`flex-1 md:px-6 py-2.5 text-sm font-medium rounded-lg transition-all z-10 ${calculatorType === 'income' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+            className={`flex-1 px-2 md:px-6 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 whitespace-nowrap ${calculatorType === 'income' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
           >
             Income Tax
           </button>
           <button 
             onClick={() => setCalculatorType('gst')}
-            className={`flex-1 md:px-6 py-2.5 text-sm font-medium rounded-lg transition-all z-10 ${calculatorType === 'gst' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+            className={`flex-1 px-2 md:px-6 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 whitespace-nowrap ${calculatorType === 'gst' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
           >
             GST Calculator
           </button>
@@ -101,8 +101,8 @@ export default function TaxCalculatorPage() {
             {/* Income Tax Form */}
             <div className="w-full lg:w-1/2">
               <GlassCard>
-                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <Calculator className="text-[#C9A94B]" />
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Calculator className="text-[#C9A94B] shrink-0" />
                   Enter Income Details
                 </h2>
                 
@@ -134,13 +134,13 @@ export default function TaxCalculatorPage() {
                     <div className="flex bg-[#111111]/50 rounded-xl p-1 border border-white/10 relative overflow-hidden">
                       <button 
                         onClick={() => setRegime('new')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all z-10 ${regime === 'new' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 whitespace-nowrap ${regime === 'new' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
                       >
                         New Regime
                       </button>
                       <button 
                         onClick={() => setRegime('old')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all z-10 ${regime === 'old' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 whitespace-nowrap ${regime === 'old' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
                       >
                         Old Regime
                       </button>
@@ -210,9 +210,9 @@ export default function TaxCalculatorPage() {
             {/* GST Form */}
             <div className="w-full lg:w-1/2">
               <GlassCard>
-                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <Percent className="text-[#C9A94B]" />
-                  Enter Goods & Services Details
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Percent className="text-[#C9A94B] shrink-0" />
+                  <span className="leading-tight">Goods & Services Details</span>
                 </h2>
                 
                 <div className="space-y-6">
@@ -221,15 +221,15 @@ export default function TaxCalculatorPage() {
                     <div className="flex bg-[#111111]/50 rounded-xl p-1 border border-white/10 relative overflow-hidden">
                       <button 
                         onClick={() => setGstMode('add')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all z-10 ${gstMode === 'add' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 flex flex-col sm:flex-row items-center justify-center gap-1 ${gstMode === 'add' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
                       >
-                        Add GST (Exclusive)
+                        <span>Add GST</span><span className="hidden sm:inline">(Exclusive)</span>
                       </button>
                       <button 
                         onClick={() => setGstMode('remove')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all z-10 ${gstMode === 'remove' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
+                        className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all z-10 flex flex-col sm:flex-row items-center justify-center gap-1 ${gstMode === 'remove' ? 'text-black' : 'text-slate-400 hover:text-slate-300'}`}
                       >
-                        Remove GST (Inclusive)
+                        <span>Remove GST</span><span className="hidden sm:inline">(Inclusive)</span>
                       </button>
                       <div 
                         className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-gradient-to-r from-[#C9A94B] to-[#E8C96B] rounded-lg transition-transform duration-300 ease-in-out z-0`}

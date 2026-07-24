@@ -84,7 +84,7 @@ export function GlassCard({ children, className = '', glowOnHover = true, tilt =
         }}
       >
         <motion.div 
-          className="relative z-10 p-8 h-full"
+          className="relative z-10 p-5 sm:p-8 h-full"
           style={{
             transform: tilt && hovered
               ? `translate3d(${-mousePosition.x}px, ${-mousePosition.y}px, 0) scale3d(1.03, 1.03, 1)`
