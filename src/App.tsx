@@ -74,7 +74,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen text-[var(--text-primary)] overflow-x-hidden flex flex-col" style={{ background: '#0D0D0F' }}>
-      <SplashCursor />
+      <SplashCursor RAINBOW_MODE={false} COLOR="#C9A94B" />
       {isPublicPage && <Navbar />}
       <main className="flex-grow">
         <Outlet />
