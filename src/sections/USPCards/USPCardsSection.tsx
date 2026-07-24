@@ -2,7 +2,7 @@ import CircularGallery from '../../components/ui/CircularGallery';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FileText, Building2, Scale, Globe, Headset, Calculator } from 'lucide-react';
 
-const createCardImage = (title: string, desc: string, Icon: React.ElementType) => {
+const createCardImage = (title: string, desc: string, Icon: any) => {
   const svgString = renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
       <rect width="800" height="600" fill="#141418" rx="40" />
