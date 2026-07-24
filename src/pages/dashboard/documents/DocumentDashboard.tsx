@@ -30,6 +30,7 @@ function formatBytes(bytes: number) {
 
 export default function DocumentDashboard() {
   const { selectedCategory } = useOutletContext<{ selectedCategory: string | null }>();
+  const token = localStorage.getItem('token');
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
