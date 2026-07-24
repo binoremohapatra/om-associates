@@ -19,10 +19,10 @@ const FOOTER_LINKS = {
     { label: 'GST News',         href: '#gst-news' },
   ],
   'Legal': [
-    { label: 'Privacy Policy',      href: '#' },
-    { label: 'Terms of Service',    href: '#' },
-    { label: 'Refund Policy',       href: '#' },
-    { label: 'DPDP Compliance',     href: '#' },
+    { label: 'Privacy Policy',      href: '/privacy-policy' },
+    { label: 'Terms of Service',    href: '/terms-of-service' },
+    { label: 'Refund Policy',       href: '/refund-policy' },
+    { label: 'DPDP Compliance',     href: '/dpdp-compliance' },
   ],
 };
 

@@ -62,17 +62,24 @@ import ReportsPage from './pages/dashboard/reports/ReportsPage';
 import AnalyticsDashboardPage from './pages/dashboard/analytics/AnalyticsDashboardPage';
 import GstNoticesPage from './pages/dashboard/gst/GstNoticesPage';
 
+// Public Legal Pages
+import { PrivacyPolicy, TermsOfService, RefundPolicy, DPDPCompliance } from './pages/public-legal/LegalDocuments';
+
+import SplashCursor from './components/ui/SplashCursor';
+
 function Layout() {
   const location = useLocation();
-  const isLandingPage = location.pathname === '/';
+  // Always show Navbar and Footer on public pages, not just the root
+  const isPublicPage = true;
 
   return (
     <div className="min-h-screen text-[var(--text-primary)] overflow-x-hidden flex flex-col" style={{ background: '#0D0D0F' }}>
-      {isLandingPage && <Navbar />}
+      <SplashCursor />
+      {isPublicPage && <Navbar />}
       <main className="flex-grow">
         <Outlet />
       </main>
-      {isLandingPage && <Footer />}
+      {isPublicPage && <Footer />}
       <FAB />
     </div>
   );
@@ -93,6 +100,10 @@ export default function App() {
             <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
             <Route path="/" element={<Layout />}>
               <Route index element={<LandingPage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="terms-of-service" element={<TermsOfService />} />
+              <Route path="refund-policy" element={<RefundPolicy />} />
+              <Route path="dpdp-compliance" element={<DPDPCompliance />} />
             </Route>
 
             <Route path="/" element={<DashboardLayout />}>
