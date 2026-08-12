@@ -4,7 +4,7 @@ import CountUp from '../../components/ui/CountUp';
 
 const STATS = [
   { label: 'Happy Clients', value: 5000, suffix: '+', prefix: '' },
-  { label: 'Years of Experience', value: 10, suffix: '+', prefix: '' },
+  { label: 'Years of Experience', value: 20, suffix: '+', prefix: '' },
   { label: 'Returns Filed', value: 10000, suffix: '+', prefix: '' },
   { label: 'GST Registrations', value: 1000, suffix: '+', prefix: '' },
   { label: 'Client Satisfaction', value: 99, suffix: '%', prefix: '' },
