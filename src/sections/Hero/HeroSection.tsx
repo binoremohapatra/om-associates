@@ -1,7 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Shield, CheckCircle2, TrendingUp, Zap, FileText, Building2, Scale, Globe, HeartHandshake } from 'lucide-react';
 import { useRef } from 'react';
-import LineWaves from '../../components/ui/LineWaves';
 import GoldDivider from '../../components/ui/GoldDivider';
 import { Link } from 'react-router-dom';
 import OrbitImages from '../../components/ui/OrbitImages';
@@ -29,24 +28,7 @@ export default function HeroSection() {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: '#0D0D0F' }}>
-      {/* LineWaves background */}
-      <div className="absolute inset-0 z-0">
-        <LineWaves
-          speed={0.3}
-          innerLineCount={32}
-          outerLineCount={36}
-          warpIntensity={1}
-          rotation={-45}
-          edgeFadeWidth={0}
-          colorCycleSpeed={1}
-          brightness={0.2}
-          color1="#D4AF37"
-          color2="#E8C76A"
-          color3="#F4E3A1"
-          enableMouseInteraction
-          mouseInfluence={2}
-        />
-      </div>
+
 
       {/* Subtle grid overlay */}
       <div

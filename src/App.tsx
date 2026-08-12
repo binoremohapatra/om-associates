@@ -24,8 +24,6 @@ import OAuthCallbackPage from './pages/auth/OAuthCallbackPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import SplashCursor from './components/ui/SplashCursor';
-
 // Public Legal Pages (small, eager is fine)
 import { PrivacyPolicy, TermsOfService, RefundPolicy, DPDPCompliance } from './pages/public-legal/LegalDocuments';
 
@@ -81,7 +79,6 @@ const PlaceholderPage        = lazy(() => import('./pages/PlaceholderPage'));
 function Layout() {
   return (
     <div className="min-h-screen text-[var(--text-primary)] overflow-x-hidden flex flex-col" style={{ background: '#0D0D0F' }}>
-      <SplashCursor RAINBOW_MODE={false} COLOR="#C9A94B" />
       <Navbar />
       <main className="flex-grow">
         <Outlet />

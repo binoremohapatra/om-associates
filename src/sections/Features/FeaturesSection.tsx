@@ -6,7 +6,6 @@ import {
 import { useRef } from 'react';
 import { FEATURES_DATA } from '../../lib/data';
 import GoldDivider from '../../components/ui/GoldDivider';
-import ScrollStack, { ScrollStackItem } from '../../components/ui/ScrollStack';
 
 const ICON_MAP: Record<string, any> = {
   Calculator, TrendingDown, Receipt, Bot, Users, BarChart2, FileText, ShieldCheck,
@@ -144,21 +143,11 @@ export default function FeaturesSection() {
           </p>
         </motion.div>
 
-        {/* Scroll Stack Presentation */}
-        <div className="mt-10 px-4">
-          <ScrollStack 
-            useWindowScroll={true} 
-            itemStackDistance={35} 
-            itemScale={0.04} 
-            baseScale={0.88}
-            itemDistance={120}
-          >
-            {FEATURES_DATA.map((feature, i) => (
-              <ScrollStackItem key={feature.id}>
-                <FeatureStackedCard feature={feature} index={i} />
-              </ScrollStackItem>
-            ))}
-          </ScrollStack>
+        {/* Features Presentation */}
+        <div className="mt-10 px-4 flex flex-col gap-6">
+          {FEATURES_DATA.map((feature, i) => (
+            <FeatureStackedCard key={feature.id} feature={feature} index={i} />
+          ))}
         </div>
       </div>
     </section>
