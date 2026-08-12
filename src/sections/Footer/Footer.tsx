@@ -77,7 +77,7 @@ export default function Footer() {
               {[
                 { icon: Mail,    text: 'op.tripathi2009@gmail.com',  href: 'mailto:op.tripathi2009@gmail.com' },
                 { icon: Phone,   text: '+91 99999 47354, +91 97169 10699',           href: 'tel:+919999947354' },
-                { icon: MapPin,  text: '722, Ground Floor, Ekta Society, Burari, Delhi-110084',      href: '#' },
+                { icon: MapPin,  text: '722, Ground Floor, Ekta Colony, Delhi-110084',      href: '#' },
               ].map(({ icon: Icon, text, href }) => (
                 <a
                   key={text}
