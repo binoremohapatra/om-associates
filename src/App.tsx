@@ -80,7 +80,7 @@ const PlaceholderPage        = lazy(() => import('./pages/PlaceholderPage'));
 
 function Layout() {
   return (
-    <div className="min-h-screen text-[var(--text-primary)] overflow-x-hidden flex flex-col" style={{ background: '#0D0D0F' }}>
+    <div className="min-h-screen text-[var(--text-primary)] flex flex-col" style={{ background: '#0D0D0F' }}>
       <Navbar />
       <main className="flex-grow">
         <Outlet />
