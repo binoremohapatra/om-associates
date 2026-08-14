@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { api } from '@/lib/api';
 import Lanyard from '../../../components/ui/Lanyard';
+import badgeBack from '../../../assets/lanyard/badge-back.svg';
 import { BentoCard } from '../../../components/ui/BentoCard';
 import { Save, User, Mail, Phone, Briefcase, Camera, Loader2, Lock, Monitor, Smartphone, Globe, LogOut } from 'lucide-react';
 
@@ -250,6 +251,7 @@ export default function ProfilePage() {
             position={[0, 0, isMobile ? 24 : 16]}
             gravity={[0, -40, 0]}
             frontImage={frontImage}
+            backImage={badgeBack}
             imageFit="cover"
           />
         </div>

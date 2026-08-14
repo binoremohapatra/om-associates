@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="768" viewBox="0 0 512 768">
+  <rect width="512" height="768" fill="#111111"/>
+  
+  <rect x="16" y="16" width="480" height="736" rx="16" fill="none" stroke="#C9A94B" stroke-width="2" stroke-dasharray="12,12" opacity="0.3"/>
+  <rect x="32" y="32" width="448" height="704" rx="8" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.05"/>
+
+  <g transform="translate(256, 384)">
+    <circle cx="0" cy="-40" r="80" fill="none" stroke="#C9A94B" stroke-width="4" opacity="0.8"/>
+    <circle cx="0" cy="-40" r="96" fill="none" stroke="#C9A94B" stroke-width="1" stroke-dasharray="8,8" opacity="0.5"/>
+    <text x="0" y="-10" font-family="sans-serif" font-size="90" font-weight="bold" fill="#C9A94B" text-anchor="middle">OM</text>
+    
+    <text x="0" y="70" font-family="sans-serif" font-size="28" font-weight="600" fill="#E8C96B" text-anchor="middle" letter-spacing="8">ASSOCIATES</text>
+    
+    <text x="0" y="110" font-family="sans-serif" font-size="14" font-weight="400" fill="#888888" text-anchor="middle" letter-spacing="4">TAX &amp; LEGAL SERVICES</text>
+  </g>
+
+  <text x="256" y="680" font-family="sans-serif" font-size="16" font-weight="bold" fill="#444444" text-anchor="middle" letter-spacing="2">PROPERTY OF OM ASSOCIATES</text>
+  <text x="256" y="710" font-family="sans-serif" font-size="12" font-weight="normal" fill="#333333" text-anchor="middle">IF FOUND, PLEASE RETURN TO AUTHORIZED OFFICE</text>
+</svg>
