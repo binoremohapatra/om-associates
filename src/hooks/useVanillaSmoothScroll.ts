@@ -2,67 +2,112 @@ import { useEffect } from 'react';
 
 export function useVanillaSmoothScroll() {
   useEffect(() => {
-    // Only apply on desktop. Mobile browsers have native smooth scrolling and touch events are complex to intercept cleanly.
+    // Only apply on desktop
     if (window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0) {
       return;
     }
 
-    let targetScroll = window.scrollY;
-    let currentScroll = window.scrollY;
-    let isScrolling = false;
+    // Map of scroll targets to their current animation state
+    const scrollStates = new Map<HTMLElement | Window, {
+      targetScroll: number;
+      currentScroll: number;
+      isScrolling: boolean;
+      maxScroll: number;
+    }>();
+
+    const getScrollableParent = (node: HTMLElement | null): HTMLElement | Window => {
+      if (!node || node === document.body || node === document.documentElement) {
+        return window;
+      }
+      
+      const style = window.getComputedStyle(node);
+      const overflowY = style.overflowY;
+      const isScrollable = (overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight;
+      
+      if (isScrollable) {
+        return node;
+      }
+      
+      return getScrollableParent(node.parentElement);
+    };
+
+    const updateScroll = (target: HTMLElement | Window) => {
+      const state = scrollStates.get(target);
+      if (!state) return;
+
+      const lerp = 0.08;
+      state.currentScroll += (state.targetScroll - state.currentScroll) * lerp;
+
+      if (Math.abs(state.targetScroll - state.currentScroll) < 0.5) {
+        state.currentScroll = state.targetScroll;
+        target.scrollTo(0, state.currentScroll);
+        state.isScrolling = false;
+      } else {
+        target.scrollTo(0, state.currentScroll);
+        requestAnimationFrame(() => updateScroll(target));
+      }
+    };
 
     const onWheel = (e: WheelEvent) => {
-      // Allow horizontal scrolling or trackpad zooming to pass through
       if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        return;
+        return; // Let native handle zoom and horizontal
       }
+
+      const targetElement = e.target as HTMLElement;
+      const scrollContainer = getScrollableParent(targetElement);
+      
+      // Calculate max scroll for the specific container
+      let maxScroll = 0;
+      let currentY = 0;
+      
+      if (scrollContainer === window) {
+        maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        currentY = window.scrollY;
+      } else {
+        const el = scrollContainer as HTMLElement;
+        maxScroll = el.scrollHeight - el.clientHeight;
+        currentY = el.scrollTop;
+      }
+
+      // If container can't scroll, let it bubble (or just prevent default and do nothing)
+      if (maxScroll <= 0) return;
 
       e.preventDefault();
-      
-      // Adjust multiplier for scroll speed
-      const scrollSpeed = 1.2;
-      targetScroll += e.deltaY * scrollSpeed;
-      
-      // Clamp the target scroll to page bounds
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
-      
-      if (!isScrolling) {
-        isScrolling = true;
-        requestAnimationFrame(updateScroll);
-      }
-    };
 
-    const updateScroll = () => {
-      // Lerp factor for smoothness (lower = smoother/slower, higher = snappier)
-      const lerp = 0.08;
-      currentScroll += (targetScroll - currentScroll) * lerp;
-      
-      if (Math.abs(targetScroll - currentScroll) < 0.5) {
-        currentScroll = targetScroll;
-        window.scrollTo(0, currentScroll);
-        isScrolling = false;
+      let state = scrollStates.get(scrollContainer);
+      if (!state) {
+        state = {
+          targetScroll: currentY,
+          currentScroll: currentY,
+          isScrolling: false,
+          maxScroll: maxScroll
+        };
+        scrollStates.set(scrollContainer, state);
       } else {
-        window.scrollTo(0, currentScroll);
-        requestAnimationFrame(updateScroll);
+        // Keep maxScroll up to date (in case layout changed)
+        state.maxScroll = maxScroll;
+      }
+      
+      // If native scroll changed the position while we weren't looking, sync it
+      if (!state.isScrolling && Math.abs(state.currentScroll - currentY) > 2) {
+        state.currentScroll = currentY;
+        state.targetScroll = currentY;
+      }
+
+      const scrollSpeed = 1.2;
+      state.targetScroll += e.deltaY * scrollSpeed;
+      state.targetScroll = Math.max(0, Math.min(state.targetScroll, state.maxScroll));
+
+      if (!state.isScrolling) {
+        state.isScrolling = true;
+        requestAnimationFrame(() => updateScroll(scrollContainer));
       }
     };
 
-    // Use passive: false to allow e.preventDefault()
     window.addEventListener('wheel', onWheel, { passive: false });
-
-    // Handle native scroll events (e.g. dragging scrollbar or arrow keys)
-    const onScroll = () => {
-      if (!isScrolling) {
-        targetScroll = window.scrollY;
-        currentScroll = window.scrollY;
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
       window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 }
