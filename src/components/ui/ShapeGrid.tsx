@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import './ShapeGrid.css';
+import { useAdaptivePerformance } from '../../hooks/useAdaptivePerformance';
 
 interface ShapeGridProps {
   direction?: 'up' | 'down' | 'left' | 'right' | 'diagonal';
@@ -22,6 +23,7 @@ const ShapeGrid: React.FC<ShapeGridProps> = ({
   hoverTrailAmount = 0,
   className = ''
 }) => {
+  const { isLowEnd } = useAdaptivePerformance();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
   const numSquaresX = useRef<number>(0);
@@ -384,6 +386,10 @@ const ShapeGrid: React.FC<ShapeGridProps> = ({
       window.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize, shape, hoverTrailAmount]);
+
+  if (isLowEnd) {
+    return null;
+  }
 
   return <canvas ref={canvasRef} className={`shapegrid-canvas ${className}`}></canvas>;
 };
