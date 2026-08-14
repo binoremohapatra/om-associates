@@ -11,7 +11,7 @@ import {
   Newspaper, CreditCard, Calendar, Upload, Scale, MessageSquare,
   MessageCircle, Mail, PhoneCall
 } from 'lucide-react';
-import LuxuryBackground from '../../components/ui/LuxuryBackground';
+
 import { cn } from '../../lib/utils';
 import { MagicBentoGrid } from '../../components/ui/MagicBento';
 import { api } from '@/lib/api';
@@ -72,9 +72,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-        <LuxuryBackground className="w-full h-full" />
-      </div>
+
       
       <motion.div
         variants={pageTransition}
@@ -140,7 +138,6 @@ export default function DashboardPage() {
               {[
                 { name: 'File GST', icon: Landmark, path: '/gst' },
                 { name: 'File ITR', icon: Calculator, path: '/income-tax' },
-                { name: 'Upload Docs', icon: Upload, path: '/documents' },
                 { name: 'Book Consult', icon: MessageSquare, path: '/queries' },
                 { name: 'Register Co.', icon: Briefcase, path: '/legal' },
                 { name: 'Apply IEC', icon: Scale, path: '/import-export' },
