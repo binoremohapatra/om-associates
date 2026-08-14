@@ -33,10 +33,11 @@ export default function ImportExportPage() {
   useEffect(() => {
     const fetchDgftNews = async () => {
       try {
-        const res = await fetch('/news?department=dgft&limit=10');
-        const d = await res.json();
-        if (d.success) setDgftNews(d.data || []);
-      } catch {} finally { setNewsLoading(false); }
+        const response = await api.get('/news?department=dgft&limit=10');
+        if (response.data.success) setDgftNews(response.data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch EXIM news', error);
+      } finally { setNewsLoading(false); }
     };
     fetchDgftNews();
   }, []);

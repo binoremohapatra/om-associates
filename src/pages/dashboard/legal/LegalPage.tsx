@@ -35,10 +35,9 @@ export default function LegalPage() {
   useEffect(() => {
     const fetchMcaNews = async () => {
       try {
-        const res = await fetch('/news?department=mca&limit=8');
-        const d = await res.json();
-        if (d.success) setMcaNews(d.data || []);
-      } catch {} finally { setNewsLoading(false); }
+        const response = await api.get('/news?department=mca&limit=8');
+        if (response.data.success) setMcaNews(response.data.data || []);
+      } catch(error) { console.error(error); } finally { setNewsLoading(false); }
     };
     fetchMcaNews();
   }, []);
