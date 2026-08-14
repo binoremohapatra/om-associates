@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 /* eslint-disable react/no-unknown-property */
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -8,7 +8,7 @@ import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphe
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
 import cardGLB from '../../assets/lanyard/card.glb';
-import lanyard from '../../assets/lanyard/lanyard.png';
+import lanyard from '../../assets/lanyard/om-logo.svg';
 
 import * as THREE from 'three';
 import './Lanyard.css';
