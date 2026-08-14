@@ -9,12 +9,9 @@ import Footer from './sections/Footer/Footer';
 import DashboardLayout from './components/layout/DashboardLayout';
 import { AuthProvider } from './contexts/AuthContext';
 
-// Minimal loading fallback — preserves design (no flash)
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-[#0D0D0F]" aria-label="Loading...">
-    <div className="w-10 h-10 border-4 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin" />
-  </div>
-);
+import PremiumLoader from './components/ui/PremiumLoader';
+
+const PageLoader = () => <PremiumLoader />;
 
 // ── Eagerly loaded (public, fast entry points) ────────────────────────────────
 import LandingPage from './pages/LandingPage';
