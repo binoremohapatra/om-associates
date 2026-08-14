@@ -51,6 +51,7 @@
   }
 
   html {
+    scroll-behavior: smooth;
     /* Fluid root font-size — scales smoothly from mobile to desktop */
     font-size: clamp(13px, 1.3vw + 9px, 18px);
   }
