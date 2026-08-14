@@ -18,14 +18,16 @@ const PageLoader = () => (
 
 // ── Eagerly loaded (public, fast entry points) ────────────────────────────────
 import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import OAuthCallbackPage from './pages/auth/OAuthCallbackPage';
-import VerifyEmailPage from './pages/auth/VerifyEmailPage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 // Public Legal Pages (small, eager is fine)
 import { PrivacyPolicy, TermsOfService, RefundPolicy, DPDPCompliance } from './pages/public-legal/LegalDocuments';
+
+// ── Lazily loaded (Auth pages) ──────────────────
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
+const OAuthCallbackPage = lazy(() => import('./pages/auth/OAuthCallbackPage'));
+const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 
 // ── Lazily loaded (dashboard — only when user is logged in) ──────────────────
 const DashboardPage          = lazy(() => import('./pages/dashboard/DashboardPage'));
