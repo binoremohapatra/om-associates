@@ -1,3 +1,4 @@
+import multer from 'multer';
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth';
@@ -7,12 +8,13 @@ import { z } from 'zod';
 import { UserRole } from '@prisma/client';
 
 const router = Router();
+const upload = multer({ dest: 'uploads/' });
 
 router.use(authenticate);
 
 const updateProfileSchema = z.object({
   name: z.string().optional(),
-  avatarUrl: z.string().url().optional(),
+  avatarUrl: z.string().optional(),
   phone: z.string().optional(),
 });
 
@@ -28,6 +30,7 @@ const updateRoleSchema = z.object({
 
 // Profile management
 router.patch('/profile', validate(updateProfileSchema), UserController.updateProfile);
+router.post('/avatar', upload.single('avatar'), UserController.uploadAvatar);
 router.post('/change-password', validate(changePasswordSchema), UserController.changePassword);
 
 // Sessions

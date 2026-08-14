@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, User, Building2, Shield, CreditCard, Bell, Key } from 'lucide-react';
+import { Settings, User, Loader2, Building2, Shield, CreditCard, Bell, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../../lib/utils';
+import { useAuth } from '../../../contexts/AuthContext';
+import { api } from '@/lib/api';
+import { useRef } from 'react';
 
 const TABS = [
   { id: 'general', label: 'General', icon: User, description: 'Profile and organization details' },
@@ -86,6 +89,41 @@ export default function SettingsPage() {
 // -- Tab Components --
 
 function GeneralSettings() {
+  const { user, updateUser } = useAuth();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [formData, setFormData] = useState({ name: user?.name || '' });
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploading(true);
+      const data = new FormData();
+      data.append('avatar', file);
+      const res = await api.post('/users/avatar', data);
+      if (res.data.success) {
+        updateUser({ ...user, avatarUrl: res.data.url });
+      }
+    } catch (err) {
+      console.error('Failed to upload avatar', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      const res = await api.patch('/users/profile', { name: formData.name });
+      if (res.data.success) {
+        updateUser({ ...user, name: formData.name });
+        alert('Profile updated successfully');
+      }
+    } catch (err) {
+      console.error('Failed to save profile', err);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Profile Section */}
@@ -97,14 +135,23 @@ function GeneralSettings() {
         <div className="p-4 md:p-6 space-y-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C9A94B] to-[#E8C96B] p-[2px] shrink-0">
-              <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center">
-                <User size={32} className="text-[#E8C96B]" />
+              <div className="w-full h-full rounded-full bg-[#111111] flex items-center justify-center overflow-hidden">
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${api.defaults.baseURL?.replace('/api/v1', '')}${user.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User size={32} className="text-[#E8C96B]" />
+                )}
               </div>
             </div>
             <div className="text-center sm:text-left mt-2 sm:mt-0">
-              <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-lg transition-colors border border-white/10">
+              <button 
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-lg transition-colors border border-white/10 flex items-center gap-2 mx-auto sm:mx-0">
+                {isUploading ? <Loader2 size={16} className="animate-spin" /> : null}
                 Change Avatar
               </button>
+              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               <p className="text-xs text-slate-500 mt-3">JPG, GIF or PNG. 1MB max.</p>
             </div>
           </div>
@@ -112,16 +159,16 @@ function GeneralSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Full Name</label>
-              <input type="text" defaultValue="CA Admin" className="w-full bg-[#0D0D0F] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
+              <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-[#0D0D0F] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C9A94B]/50 transition-colors" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Email Address</label>
-              <input type="email" defaultValue="admin@omassociates.com" disabled className="w-full bg-[#0D0D0F]/50 border border-white/5 rounded-xl px-4 py-3 text-slate-500 cursor-not-allowed" />
+              <input type="email" defaultValue={user?.email || ''} disabled className="w-full bg-[#0D0D0F]/50 border border-white/5 rounded-xl px-4 py-3 text-slate-500 cursor-not-allowed" />
             </div>
           </div>
         </div>
         <div className="px-4 md:px-6 py-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
-          <button className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors whitespace-nowrap">
+          <button onClick={handleSaveProfile} className="px-5 py-2.5 bg-[#C9A94B] hover:bg-[#E8C96B] text-[#0D0D0F] text-sm font-semibold rounded-xl transition-colors whitespace-nowrap">
             Save Changes
           </button>
         </div>

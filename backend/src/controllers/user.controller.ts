@@ -5,6 +5,21 @@ import { z } from 'zod';
 import { BadRequestError } from '../types/errors';
 
 export class UserController {
+  
+  static async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ success: false, error: 'No image uploaded' });
+      }
+      const avatarUrl = '/uploads/' + file.filename;
+      const user = await UserService.updateProfile(req.user!.id, { avatarUrl });
+      sendSuccess(res, { url: avatarUrl, user });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, avatarUrl, phone } = req.body;

@@ -123,14 +123,12 @@ export default function ProfilePage() {
     if (!file) return;
     try {
       setIsUploadingAvatar(true);
-      /*
       const formData = new FormData();
-      formData.append('file', file);
-      const res = await api.post('/upload', formData);
+      formData.append('avatar', file);
+      const res = await api.post('/users/avatar', formData);
       if (res.data.success) {
-        updateUser({ ...user, avatarUrl: res.data.data.url });
+        updateUser({ ...user, avatarUrl: res.data.url });
       }
-      */
     } catch (err) {
       console.error('Failed to upload avatar', err);
     } finally {
