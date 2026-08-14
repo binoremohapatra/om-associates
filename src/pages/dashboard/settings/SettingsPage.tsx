@@ -103,7 +103,9 @@ function GeneralSettings() {
       data.append('avatar', file);
       const res = await api.post('/users/avatar', data);
       if (res.data.success) {
-        updateUser({ ...user, avatarUrl: res.data.url });
+        if (user) {
+          updateUser({ ...user, avatarUrl: res.data.url } as any);
+        }
       }
     } catch (err) {
       console.error('Failed to upload avatar', err);
@@ -116,7 +118,7 @@ function GeneralSettings() {
     try {
       const res = await api.patch('/users/profile', { name: formData.name });
       if (res.data.success) {
-        updateUser({ ...user, name: formData.name });
+        if (user) updateUser({ ...user, name: formData.name } as any);
         alert('Profile updated successfully');
       }
     } catch (err) {

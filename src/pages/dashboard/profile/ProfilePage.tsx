@@ -127,7 +127,9 @@ export default function ProfilePage() {
       formData.append('avatar', file);
       const res = await api.post('/users/avatar', formData);
       if (res.data.success) {
-        updateUser({ ...user, avatarUrl: res.data.url });
+        if (user) {
+          updateUser({ ...user, avatarUrl: res.data.url } as any);
+        }
       }
     } catch (err) {
       console.error('Failed to upload avatar', err);
