@@ -91,7 +91,11 @@ function Layout() {
   );
 }
 
+import { useVanillaSmoothScroll } from './hooks/useVanillaSmoothScroll';
+
 export default function App() {
+  useVanillaSmoothScroll();
+
   return (
     <AuthProvider>
       <ThemeProvider>
