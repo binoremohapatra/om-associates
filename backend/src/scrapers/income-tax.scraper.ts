@@ -58,8 +58,6 @@ export async function scrapeIncomeTax(): Promise<ScrapedItem[]> {
             if (href.toLowerCase().includes('.pdf')) pdfUrl = href;
             
             let publishedAt = new Date();
-            const yearMatch = title.match(/\b(20[0-9]{2})\b/);
-            if (yearMatch) publishedAt = new Date(parseInt(yearMatch[1]), new Date().getMonth(), 1);
             
             const cells = $el.find('td');
             if (cells.length >= 2) {

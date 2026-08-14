@@ -58,8 +58,6 @@ export async function scrapeMCA(): Promise<ScrapedItem[]> {
               const parsed = parseIndianDate(dateEl.attr('datetime') || dateEl.text());
               if (parsed) publishedAt = parsed;
             } else {
-              const yearMatch = title.match(/\b(20[0-9]{2})\b/);
-              if (yearMatch) publishedAt = new Date(parseInt(yearMatch[1]), 0, 1);
               const dateMatch = $el.find('td').length > 1 ?
                 parseIndianDate($($el.find('td')[1]).text()) : null;
               if (dateMatch) publishedAt = dateMatch;

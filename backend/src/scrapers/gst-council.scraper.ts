@@ -53,8 +53,6 @@ export async function scrapeGstCouncil(): Promise<ScrapedItem[]> {
               const parsed = parseIndianDate(dateEl.text() || dateEl.attr('datetime') || '');
               if (parsed) publishedAt = parsed;
             } else {
-              const yearMatch = title.match(/\b(20[0-9]{2})\b/);
-              if (yearMatch) publishedAt = new Date(parseInt(yearMatch[1]), 0, 1);
             }
             
             items.push({
