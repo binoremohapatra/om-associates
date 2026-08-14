@@ -27,10 +27,11 @@ export default function IncomeTaxDashboardPage() {
   useEffect(() => {
     const fetchItNews = async () => {
       try {
-        const res = await fetch('/news?department=income-tax&limit=10');
-        const d = await res.json();
-        if (d.success) setItNews(d.data || []);
-      } catch {} finally { setNewsLoading(false); }
+        const response = await api.get('/news?department=income-tax&limit=10');
+        if (response.data.success) setItNews(response.data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch income tax news', error);
+      } finally { setNewsLoading(false); }
     };
     fetchItNews();
   }, []);
