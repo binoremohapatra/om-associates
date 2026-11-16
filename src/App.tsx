@@ -91,7 +91,8 @@ function Layout() {
 import { useVanillaSmoothScroll } from './hooks/useVanillaSmoothScroll';
 
 export default function App() {
-  useVanillaSmoothScroll();
+  // Disabled smooth scroll for better UX
+  // useVanillaSmoothScroll();
 
   return (
     <AuthProvider>
