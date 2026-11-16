@@ -22,7 +22,7 @@ import {
   MessageCircle, Mail, PhoneCall, ExternalLink,
   CheckCircle2, ArrowUpRight, TrendingUp,
   Sparkles, RefreshCw, Copy, Check, FileCheck, Activity,
-  ChevronRight, AlertCircle
+  ChevronRight, AlertCircle, Building2, ChevronDown
 } from 'lucide-react';
 
 // Fallback monthly trend data if database has no historical records yet
@@ -43,6 +43,7 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [govNews, setGovNews] = useState<Record<string, any[]>>({});
   const [govNewsLoading, setGovNewsLoading] = useState(true);
   const [activeNewsTab, setActiveNewsTab] = useState<'all' | 'gst' | 'income-tax' | 'cbic'>('all');
@@ -51,16 +52,23 @@ export default function DashboardPage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   // Fetch real summary from backend API connected to Neon PostgreSQL
-  const fetchDashboardData = useCallback(async (isRefresh = false) => {
+  const fetchDashboardData = useCallback(async (isRefresh = false, clientIdOverride?: string) => {
     if (!token) {
       setLoading(false);
       return;
     }
     if (isRefresh) setRefreshing(true);
     try {
-      const response = await api.get('/dashboard/summary');
+      const cId = clientIdOverride !== undefined ? clientIdOverride : selectedClientId;
+      const params: any = {};
+      if (cId) params.clientId = cId;
+
+      const response = await api.get('/dashboard/summary', { params });
       if (response.data.success) {
         setDashboardData(response.data.data);
+        if (response.data.data.selectedClientId && !selectedClientId && !cId) {
+          setSelectedClientId(response.data.data.selectedClientId);
+        }
       }
     } catch (error) {
       if (import.meta.env.DEV) console.error('Failed to fetch dashboard data:', error);
@@ -68,11 +76,17 @@ export default function DashboardPage() {
       setLoading(false);
       if (isRefresh) setRefreshing(false);
     }
-  }, [token]);
+  }, [token, selectedClientId]);
 
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  // Handle entity / company switch
+  const handleCompanyChange = (clientId: string) => {
+    setSelectedClientId(clientId);
+    fetchDashboardData(true, clientId);
+  };
 
   // Fetch live official government updates
   useEffect(() => {
@@ -111,6 +125,9 @@ export default function DashboardPage() {
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
   };
+
+  // Companies list from DB
+  const clientCompanies = dashboardData?.clients || [];
 
   // Real data mapped from Database
   const statutoryFilings = useMemo(() => {
@@ -257,7 +274,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#0D0D0F] gap-4">
         <div className="w-12 h-12 border-4 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin"></div>
-        <p className="text-slate-400 text-sm animate-pulse font-medium">Fetching real-time data from database...</p>
+        <p className="text-slate-400 text-sm animate-pulse font-medium">Fetching multi-entity enterprise portfolio...</p>
       </div>
     );
   }
@@ -266,6 +283,8 @@ export default function DashboardPage() {
   const clientName = dashboardData?.businessStatus?.clientName || userName;
   const clientGstin = dashboardData?.businessStatus?.gstin || '07AABCO1234D1Z8';
   const clientPan = dashboardData?.businessStatus?.panNumber || 'AABCO1234D';
+  const entityType = dashboardData?.businessStatus?.entityType?.replace('_', ' ') || 'PRIVATE LIMITED';
+  const entityState = dashboardData?.businessStatus?.state || 'Delhi';
   const financialTotals = dashboardData?.financialTotals || {
     totalTurnover: 3275000,
     totalTaxPaid: 589500,
@@ -284,35 +303,78 @@ export default function DashboardPage() {
         className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10 space-y-6"
       >
         {/* ============================================================== */}
-        {/* 1. TOP HEADER & FINANCIAL YEAR CONTEXT BAR                     */}
+        {/* 1. TOP HEADER & MULTI-COMPANY PORTFOLIO SELECTOR               */}
         {/* ============================================================== */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-white/[0.04] via-white/[0.02] to-transparent border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-white/[0.05] via-white/[0.02] to-transparent border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#C9A94B]/5 rounded-full blur-3xl pointer-events-none" />
           
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-[#C9A94B]/15 text-[#E8C96B] border border-[#C9A94B]/30">
                 <Sparkles size={12} className="text-[#E8C96B]" />
                 Om Associates Client Portal
               </span>
+
+              {clientCompanies.length > 0 && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/5 text-slate-300 border border-white/10">
+                  <Building2 size={12} className="text-[#C9A94B]" />
+                  {clientCompanies.length} Entities Enrolled
+                </span>
+              )}
+
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <CheckCircle2 size={11} />
                 Live DB Connected
               </span>
             </div>
-            <h1 className="font-display font-bold text-white text-2xl sm:text-3xl tracking-tight">
-              Welcome back, <span className="bg-gradient-to-r from-white via-slate-100 to-[#E8C96B] bg-clip-text text-transparent">{clientName}</span>
-            </h1>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1">
-              Active Assessment: <strong className="text-slate-200">FY 2025-26 (AY 2026-27)</strong> • Legal & Tax Records fetched live from PostgreSQL.
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <h1 className="font-display font-bold text-white text-2xl sm:text-3xl tracking-tight">
+                <span className="bg-gradient-to-r from-white via-slate-100 to-[#E8C96B] bg-clip-text text-transparent">
+                  {clientName}
+                </span>
+              </h1>
+
+              {/* Entity Type Badge */}
+              <span className="self-start sm:self-auto text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-lg bg-[#C9A94B]/15 text-[#E8C96B] border border-[#C9A94B]/30">
+                {entityType} • {entityState}
+              </span>
+            </div>
+
+            <p className="text-slate-400 text-xs sm:text-sm">
+              Active Assessment: <strong className="text-slate-200">FY 2025-26 (AY 2026-27)</strong> • Switch companies below to inspect individual GSTINs, filings & tax ledgers.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          {/* Right Action Controls: MULTI-COMPANY SELECTOR + BUTTONS */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+            
+            {/* MULTI-COMPANY SELECTOR DROPDOWN */}
+            {clientCompanies.length > 0 && (
+              <div className="relative min-w-[240px]">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#111115] border border-[#C9A94B]/40 hover:border-[#C9A94B] transition-all shadow-lg group">
+                  <Building2 size={15} className="text-[#C9A94B] shrink-0" />
+                  <select
+                    value={selectedClientId}
+                    onChange={(e) => handleCompanyChange(e.target.value)}
+                    className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer appearance-none pr-5 py-0.5"
+                  >
+                    <option value="all" className="bg-[#111115] text-white">🌐 All Entities (Consolidated)</option>
+                    {clientCompanies.map((c: any) => (
+                      <option key={c.id} value={c.id} className="bg-[#111115] text-white">
+                        🏢 {c.name} ({c.state})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="text-slate-400 absolute right-3 pointer-events-none group-hover:text-white" />
+                </div>
+              </div>
+            )}
+
             <button
               onClick={() => fetchDashboardData(true)}
               disabled={refreshing}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-medium transition-all hover:text-white"
+              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-medium transition-all hover:text-white"
               title="Refresh database metrics"
             >
               <RefreshCw size={14} className={refreshing ? 'animate-spin text-[#C9A94B]' : 'text-slate-400'} />
@@ -320,16 +382,8 @@ export default function DashboardPage() {
             </button>
 
             <button
-              onClick={() => navigate('/tax-calculator')}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-medium transition-all hover:text-white"
-            >
-              <Calculator size={14} className="text-[#C9A94B]" />
-              <span>Tax Calculator</span>
-            </button>
-
-            <button
               onClick={() => setIsBookingOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#C9A94B] to-[#997B2E] text-black font-semibold text-xs shadow-lg shadow-[#C9A94B]/20 hover:brightness-110 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#C9A94B] to-[#997B2E] text-black font-semibold text-xs shadow-lg shadow-[#C9A94B]/20 hover:brightness-110 transition-all cursor-pointer whitespace-nowrap"
             >
               <Calendar size={14} />
               <span>Book Consultation</span>
@@ -342,7 +396,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2.5">
             <AlertCircle size={18} className="text-amber-400 shrink-0" />
             <span>
-              <strong>Statutory Reminder:</strong> GSTR-3B return for the prior tax period is due on the <strong>20th</strong>. Ensure your Input Tax Credit (ITC) reconciliation is complete.
+              <strong>Statutory Reminder for {clientName}:</strong> GSTR-3B return for the prior tax period is due on the <strong>20th</strong>. Ensure your Input Tax Credit (ITC) reconciliation is complete.
             </span>
           </div>
           <button 
@@ -476,7 +530,7 @@ export default function DashboardPage() {
                     <Activity size={18} className="text-[#C9A94B]" />
                     <h3 className="text-lg font-display font-bold text-white">Statutory Return Filing Tracker</h3>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">Real-time status of mandatory GST, TDS, and Direct Tax obligations from database.</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Real-time status of mandatory GST, TDS, and Direct Tax obligations for {clientName}.</p>
                 </div>
                 <button
                   onClick={() => navigate('/gst/returns')}
@@ -538,7 +592,7 @@ export default function DashboardPage() {
                     <TrendingUp size={18} className="text-[#C9A94B]" />
                     <h3 className="text-lg font-display font-bold text-white">Tax Liability & Turnover Overview</h3>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">Aggregated revenue declared vs GST paid & Input Tax Credit (ITC) from database.</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Aggregated revenue declared vs GST paid & Input Tax Credit (ITC) for {clientName}.</p>
                 </div>
 
                 <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10 self-start sm:self-auto">

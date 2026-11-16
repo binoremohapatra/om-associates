@@ -1,4 +1,4 @@
-﻿import { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '../config/database'; 
 import { logger } from '../utils/logger';
 
@@ -11,10 +11,40 @@ export class DashboardController {
         return res.status(401).json({ success: false, error: 'Unauthorized: No organization found' });
       }
 
+      const requestedClientId = req.query.clientId as string | undefined;
+
+      // 1. Fetch all active client companies for this organization
+      const allClients = await prisma.client.findMany({
+        where: { organizationId: orgId, isActive: true },
+        select: {
+          id: true,
+          name: true,
+          gstin: true,
+          pan: true,
+          entityType: true,
+          city: true,
+          state: true
+        },
+        orderBy: { name: 'asc' }
+      });
+
+      // Determine active client (either requested, or first company, or all)
+      const isConsolidated = requestedClientId === 'all';
+      const activeClient = !isConsolidated 
+        ? (allClients.find(c => c.id === requestedClientId) || allClients[0] || null)
+        : null;
+
+      // Client filter clause for relations
+      const clientWhereClause = activeClient 
+        ? { clientId: activeClient.id }
+        : { client: { organizationId: orgId } };
+
+      const invoiceClientWhereClause = activeClient
+        ? { organizationId: orgId, clientId: activeClient.id }
+        : { organizationId: orgId };
+
       // Execute concurrent queries for performance
       const [
-        activeClientsCount,
-        primaryClient,
         totalGstFilings,
         overdueGstFilings,
         totalTaxFilings,
@@ -27,26 +57,21 @@ export class DashboardController {
         recentTaxFilings,
         activeLegalCases
       ] = await Promise.all([
-        // 1. Business Status queries
-        prisma.client.count({ where: { organizationId: orgId, isActive: true } }),
-        prisma.client.findFirst({ where: { organizationId: orgId, isActive: true } }),
-        prisma.gstFiling.count({ where: { client: { organizationId: orgId } } }),
-        prisma.gstFiling.count({ where: { client: { organizationId: orgId }, status: 'OVERDUE' } }),
-        prisma.taxFiling.count({ where: { client: { organizationId: orgId } } }),
-        prisma.taxFiling.count({ where: { client: { organizationId: orgId }, status: 'OVERDUE' } }),
+        prisma.gstFiling.count({ where: clientWhereClause }),
+        prisma.gstFiling.count({ where: { ...clientWhereClause, status: 'OVERDUE' } }),
+        prisma.taxFiling.count({ where: clientWhereClause }),
+        prisma.taxFiling.count({ where: { ...clientWhereClause, status: 'OVERDUE' } }),
         
-        // 2. Payment Summary queries
         prisma.invoice.aggregate({
-          where: { organizationId: orgId, status: { in: ['DRAFT', 'SENT'] } },
+          where: { ...invoiceClientWhereClause, status: { in: ['DRAFT', 'SENT'] } },
           _sum: { totalPaise: true }
         }),
         prisma.invoice.findFirst({
-          where: { organizationId: orgId },
+          where: invoiceClientWhereClause,
           orderBy: { updatedAt: 'desc' },
           select: { invoiceNumber: true, status: true, totalPaise: true }
         }),
 
-        // 3. Recent Activity queries
         prisma.auditLog.findMany({
           where: { actor: { organizationId: orgId } },
           orderBy: { createdAt: 'desc' },
@@ -54,19 +79,17 @@ export class DashboardController {
           select: { action: true, entityType: true, createdAt: true }
         }),
 
-        // 4. Recent Documents
         prisma.document.findMany({
-          where: { client: { organizationId: orgId } },
+          where: clientWhereClause,
           orderBy: { createdAt: 'desc' },
           take: 4,
           select: { id: true, fileName: true, fileType: true, sizeBytes: true, category: true, createdAt: true, fileUrl: true }
         }),
 
-        // 5. Recent GST Filings from DB
         prisma.gstFiling.findMany({
-          where: { client: { organizationId: orgId } },
+          where: clientWhereClause,
           orderBy: { periodStart: 'desc' },
-          take: 12,
+          take: 16,
           select: {
             id: true,
             formType: true,
@@ -81,9 +104,8 @@ export class DashboardController {
           }
         }),
 
-        // 6. Recent Tax Filings from DB
         prisma.taxFiling.findMany({
-          where: { client: { organizationId: orgId } },
+          where: clientWhereClause,
           orderBy: { createdAt: 'desc' },
           take: 2,
           select: {
@@ -97,11 +119,10 @@ export class DashboardController {
           }
         }),
 
-        // 7. Active Legal Cases from DB
         prisma.legalCase.findMany({
-          where: { client: { organizationId: orgId } },
+          where: clientWhereClause,
           orderBy: { updatedAt: 'desc' },
-          take: 4,
+          take: 6,
           select: {
             id: true,
             caseNumber: true,
@@ -114,7 +135,7 @@ export class DashboardController {
         })
       ]);
 
-      // Calculate Compliance Score (100% minus the percentage of overdue filings)
+      // Calculate Compliance Score
       const totalFilings = totalGstFilings + totalTaxFilings;
       const totalOverdue = overdueGstFilings + overdueTaxFilings;
       let complianceScore = 100;
@@ -123,27 +144,28 @@ export class DashboardController {
       }
 
       const businessStatus = {
-        gst: primaryClient?.gstin ? 'Active' : (activeClientsCount > 0 ? 'Active' : 'Inactive'),
-        pan: primaryClient?.pan ? 'Verified' : (activeClientsCount > 0 ? 'Verified' : 'Pending'),
-        iec: activeClientsCount > 0 ? 'Active' : 'Inactive',
+        gst: activeClient?.gstin ? 'Active' : (allClients.length > 0 ? 'Active' : 'Inactive'),
+        pan: activeClient?.pan ? 'Verified' : (allClients.length > 0 ? 'Verified' : 'Pending'),
+        iec: 'Active',
         complianceScore,
-        clientName: primaryClient?.name || 'Om Apex Enterprises Pvt Ltd',
-        gstin: primaryClient?.gstin || '07AABCO1234D1Z8',
-        panNumber: primaryClient?.pan || 'AABCO1234D',
-        entityType: primaryClient?.entityType || 'PRIVATE_LIMITED',
-        state: primaryClient?.state || 'Delhi'
+        clientName: activeClient ? activeClient.name : 'All Companies (Consolidated)',
+        gstin: activeClient?.gstin || (allClients[0]?.gstin || '07AABCO1234D1Z8'),
+        panNumber: activeClient?.pan || (allClients[0]?.pan || 'AABCO1234D'),
+        entityType: activeClient?.entityType || 'CORPORATE_GROUP',
+        state: activeClient?.state || 'Multiple Jurisdictions',
+        totalCompanies: allClients.length
       };
 
       // Query Upcoming Due Dates
       const upcomingGst = await prisma.gstFiling.findMany({
-        where: { client: { organizationId: orgId }, status: 'PENDING', dueDate: { gte: new Date() } },
+        where: { ...clientWhereClause, status: 'PENDING', dueDate: { gte: new Date() } },
         orderBy: { dueDate: 'asc' },
         take: 3,
         select: { formType: true, dueDate: true, notes: true }
       });
 
       const upcomingTax = await prisma.taxFiling.findMany({
-        where: { client: { organizationId: orgId }, status: 'PENDING' },
+        where: { ...clientWhereClause, status: 'PENDING' },
         orderBy: { createdAt: 'desc' },
         take: 1,
         select: { financialYear: true, createdAt: true }
@@ -171,7 +193,6 @@ export class DashboardController {
         });
       });
 
-      // If no upcoming due dates exist, add default statutory calendar
       if (dueDates.length === 0) {
         dueDates.push(
           {
@@ -193,7 +214,7 @@ export class DashboardController {
 
       // Map Payment Summary
       const paymentSummary = {
-        pendingBills: Math.round(Number(pendingInvoices._sum.totalPaise || 0) / 100), // Convert paise to rupees
+        pendingBills: Math.round(Number(pendingInvoices._sum.totalPaise || 0) / 100),
         lastInvoice: lastInvoice?.invoiceNumber || 'INV-2025-089',
         lastInvoiceStatus: lastInvoice?.status || 'SENT'
       };
@@ -218,10 +239,9 @@ export class DashboardController {
         };
       });
 
-      // 8. Map Statutory Filings from actual DB records
+      // Map Statutory Filings from actual DB records
       const statutoryFilings: any[] = [];
       
-      // Top recent GST filings
       const gstr1 = recentGstFilings.find(f => f.formType === 'GSTR_1');
       if (gstr1) {
         const periodMonth = gstr1.periodStart.toLocaleString('default', { month: 'short', year: 'numeric' });
@@ -253,7 +273,6 @@ export class DashboardController {
         });
       }
 
-      // Add Income Tax Filing from DB
       if (recentTaxFilings.length > 0) {
         const it = recentTaxFilings[0];
         statutoryFilings.push({
@@ -268,7 +287,6 @@ export class DashboardController {
         });
       }
 
-      // Add TDS status
       statutoryFilings.push({
         form: 'TDS Challan 281',
         description: 'Tax Deducted at Source Deposit',
@@ -280,30 +298,29 @@ export class DashboardController {
         route: '/income-tax'
       });
 
-      // 9. Aggregate Monthly Trends directly from GST Filings in DB
+      // Aggregate Monthly Trends directly from GST Filings in DB
       const monthlyMap = new Map<string, { turnover: number; taxPaid: number; itcClaimed: number }>();
       let totalTurnover = 0;
       let totalTaxPaid = 0;
       let totalItcSalvaged = 0;
 
-      // Group filings by month
       recentGstFilings.forEach(f => {
         const monthKey = f.periodStart.toLocaleString('default', { month: 'short' });
         const valTurnover = f.totalTaxableValue ? Number(f.totalTaxableValue / 100n) : 0;
         const valTax = f.totalTaxPayable ? Number(f.totalTaxPayable / 100n) : 0;
-        const valItc = Math.round(valTax * 0.58); // ITC credit component
+        const valItc = Math.round(valTax * 0.58);
 
         if (!monthlyMap.has(monthKey)) {
           monthlyMap.set(monthKey, { turnover: 0, taxPaid: 0, itcClaimed: 0 });
         }
         const current = monthlyMap.get(monthKey)!;
         if (f.formType === 'GSTR_1') {
-          current.turnover = Math.max(current.turnover, valTurnover);
+          current.turnover += valTurnover;
           totalTurnover += valTurnover;
         }
         if (f.formType === 'GSTR_3B') {
-          current.taxPaid = Math.max(current.taxPaid, valTax);
-          current.itcClaimed = Math.max(current.itcClaimed, valItc);
+          current.taxPaid += valTax;
+          current.itcClaimed += valItc;
           totalTaxPaid += valTax;
           totalItcSalvaged += valItc;
         }
@@ -319,15 +336,14 @@ export class DashboardController {
         });
       });
 
-      // Reverse so chronological if needed
       financialTrends.reverse();
 
-      // 10. Map Active Legal Cases from DB
+      // Map Active Legal Cases from DB
       const activeEngagements = activeLegalCases.map(c => {
         const isProgress = c.status === 'OPEN' || c.status === 'IN_PROGRESS';
         return {
           title: c.title,
-          type: c.court?.includes('ROC') ? 'Corporate MCA' : 'GST Advisory',
+          type: c.court?.includes('ROC') ? 'Corporate MCA' : (c.court?.includes('DGFT') ? 'Foreign Trade (EXIM)' : (c.court?.includes('ITAT') ? 'Direct Tax Appeal' : 'GST Advisory')),
           progress: isProgress ? 80 : 100,
           currentStep: c.description || 'Under legal counsel review',
           sla: c.nextHearingDate ? `Next hearing: ${c.nextHearingDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}` : 'In regular compliance schedule',
@@ -338,6 +354,8 @@ export class DashboardController {
       res.json({
         success: true,
         data: {
+          clients: allClients,
+          selectedClientId: activeClient ? activeClient.id : 'all',
           businessStatus,
           dueDates,
           paymentSummary,
