@@ -19,7 +19,10 @@ export class GstController {
 
       // Concurrent queries for dashboard stats
       const [filings, challans, notices, profiles] = await Promise.all([
-        prisma.gstFiling.findMany({ where: { clientId: { in: clientIds } } }),
+        prisma.gstFiling.findMany({ 
+          where: { clientId: { in: clientIds } },
+          include: { client: { select: { id: true, name: true, gstin: true } } }
+        }),
         prisma.gstChallan.findMany({ where: { clientId: { in: clientIds } } }),
         prisma.gstNotice.findMany({ where: { clientId: { in: clientIds } } }),
         prisma.gstProfile.findMany({ where: { clientId: { in: clientIds } } })
@@ -157,6 +160,38 @@ export class GstController {
     } catch (error: any) {
       logger.error(`GST Create Return Error: ${error.message}`);
       return res.status(500).json({ success: false, error: 'Failed to create GST return' });
+    }
+  }
+
+  // Update GST Return status / acknowledgement
+  static async updateReturnStatus(req: Request, res: Response) {
+    try {
+      const orgId = req.user!.organizationId;
+      const id = req.params.id as string;
+      const { status, acknowledgementNo } = req.body;
+
+      const filing = await prisma.gstFiling.findFirst({
+        where: { id, client: { organizationId: orgId } }
+      });
+
+      if (!filing) {
+        return res.status(404).json({ success: false, error: 'Filing not found or unauthorized' });
+      }
+
+      const updated = await prisma.gstFiling.update({
+        where: { id },
+        data: {
+          status: status || filing.status,
+          filedAt: status === 'FILED' ? (filing.filedAt || new Date()) : filing.filedAt,
+          acknowledgementNo: acknowledgementNo !== undefined ? acknowledgementNo : filing.acknowledgementNo
+        },
+        include: { client: { select: { id: true, name: true, gstin: true } } }
+      });
+
+      return res.status(200).json({ success: true, data: updated });
+    } catch (error: any) {
+      logger.error(`GST Update Return Error: ${error.message}`);
+      return res.status(500).json({ success: false, error: 'Failed to update GST return' });
     }
   }
 

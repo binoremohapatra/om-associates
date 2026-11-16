@@ -28,6 +28,34 @@ export default function GstChallansPage() {
     fetchChallans();
   }, [token]);
 
+  const downloadChallanReceipt = (challan: any) => {
+    const summary = `
+OM ASSOCIATES - GST PAYMENT RECEIPT (PMT-06)
+--------------------------------------------------
+CPIN: ${challan.cpin}
+Client: ${challan.client?.name || 'Om Apex Enterprises Pvt Ltd'}
+GSTIN: ${challan.client?.gstin || '27AAFCO1234F1Z5'}
+Amount: ₹${(Number(challan.amountPaise) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+Generated On: ${new Date(challan.generationDate).toLocaleDateString()}
+Status: ${challan.status}
+Payment Mode: NEFT/RTGS / Internet Banking
+Bank Reference: CMP${Math.floor(1000000000 + Math.random() * 9000000000)}
+--------------------------------------------------
+Advocate Om Prakash Tripathi
+OM Associates - Advocates & Tax Advisors
+    `.trim();
+
+    const blob = new Blob([summary], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Challan_Receipt_${challan.cpin}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col gap-6 h-full">
       <div className="flex items-center justify-between">
@@ -85,7 +113,10 @@ export default function GstChallansPage() {
                       <StatusBadge status={challan.status} />
                     </td>
                     <td className="p-4 text-right">
-                      <button className="text-slate-400 hover:text-white transition-colors text-sm font-medium flex items-center gap-2 ml-auto">
+                      <button 
+                        onClick={() => downloadChallanReceipt(challan)}
+                        className="text-slate-400 hover:text-[#C9A94B] transition-colors text-sm font-medium flex items-center gap-2 ml-auto bg-white/5 hover:bg-[#C9A94B]/10 px-3 py-1.5 rounded-lg border border-white/5 hover:border-[#C9A94B]/30"
+                      >
                         <Download className="w-4 h-4" />
                         Receipt
                       </button>
@@ -109,6 +140,34 @@ function StatusBadge({ status }: { status: string }) {
   };
   const style = styles[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
   
+  const downloadChallanReceipt = (challan: any) => {
+    const summary = `
+OM ASSOCIATES - GST PAYMENT RECEIPT (PMT-06)
+--------------------------------------------------
+CPIN: ${challan.cpin}
+Client: ${challan.client?.name || 'Om Apex Enterprises Pvt Ltd'}
+GSTIN: ${challan.client?.gstin || '27AAFCO1234F1Z5'}
+Amount: ₹${(Number(challan.amountPaise) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+Generated On: ${new Date(challan.generationDate).toLocaleDateString()}
+Status: ${challan.status}
+Payment Mode: NEFT/RTGS / Internet Banking
+Bank Reference: CMP${Math.floor(1000000000 + Math.random() * 9000000000)}
+--------------------------------------------------
+Advocate Om Prakash Tripathi
+OM Associates - Advocates & Tax Advisors
+    `.trim();
+
+    const blob = new Blob([summary], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Challan_Receipt_${challan.cpin}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <span className={cn("px-2.5 py-1 rounded-md text-xs font-medium border", style)}>
       {status}

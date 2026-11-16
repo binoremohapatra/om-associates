@@ -11,6 +11,11 @@ import { config } from './config';
 import { requestId, httpLogger } from './middleware/request';
 import { errorHandler } from './middleware/errorHandler';
 
+// Ensure BigInt can be serialized to JSON across all routes
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 // Route imports
 import authRoutes from './routes/auth.routes';
 import clientRoutes from './routes/client.routes';
