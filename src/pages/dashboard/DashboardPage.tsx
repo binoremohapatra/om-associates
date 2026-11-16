@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { pageTransition, staggerContainer, fadeInUp } from '../../lib/animations';
+import { BentoCard } from '../../components/ui/BentoCard';
+import { Tabs } from '../../components/ui/tabs';
 import { useAuth } from '../../contexts/AuthContext';
-import {
-  ShieldCheck, Clock, FileText, CreditCard, Calendar,
-  Landmark, Calculator, Briefcase, Scale, ChevronRight,
-  AlertCircle, CheckCircle
+import { 
+  FileText, Calculator, Clock, ShieldCheck, 
+  Landmark, Briefcase, Download, 
+  Newspaper, CreditCard, Calendar, Upload, Scale, MessageSquare,
+  MessageCircle, Mail, PhoneCall
 } from 'lucide-react';
+
+import { cn } from '../../lib/utils';
+import { MagicBentoGrid } from '../../components/ui/MagicBento';
 import { api } from '@/lib/api';
 
 export default function DashboardPage() {
@@ -14,6 +22,8 @@ export default function DashboardPage() {
   const userName = user?.name || 'User';
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [govNews, setGovNews] = useState<Record<string, any[]>>({});
+  const [govNewsLoading, setGovNewsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -30,196 +40,386 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [token]);
 
+  useEffect(() => {
+    const fetchGovNews = async () => {
+      try {
+        const response = await api.get('/news/latest?perDept=3');
+        if (response.data.success) setGovNews(response.data.data || {});
+      } catch {} finally { setGovNewsLoading(false); }
+    };
+    fetchGovNews();
+  }, []);
+
+  // Define WhatsApp and Email links
+  const whatsappNumber = "919999999999";
+  const emailAddress = "contact@omassociates.com";
+
+  const handleWhatsAppClick = useCallback(() => {
+    window.open(`https://wa.me/${whatsappNumber}?text=Hi, I would like to book a consultation.`, '_blank', 'noopener,noreferrer');
+  }, [whatsappNumber]);
+
+  const handleEmailClick = useCallback(() => {
+    window.location.href = `mailto:${emailAddress}?subject=Booking Consultation Request`;
+  }, [emailAddress]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0D0D0F]">
-        <div className="w-8 h-8 border-2 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-[#C9A94B]/30 border-t-[#C9A94B] rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  const quickActions = [
-    { name: 'File GST', icon: Landmark, path: '/gst', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { name: 'File ITR', icon: Calculator, path: '/income-tax', color: 'text-sky-400', bg: 'bg-sky-500/10' },
-    { name: 'Consult', icon: Briefcase, path: '/queries', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-    { name: 'Legal', icon: Scale, path: '/legal', color: 'text-amber-400', bg: 'bg-amber-500/10' },
-  ];
-
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white mb-1">Welcome back, {userName}</h1>
-        <p className="text-slate-400 text-sm">Here's an overview of your business compliance</p>
-      </div>
+    <>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCard
-          label="Compliance Score"
-          value={`${dashboardData?.businessStatus?.complianceScore || 0}%`}
-          icon={ShieldCheck}
-          color="text-[#C9A94B]"
-          trend="+5%"
-        />
-        <MetricCard
-          label="Pending Tasks"
-          value={dashboardData?.dueDates?.length || 0}
-          icon={Clock}
-          color="text-amber-400"
-          trend="2 urgent"
-        />
-        <MetricCard
-          label="Documents"
-          value={dashboardData?.recentDocuments?.length || 0}
-          icon={FileText}
-          color="text-sky-400"
-          trend="recent"
-        />
-        <MetricCard
-          label="Pending Bills"
-          value={`₹${(dashboardData?.paymentSummary?.pendingBills || 0).toLocaleString()}`}
-          icon={CreditCard}
-          color="text-red-400"
-          trend="due soon"
-        />
-      </div>
+      
+      <motion.div
+        variants={pageTransition}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10"
+      >
+        {/* Header section (already done in layout/navbar but keeping a welcome message here) */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="font-display font-bold text-white mb-1 sm:mb-2" style={{ fontSize: 'clamp(1.5rem, 3vw + 0.3rem, 2rem)' }}>Welcome back, {userName}</h1>
+          <p className="text-slate-400" style={{ fontSize: 'clamp(0.8rem, 1.2vw + 0.1rem, 0.95rem)' }}>Here's what's happening with your business compliance.</p>
+        </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
-        <div className="lg:col-span-2">
-          <SectionHeader title="Quick Actions" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {quickActions.map((action) => (
-              <button
-                key={action.name}
-                onClick={() => navigate(action.path)}
-                className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[#141418] border border-white/5 hover:border-[#C9A94B]/20 hover:bg-[#1C1C22] transition-all group"
-              >
-                <div className={`w-10 h-10 rounded-lg ${action.bg} flex items-center justify-center`}>
-                  <action.icon size={20} className={action.color} />
-                </div>
-                <span className="text-sm text-slate-300 group-hover:text-white">{action.name}</span>
-              </button>
-            ))}
-            <button
-              onClick={() => navigate('/appointments')}
-              className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[#141418] border border-white/5 hover:border-[#C9A94B]/20 hover:bg-[#1C1C22] transition-all group"
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#C9A94B]/10 flex items-center justify-center">
-                <Calendar size={20} className="text-[#C9A94B]" />
+        <MagicBentoGrid 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 auto-rows-[minmax(160px,auto)]"
+        >
+          {/* 1. Business Summary */}
+          <BentoCard size="xl" title="Business Health Summary" description="Overview of your current compliance standing." className="xl:col-span-4" icon={<ShieldCheck size={24} />}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <p className="text-slate-400 text-sm mb-1">GST Status</p>
+                <p className="text-xl font-bold text-emerald-400">{dashboardData?.businessStatus?.gst || 'N/A'}</p>
               </div>
-              <span className="text-sm text-slate-300 group-hover:text-white">Book Appt</span>
-            </button>
-          </div>
-        </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <p className="text-slate-400 text-sm mb-1">PAN Status</p>
+                <p className="text-xl font-bold text-emerald-400">{dashboardData?.businessStatus?.pan || 'N/A'}</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <p className="text-slate-400 text-sm mb-1">IEC Status</p>
+                <p className="text-xl font-bold text-emerald-400">{dashboardData?.businessStatus?.iec || 'N/A'}</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#C9A94B]/20 to-transparent border border-[#C9A94B]/30">
+                <p className="text-[#E8C96B] text-sm mb-1">Compliance Score</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-display font-bold text-[#C9A94B]">{dashboardData?.businessStatus?.complianceScore || '0'}<span className="text-xl text-[#C9A94B]/50">%</span></span>
+                </div>
+              </div>
+            </div>
+          </BentoCard>
 
-        {/* Status Overview */}
-        <div>
-          <SectionHeader title="Compliance Status" />
-          <div className="bg-[#141418] border border-white/5 rounded-xl p-4 space-y-3">
-            <StatusItem label="GST Status" value={dashboardData?.businessStatus?.gst || 'N/A'} status="active" />
-            <StatusItem label="PAN Status" value={dashboardData?.businessStatus?.pan || 'N/A'} status="active" />
-            <StatusItem label="IEC Status" value={dashboardData?.businessStatus?.iec || 'N/A'} status="inactive" />
-          </div>
-        </div>
-      </div>
+          {/* 2. Upcoming Due Dates */}
+          <BentoCard size="md" title="Upcoming Due Dates" description="Critical compliance deadlines." className="xl:col-span-2" icon={<Clock size={24} />}>
+            <div className="space-y-3">
+              {dashboardData?.dueDates && dashboardData.dueDates.length > 0 ? dashboardData.dueDates.map((due: any, i: number) => (
+                <div key={i} className={`flex justify-between items-center p-3 rounded-xl bg-white/5 border border-${due.color}-500/20`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full bg-${due.color}-500`}></div>
+                    <span className="font-medium text-white">{due.title}</span>
+                  </div>
+                  <span className={`text-sm font-bold text-${due.color}-400`}>{due.status}</span>
+                </div>
+              )) : (
+                <div className="flex items-center justify-center h-full py-8 text-slate-500 text-sm">No upcoming due dates.</div>
+              )}
+            </div>
+          </BentoCard>
 
-      {/* Upcoming Deadlines */}
-      <div className="mt-6">
-        <SectionHeader title="Upcoming Deadlines" action="View All" onAction={() => navigate('/calendar')} />
-        <div className="bg-[#141418] border border-white/5 rounded-xl overflow-hidden">
-          {dashboardData?.dueDates && dashboardData.dueDates.length > 0 ? (
-            dashboardData.dueDates.map((due: any, i: number) => (
-              <DeadlineItem key={i} due={due} />
-            ))
-          ) : (
-            <div className="p-8 text-center text-slate-500 text-sm">No upcoming deadlines</div>
-          )}
-        </div>
-      </div>
+          {/* 3. Quick Actions */}
+          <BentoCard size="xl" title="Quick Actions" description="Frequently used services and actions." className="xl:col-span-6">
 
-      {/* Recent Documents */}
-      <div className="mt-6">
-        <SectionHeader title="Recent Documents" action="View All" onAction={() => navigate('/documents')} />
-        <div className="bg-[#141418] border border-white/5 rounded-xl overflow-hidden">
-          {dashboardData?.recentDocuments && dashboardData.recentDocuments.length > 0 ? (
-            dashboardData.recentDocuments.slice(0, 5).map((doc: any, i: number) => (
-              <DocumentItem key={i} doc={doc} />
-            ))
-          ) : (
-            <div className="p-8 text-center text-slate-500 text-sm">No recent documents</div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[
+                { name: 'File GST', icon: Landmark, path: '/gst' },
+                { name: 'File ITR', icon: Calculator, path: '/income-tax' },
+                { name: 'Book Consult', icon: MessageSquare, path: '/queries' },
+                { name: 'Register Co.', icon: Briefcase, path: '/legal' },
+                { name: 'Apply IEC', icon: Scale, path: '/import-export' },
+              ].map((action, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => navigate(action.path)}
+                  className="flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-[#C9A94B]/10 hover:border-[#C9A94B]/30 hover:-translate-y-1 transition-all group"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center border border-white/5 group-hover:border-[#C9A94B]/30 shadow-lg">
+                    <action.icon size={20} className="text-[#E8C96B]" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-300 group-hover:text-white">{action.name}</span>
+                </button>
+              ))}
+            </div>
+          </BentoCard>
 
-// Sub-components
-function MetricCard({ label, value, icon: Icon, color, trend }: any) {
-  return (
-    <div className="bg-[#141418] border border-white/5 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <Icon size={16} className={color} />
-        <span className="text-xs text-slate-500">{trend}</span>
-      </div>
-      <p className="text-2xl font-semibold text-white mb-1">{value}</p>
-      <p className="text-xs text-slate-400">{label}</p>
-    </div>
-  );
-}
+          {/* 4. Connect With Expert */}
+          <BentoCard size="lg" title="Connect with Expert" description="Get direct assistance from your dedicated consultant." className="xl:col-span-4" icon={<PhoneCall size={24} />}>
+            <div className="flex flex-col h-full justify-between gap-4">
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-white/5 to-transparent border border-white/10 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-[#C9A94B]/20 flex items-center justify-center border border-[#C9A94B]/30">
+                  <img src="https://ui-avatars.com/api/?name=Om+Associates&background=C9A94B&color=000" alt="Consultant" className="w-full h-full rounded-full" />
+                </div>
+                <div>
+                  <h4 className="text-white font-medium text-lg">Senior Consultant</h4>
+                  <p className="text-slate-400 text-sm">OM Associates CA Firm</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button 
+                  onClick={handleWhatsAppClick}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all text-emerald-400 group"
+                >
+                  <MessageCircle size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">WhatsApp</span>
+                </button>
+                
+                <button 
+                  onClick={handleEmailClick}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-all text-sky-400 group"
+                >
+                  <Mail size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Email Us</span>
+                </button>
+                
+                <button 
+                  onClick={() => navigate('/appointments')}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#C9A94B]/10 border border-[#C9A94B]/30 hover:bg-[#C9A94B]/20 hover:shadow-[0_0_15px_rgba(201,169,75,0.2)] transition-all text-[#C9A94B] group"
+                >
+                  <Calendar size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Book Appt</span>
+                </button>
+              </div>
+            </div>
+          </BentoCard>
 
-function SectionHeader({ title, action, onAction }: any) {
-  return (
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="text-sm font-medium text-white">{title}</h2>
-      {action && (
-        <button onClick={onAction} className="text-xs text-[#C9A94B] hover:text-[#E8C96B] flex items-center gap-1">
-          {action} <ChevronRight size={14} />
-        </button>
-      )}
-    </div>
-  );
-}
+          <BentoCard size="lg" title="Live Gov Updates" description="Official government notifications." className="xl:col-span-2" icon={<Newspaper size={24} />}>
+            <div className="space-y-2 overflow-y-auto max-h-52 custom-scrollbar">
+              {govNewsLoading ? (
+                Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-14 rounded-xl bg-white/5 animate-pulse" />)
+              ) : (
+                Object.values(govNews).flat().sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, 6).map((item: any, i: number) => (
+                  <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/[0.07] cursor-pointer hover:border-[#C9A94B]/25 transition-all group"
+                    onClick={() => window.open(item.officialUrl, '_blank')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
+                        style={{ backgroundColor: `${item.department?.logoColor || '#C9A94B'}20`, color: item.department?.logoColor || '#C9A94B' }}>
+                        {item.department?.shortName || 'GOV'}
+                      </span>
+                      <span className="text-[9px] text-slate-600">{item.category}</span>
+                    </div>
+                    <h4 className="text-xs text-slate-300 group-hover:text-white transition-colors line-clamp-2 leading-snug">{item.title}</h4>
+                  </div>
+                ))
+              )}
+              {!govNewsLoading && Object.keys(govNews).length === 0 && (
+                <p className="text-xs text-slate-600 py-4 text-center">Sync running... check back shortly.</p>
+              )}
+            </div>
+          </BentoCard>
 
-function StatusItem({ label, value, status }: any) {
-  const Icon = status === 'active' ? CheckCircle : AlertCircle;
-  const color = status === 'active' ? 'text-emerald-400' : 'text-amber-400';
-  return (
-    <div className="flex items-center justify-between py-2">
-      <span className="text-sm text-slate-400">{label}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-white">{value}</span>
-        <Icon size={14} className={color} />
-      </div>
-    </div>
-  );
-}
+          <BentoCard size="md" title="Document Center" description="Recent uploads." className="xl:col-span-2" icon={<FileText size={24} />}>
+            <div className="space-y-3">
+              {dashboardData?.recentDocuments && dashboardData.recentDocuments.length > 0 ? dashboardData.recentDocuments.map((doc: any, i: number) => (
+                <div key={i} className="flex justify-between items-center p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors cursor-pointer group">
+                  <div className="flex items-center gap-3">
+                    <FileText size={16} className="text-slate-400 group-hover:text-[#C9A94B]" />
+                    <span className="text-sm text-slate-300 group-hover:text-white line-clamp-1">{doc.fileName}</span>
+                  </div>
+                  <Download size={14} className="text-slate-500 group-hover:text-white" />
+                </div>
+              )) : (
+                <p className="text-slate-500 text-sm text-center py-4">No recent documents</p>
+              )}
+            </div>
+          </BentoCard>
 
-function DeadlineItem({ due }: any) {
-  const Icon = due.color === 'red' ? AlertCircle : Clock;
-  const color = due.color === 'red' ? 'text-red-400' : due.color === 'amber' ? 'text-amber-400' : 'text-emerald-400';
-  return (
-    <div className="flex items-center justify-between p-4 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
-      <div className="flex items-center gap-3">
-        <Icon size={16} className={color} />
-        <span className="text-sm text-white">{due.title}</span>
-      </div>
-      <span className={`text-xs font-medium ${color}`}>{due.status}</span>
-    </div>
-  );
-}
+          <BentoCard size="md" title="Payment Summary" description="Billing & Invoices." className="xl:col-span-2" icon={<CreditCard size={24} />}>
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-red-500/10 to-transparent border border-red-500/20">
+                <div>
+                  <p className="text-slate-400 text-xs">Pending Bills</p>
+                  <p className="text-xl font-bold text-white">₹{dashboardData?.paymentSummary?.pendingBills?.toLocaleString() || '0'}</p>
+                </div>
+                <button className="px-4 py-2 bg-red-500/20 text-red-400 text-xs font-semibold rounded-lg hover:bg-red-500/30 transition-colors">Pay Now</button>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-400">Last Invoice: {dashboardData?.paymentSummary?.lastInvoice || '-'}</span>
+                <span className="text-sm text-emerald-400">{dashboardData?.paymentSummary?.lastInvoiceStatus || '-'}</span>
+              </div>
+            </div>
+          </BentoCard>
 
-function DocumentItem({ doc }: any) {
-  return (
-    <div className="flex items-center justify-between p-4 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors cursor-pointer">
-      <div className="flex items-center gap-3">
-        <FileText size={16} className="text-slate-400" />
-        <span className="text-sm text-slate-300">{doc.fileName}</span>
-      </div>
-      <ChevronRight size={14} className="text-slate-500" />
-    </div>
+          <BentoCard size="md" title="Compliance Calendar" description="Upcoming deadlines." className="xl:col-span-2" icon={<Calendar size={24} />}>
+            <div className="bg-[#111111] rounded-xl border border-white/10 p-4 h-full flex flex-col items-center justify-center">
+               <div className="text-center space-y-2">
+                 <p className="text-[#C9A94B] font-medium">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</p>
+                 <div className="flex flex-wrap gap-2 justify-center mt-4">
+                    {dashboardData?.dueDates && dashboardData.dueDates.slice(0, 3).map((due: any, i: number) => (
+                      <div key={i} className={`p-2 rounded border border-${due.color}-500/30 bg-${due.color}-500/10 text-center w-full`}>
+                        <p className={`text-xs text-${due.color}-400 font-bold`}>{due.status}</p>
+                        <p className="text-[10px] text-slate-400 mt-1">{due.title}</p>
+                      </div>
+                    ))}
+                    {(!dashboardData?.dueDates || dashboardData.dueDates.length === 0) && (
+                      <p className="text-xs text-slate-500">No upcoming deadlines</p>
+                    )}
+                 </div>
+               </div>
+            </div>
+          </BentoCard>
+
+          <BentoCard size="xl" title="Government Updates Center" description="Latest official circulars and notifications from 5 departments." className="xl:col-span-6">
+            <div className="h-[420px] w-full mt-4">
+              <Tabs
+                containerClassName="mb-4"
+                activeTabClassName="bg-[#C9A94B]/20"
+                tabClassName="hover:text-white"
+                contentClassName="mt-4"
+                tabs={[
+                  {
+                    title: 'GST Council',
+                    value: 'gst-council',
+                    content: (
+                      <div className="w-full h-full rounded-2xl p-5 bg-[#0D0D0F] border border-white/10 overflow-y-auto custom-scrollbar">
+                        <h3 className="text-sm font-medium text-white mb-4">Latest GST Council Notifications</h3>
+                        <div className="space-y-3">
+                          {govNewsLoading ? Array.from({length:3}).map((_,i)=><div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />) :
+                            (govNews['gst-council'] || []).length === 0 ? <p className="text-slate-600 text-sm">Syncing data from GST Council...</p> :
+                            (govNews['gst-council'] || []).map((item: any, i: number) => (
+                              <div key={i} className="p-4 rounded-xl bg-[#111111] border border-white/[0.07] cursor-pointer hover:border-[#C9A94B]/25 transition-all group"
+                                onClick={() => window.open(item.officialUrl, '_blank')}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-[10px] text-slate-600">{item.category}</span>
+                                  {item.notificationNo && <span className="text-[10px] font-mono text-slate-700">{item.notificationNo}</span>}
+                                </div>
+                                <h4 className="text-sm text-white group-hover:text-[#C9A94B] transition-colors line-clamp-2">{item.title}</h4>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  },
+                  {
+                    title: 'CBIC',
+                    value: 'cbic',
+                    content: (
+                      <div className="w-full h-full rounded-2xl p-5 bg-[#0D0D0F] border border-white/10 overflow-y-auto custom-scrollbar">
+                        <h3 className="text-sm font-medium text-white mb-4">CBIC Circulars & Notifications</h3>
+                        <div className="space-y-3">
+                          {govNewsLoading ? Array.from({length:3}).map((_,i)=><div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />) :
+                            (govNews['cbic'] || []).length === 0 ? <p className="text-slate-600 text-sm">Syncing data from CBIC...</p> :
+                            (govNews['cbic'] || []).map((item: any, i: number) => (
+                              <div key={i} className="p-4 rounded-xl bg-[#111111] border border-white/[0.07] cursor-pointer hover:border-[#0F9D58]/25 transition-all group"
+                                onClick={() => window.open(item.officialUrl, '_blank')}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-[10px] text-slate-600">{item.category}</span>
+                                </div>
+                                <h4 className="text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-2">{item.title}</h4>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  },
+                  {
+                    title: 'Income Tax',
+                    value: 'income-tax',
+                    content: (
+                      <div className="w-full h-full rounded-2xl p-5 bg-[#0D0D0F] border border-white/10 overflow-y-auto custom-scrollbar">
+                        <h3 className="text-sm font-medium text-white mb-4">CBDT Notifications & Updates</h3>
+                        <div className="space-y-3">
+                          {govNewsLoading ? Array.from({length:3}).map((_,i)=><div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />) :
+                            (govNews['income-tax'] || []).length === 0 ? <p className="text-slate-600 text-sm">Syncing data from Income Tax...</p> :
+                            (govNews['income-tax'] || []).map((item: any, i: number) => (
+                              <div key={i} className="p-4 rounded-xl bg-[#111111] border border-white/[0.07] cursor-pointer hover:border-amber-500/25 transition-all group"
+                                onClick={() => window.open(item.officialUrl, '_blank')}>
+                                <h4 className="text-sm text-white group-hover:text-amber-400 transition-colors line-clamp-2">{item.title}</h4>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  },
+                  {
+                    title: 'DGFT',
+                    value: 'dgft',
+                    content: (
+                      <div className="w-full h-full rounded-2xl p-5 bg-[#0D0D0F] border border-white/10 overflow-y-auto custom-scrollbar">
+                        <h3 className="text-sm font-medium text-white mb-4">DGFT Trade Notices</h3>
+                        <div className="space-y-3">
+                          {govNewsLoading ? Array.from({length:3}).map((_,i)=><div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />) :
+                            (govNews['dgft'] || []).length === 0 ? <p className="text-slate-600 text-sm">Syncing data from DGFT...</p> :
+                            (govNews['dgft'] || []).map((item: any, i: number) => (
+                              <div key={i} className="p-4 rounded-xl bg-[#111111] border border-white/[0.07] cursor-pointer hover:border-red-500/25 transition-all group"
+                                onClick={() => window.open(item.officialUrl, '_blank')}>
+                                <h4 className="text-sm text-white group-hover:text-red-400 transition-colors line-clamp-2">{item.title}</h4>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  },
+                  {
+                    title: 'MCA',
+                    value: 'mca',
+                    content: (
+                      <div className="w-full h-full rounded-2xl p-5 bg-[#0D0D0F] border border-white/10 overflow-y-auto custom-scrollbar">
+                        <h3 className="text-sm font-medium text-white mb-4">MCA Circulars & ROC Notifications</h3>
+                        <div className="space-y-3">
+                          {govNewsLoading ? Array.from({length:3}).map((_,i)=><div key={i} className="h-16 rounded-xl bg-white/5 animate-pulse" />) :
+                            (govNews['mca'] || []).length === 0 ? <p className="text-slate-600 text-sm">Syncing data from MCA...</p> :
+                            (govNews['mca'] || []).map((item: any, i: number) => (
+                              <div key={i} className="p-4 rounded-xl bg-[#111111] border border-white/[0.07] cursor-pointer hover:border-purple-500/25 transition-all group"
+                                onClick={() => window.open(item.officialUrl, '_blank')}>
+                                <h4 className="text-sm text-white group-hover:text-purple-400 transition-colors line-clamp-2">{item.title}</h4>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  },
+                ]}
+              />
+            </div>
+          </BentoCard>
+
+          {/* 10. Recent Activity Timeline */}
+          <BentoCard size="lg" title="Recent Activity" description="Your timeline." className="xl:col-span-2" icon={<Clock size={24} />}>
+            <div className="space-y-4 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+              {dashboardData?.recentActivity && dashboardData.recentActivity.length > 0 ? dashboardData.recentActivity.map((activity: any, i: number) => {
+                const getIcon = (type: string) => {
+                  switch(type) {
+                    case 'gst': return <Landmark size={14} className="text-emerald-400" />;
+                    case 'payment': return <CreditCard size={14} className="text-sky-400" />;
+                    case 'appointment': return <Calendar size={14} className="text-amber-400" />;
+                    default: return <FileText size={14} className="text-slate-400" />;
+                  }
+                };
+                return (
+                <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white/10 bg-[#111111] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">
+                    <div className="w-2 h-2 rounded-full bg-[#C9A94B]"></div>
+                  </div>
+                  <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-3 rounded-xl bg-white/5 border border-white/5 hover:border-[#C9A94B]/30 transition-colors">
+                    <div className="flex items-center gap-2 mb-1">
+                      {getIcon(activity.type)}
+                      <h4 className="text-sm font-medium text-white">{activity.title}</h4>
+                    </div>
+                    <time className="text-xs text-slate-500">{activity.date}</time>
+                  </div>
+                </div>
+              )}) : (
+                <div className="flex justify-center items-center h-full py-8 text-slate-500 text-sm text-center">No recent activity</div>
+              )}
+            </div>
+          </BentoCard>
+        </MagicBentoGrid>
+      </motion.div>
+    </>
   );
 }
