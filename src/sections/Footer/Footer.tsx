@@ -171,7 +171,7 @@ export default function Footer() {
             © 2025 OM Associates. All rights reserved. · GSTIN: 29AABCT1234F1Z5
           </p>
           <div className="flex items-center gap-4 text-xs" style={{ color: '#3E3E4E' }}>
-            <span style={{ color: '#C9A94B' }}>🔒</span> SSL Secured
+            SSL Secured
             <span>·</span>
             <span>ISO 27001</span>
             <span>·</span>

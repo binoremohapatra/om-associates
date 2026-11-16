@@ -200,7 +200,7 @@ export default function TaxSlabsSection() {
 
             {/* Comparison note */}
             <div className="mt-4 p-4 rounded-xl" style={{ background: 'rgba(201,169,75,0.06)', border: '1px solid rgba(201,169,75,0.15)' }}>
-              <p className="text-xs font-semibold mb-1" style={{ color: '#C9A94B' }}>💡 Pro Tip</p>
+              <p className="text-xs font-semibold mb-1" style={{ color: '#C9A94B' }}>Pro Tip</p>
               <p className="text-xs" style={{ color: '#9898AA' }}>
                 Switch to the Old Regime and subtract your 80C (₹1.5L), 80D (₹25K), and HRA deductions before comparing. Our AI can run this analysis automatically for you.
               </p>

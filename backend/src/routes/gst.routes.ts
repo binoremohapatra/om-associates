@@ -17,6 +17,7 @@ router.get('/dashboard', GstController.getDashboard);
 // List all GST returns across clients
 router.get('/returns', GstController.getReturns);
 router.post('/returns', GstController.createReturn);
+router.patch('/returns/:id', GstController.updateReturnStatus);
 
 // Auto-parse a GST PDF Return
 router.post('/parse-return', upload.single('document'), GstController.uploadReturn);
