@@ -45,7 +45,7 @@ export default function AIAssistantSection() {
     {
       id: '0',
       role: 'assistant',
-      content: "Hello! I'm TaxOS AI, your intelligent tax advisor. I can help you with GST queries, income tax planning, deduction strategies, and compliance questions. What would you like to know today?",
+      content: "Hello! I'm DIVA AI, your intelligent tax advisor. I can help you with GST queries, income tax planning, deduction strategies, and compliance questions. What would you like to know today?",
       timestamp: new Date(),
     },
   ]);
@@ -140,21 +140,19 @@ export default function AIAssistantSection() {
                     transition={{ duration: 0.25 }}
                     className={`flex gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                   >
-                    <div className={`w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center ${
-                      msg.role === 'assistant'
+                    <div className={`w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center ${msg.role === 'assistant'
                         ? 'bg-gradient-to-br from-sky-400 to-violet-500'
                         : 'bg-slate-200 dark:bg-navy-600'
-                    }`}>
+                      }`}>
                       {msg.role === 'assistant'
                         ? <Bot size={14} className="text-white" />
                         : <User size={14} className="text-slate-600 dark:text-slate-300" />
                       }
                     </div>
-                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === 'assistant'
+                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'assistant'
                         ? 'bg-slate-100 dark:bg-navy-900/80 text-navy-900 dark:text-slate-100 rounded-tl-sm'
                         : 'bg-sky-500 text-white rounded-tr-sm'
-                    }`}>
+                      }`}>
                       {msg.content}
                     </div>
                   </motion.div>

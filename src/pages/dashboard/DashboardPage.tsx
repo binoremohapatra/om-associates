@@ -383,7 +383,7 @@ export default function DashboardPage() {
               title="Refresh database metrics"
             >
               <RefreshCw size={14} className={refreshing ? 'animate-spin text-[#C9A94B]' : 'text-slate-400'} />
-              <span>{refreshing ? 'Syncing...' : 'Sync DB'}</span>
+              <span>{refreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
             <button
