@@ -7,7 +7,8 @@ import bcrypt from 'bcryptjs';
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password, name } = req.body;
+      const { email: rawEmail, password, name } = req.body;
+      const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
       if (!email || !password || !name) {
         return res.status(400).json({ success: false, error: 'Email, password, and name are required' });
       }
@@ -31,7 +32,8 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
+      const { email: rawEmail, password } = req.body;
+      const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
       if (!email || !password) {
         return res.status(400).json({ success: false, error: 'Email and password are required' });
       }
@@ -95,7 +97,8 @@ export class AuthController {
 
   static async sendOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.body;
+      const { email: rawEmail } = req.body;
+      const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
       if (!email) return res.status(400).json({ success: false, error: 'Email is required' });
 
       await AuthService.sendOtp(email);
@@ -107,7 +110,8 @@ export class AuthController {
 
   static async verifyOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, otp } = req.body;
+      const { email: rawEmail, otp } = req.body;
+      const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
       if (!email || !otp) return res.status(400).json({ success: false, error: 'Email and OTP are required' });
 
       await AuthService.verifyOtp(email, otp);
@@ -119,7 +123,8 @@ export class AuthController {
 
   static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.body;
+      const { email: rawEmail } = req.body;
+      const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : rawEmail;
       if (!email) return res.status(400).json({ success: false, error: 'Email is required' });
 
       await AuthService.sendPasswordReset(email);

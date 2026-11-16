@@ -362,7 +362,8 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           alpha: true
         });
         this.renderer.setSize(initW, initH, false);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+        this.renderer.setPixelRatio(this.pixelRatio);
         this.composer = new EffectComposer(this.renderer);
         container.append(this.renderer.domElement);
 
@@ -657,7 +658,7 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
           }
         }
 
-        if (resizeRendererToDisplaySize(this.renderer, this.setSize)) {
+        if (resizeRendererToDisplaySize(this.renderer, this.setSize, this.pixelRatio)) {
           const canvas = this.renderer.domElement;
           if (this.hasValidSize) {
             this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
@@ -1144,12 +1145,14 @@ const Hyperspeed = ({ effectOptions = DEFAULT_EFFECT_OPTIONS }) => {
       }
     `;
 
-    function resizeRendererToDisplaySize(renderer, setSize) {
+    function resizeRendererToDisplaySize(renderer, setSize, pixelRatio = 1) {
       const canvas = renderer.domElement;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       if (width <= 0 || height <= 0) return false;
-      const needResize = canvas.width !== width || canvas.height !== height;
+      const needResize =
+        canvas.width !== Math.floor(width * pixelRatio) ||
+        canvas.height !== Math.floor(height * pixelRatio);
       if (needResize) {
         setSize(width, height, false);
       }

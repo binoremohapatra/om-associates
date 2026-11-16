@@ -133,7 +133,7 @@ export class AuthService {
   }
 
   static async findOrCreateOAuthUser(provider: string, profile: any) {
-    const email = profile.emails?.[0]?.value;
+    const email = profile.emails?.[0]?.value?.trim().toLowerCase();
     const providerId = profile.id;
     const name = profile.displayName || profile.username || 'User';
     const avatarUrl = profile.photos?.[0]?.value;

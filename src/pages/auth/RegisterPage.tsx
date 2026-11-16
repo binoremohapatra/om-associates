@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail, Lock, Zap, User, Building, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandGithub, IconBrandWindows, IconBrandApple } from '@tabler/icons-react';
 import { Button } from '../../components/ui/Button';
 import { GlassCard } from '../../components/ui/GlassCard';
-import Hyperspeed from '../../components/ui/Hyperspeed';
+const Hyperspeed = lazy(() => import('../../components/ui/Hyperspeed'));
 import { fadeInUp, staggerContainer } from '../../lib/animations';
 import { LoaderOne } from '../../components/ui/loader';
 
@@ -93,7 +93,9 @@ export default function RegisterPage() {
       {/* Left: Interactive Visuals (Aurora) */}
       <div className="hidden lg:flex relative w-1/2 flex-col justify-between p-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <Hyperspeed effectOptions={hyperspeedOptions} />
+          <Suspense fallback={<div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 120%, rgba(201,169,75,0.12), transparent 60%)' }} />}>
+            <Hyperspeed effectOptions={hyperspeedOptions} />
+          </Suspense>
           <div className="absolute inset-0 bg-navy-950/40 pointer-events-none" />
         </div>
 

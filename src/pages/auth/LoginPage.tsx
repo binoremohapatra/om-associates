@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail, Lock, Eye, EyeOff, CheckCircle2, TrendingUp, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '@/lib/api';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandGithub, IconBrandWindows, IconBrandApple } from '@tabler/icons-react';
-import Hyperspeed from '../../components/ui/Hyperspeed';
+const Hyperspeed = lazy(() => import('../../components/ui/Hyperspeed'));
 import GoldDivider from '../../components/ui/GoldDivider';
 import { LoaderOne } from '../../components/ui/loader';
 
@@ -98,7 +98,9 @@ export default function LoginPage() {
       <div className="hidden lg:flex relative w-1/2 flex-col justify-between overflow-hidden" style={{ padding: 'clamp(2rem, 4vw, 3.5rem)' }}>
         {/* Luxury background */}
         <div className="absolute inset-0 z-0">
-          <Hyperspeed effectOptions={hyperspeedOptions} />
+          <Suspense fallback={<div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 120%, rgba(201,169,75,0.12), transparent 60%)' }} />}>
+            <Hyperspeed effectOptions={hyperspeedOptions} />
+          </Suspense>
           <div className="absolute inset-0 bg-[#0D0D0F]/40 pointer-events-none" />
         </div>
 
@@ -263,6 +265,7 @@ export default function LoginPage() {
                   />
                   <input
                     type="email"
+                    autoComplete="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     onFocus={() => setEmailFocused(true)}
