@@ -55,7 +55,8 @@ export class DashboardController {
         recentDocuments,
         recentGstFilings,
         recentTaxFilings,
-        activeLegalCases
+        activeLegalCases,
+        upcomingAppointments
       ] = await Promise.all([
         prisma.gstFiling.count({ where: clientWhereClause }),
         prisma.gstFiling.count({ where: { ...clientWhereClause, status: 'OVERDUE' } }),
@@ -131,6 +132,21 @@ export class DashboardController {
             court: true,
             status: true,
             nextHearingDate: true
+          }
+        }),
+
+        prisma.appointment.findMany({
+          where: { ...clientWhereClause, status: 'SCHEDULED' },
+          orderBy: { scheduledAt: 'asc' },
+          take: 3,
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            scheduledAt: true,
+            durationMinutes: true,
+            status: true,
+            meetLink: true
           }
         })
       ]);
@@ -364,6 +380,7 @@ export class DashboardController {
           statutoryFilings: statutoryFilings.length > 0 ? statutoryFilings : undefined,
           financialTrends: financialTrends.length > 0 ? financialTrends : undefined,
           activeEngagements: activeEngagements.length > 0 ? activeEngagements : undefined,
+          upcomingAppointments: upcomingAppointments || [],
           financialTotals: {
             totalTurnover: totalTurnover > 0 ? totalTurnover : 3275000,
             totalTaxPaid: totalTaxPaid > 0 ? totalTaxPaid : 589500,

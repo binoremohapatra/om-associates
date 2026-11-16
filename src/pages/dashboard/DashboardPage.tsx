@@ -22,7 +22,7 @@ import {
   MessageCircle, Mail, PhoneCall, ExternalLink,
   CheckCircle2, ArrowUpRight, TrendingUp,
   Sparkles, RefreshCw, Copy, Check, FileCheck, Activity,
-  ChevronRight, AlertCircle, Building2, ChevronDown
+  ChevronRight, AlertCircle, Building2, ChevronDown, Video
 } from 'lucide-react';
 
 // Fallback monthly trend data if database has no historical records yet
@@ -201,6 +201,11 @@ export default function DashboardPage() {
         status: 'OPEN'
       }
     ];
+  }, [dashboardData]);
+
+  // Real Upcoming Appointments from Database
+  const upcomingAppointments = useMemo(() => {
+    return dashboardData?.upcomingAppointments || [];
   }, [dashboardData]);
 
   // Real financial trends from Database
@@ -797,6 +802,73 @@ export default function DashboardPage() {
                 <Calendar size={14} />
                 <span>Schedule 1-on-1 Strategy Meeting</span>
               </button>
+            </div>
+
+            {/* 3.4.1 UPCOMING CONSULTATIONS & VIDEO MEETINGS (From Database) */}
+            <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Video size={18} className="text-[#C9A94B]" />
+                  <h3 className="text-base font-display font-bold text-white">Upcoming Consultations</h3>
+                </div>
+                <button
+                  onClick={() => navigate('/appointments')}
+                  className="text-xs font-semibold text-[#C9A94B] hover:text-[#E8C96B] flex items-center gap-0.5"
+                >
+                  Manage <ArrowUpRight size={13} />
+                </button>
+              </div>
+
+              {upcomingAppointments.length > 0 ? (
+                <div className="space-y-3">
+                  {upcomingAppointments.map((apt: any, i: number) => {
+                    const dateFormatted = new Date(apt.scheduledAt).toLocaleString('en-IN', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                    return (
+                      <div key={i} className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#C9A94B]/30 transition-all space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-xs font-bold text-white leading-tight">{apt.title}</h4>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+                            Scheduled
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 line-clamp-1">{apt.description}</p>
+                        <div className="flex items-center justify-between pt-1 text-xs">
+                          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                            <Clock size={12} className="text-[#C9A94B]" />
+                            <span>{dateFormatted} ({apt.durationMinutes}m)</span>
+                          </div>
+                          {apt.meetLink && (
+                            <a
+                              href={apt.meetLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-2.5 py-1 rounded-lg bg-[#C9A94B]/20 text-[#E8C96B] hover:bg-[#C9A94B] hover:text-black font-semibold text-[11px] transition-all flex items-center gap-1"
+                            >
+                              <Video size={12} />
+                              <span>Join Meet</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-4 space-y-2">
+                  <p className="text-xs text-slate-400">No upcoming meetings scheduled.</p>
+                  <button
+                    onClick={() => setIsBookingOpen(true)}
+                    className="text-xs font-semibold text-[#C9A94B] hover:underline"
+                  >
+                    + Book Strategy Session
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* 3.5 UPCOMING STATUTORY DEADLINES */}
