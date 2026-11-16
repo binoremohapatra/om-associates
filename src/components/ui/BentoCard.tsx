@@ -3,7 +3,7 @@ import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 import { MagicBentoCard } from './MagicBento';
-import { GlowingEffect } from './glowing-effect';
+// import { GlowingEffect } from './glowing-effect'; // Disabled to remove cursor glow
 
 interface BentoCardProps extends HTMLMotionProps<'div'> {
   className?: string;
@@ -35,16 +35,15 @@ export const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
         {...props}
       >
         <div className="absolute inset-0 z-0 rounded-[inherit]">
-          {/* Cursor glow effect disabled per user request */}
-          {/* <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} /> */}
+          {/* GlowingEffect import removed - glow disabled */}
         </div>
         <MagicBentoCard
           className="h-full w-full backdrop-blur-2xl border-white/[0.08]"
           glowColor="201, 169, 75"
           enableStars={false}
-          enableBorderGlow={false} // Disabled cursor border glow
-          enableTilt={true}
-          enableMagnetism={false} // Disable magnetism for large cards to prevent layout jitter
+          enableBorderGlow={false}
+          enableTilt={false} // Disabled tilt for better performance
+          enableMagnetism={false}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[#C9A94B]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           

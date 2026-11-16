@@ -52,7 +52,8 @@
   }
 }
 
-/* Border glow effect */
+/* Border glow effect - disabled for performance */
+/*
 .magic-bento-card--border-glow::after {
   content: '';
   position: absolute;
@@ -88,6 +89,7 @@
     0 4px 20px rgba(201, 169, 75, 0.1),
     0 0 30px var(--gold-glow);
 }
+*/
 
 .particle-container {
   position: relative;

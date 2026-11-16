@@ -197,11 +197,11 @@ export const MagicBentoCard = ({
   style,
   particleCount = DEFAULT_PARTICLE_COUNT,
   glowColor = DEFAULT_GLOW_COLOR,
-  enableTilt = true,
-  clickEffect = true,
-  enableMagnetism = true,
-  enableStars = true,
-  enableBorderGlow = true,
+  enableTilt = false, // Disabled by default for performance
+  clickEffect = false, // Disabled by default for performance
+  enableMagnetism = false,
+  enableStars = false, // Disabled by default for performance
+  enableBorderGlow = false, // Disabled by default
   onClick
 }: any) => {
   const cardRef = useRef<any>(null);
@@ -286,106 +286,25 @@ export const MagicBentoCard = ({
 
     const element = cardRef.current;
 
+    // All heavy animations disabled for performance
     const handleMouseEnter = () => {
       isHoveredRef.current = true;
-      if (enableStars) animateParticles();
-
-      if (enableTilt) {
-        gsap.to(element, { x: 0, y: 0, duration: 0.3, ease: 'power2.out' });
-        if (innerRef.current) {
-           gsap.to(innerRef.current, { x: 0, y: 0, scale: 1.03, duration: 0.3, ease: 'power2.out' });
-        }
-      }
     };
 
     const handleMouseLeave = () => {
       isHoveredRef.current = false;
-      if (enableStars) clearAllParticles();
-
-      if (enableTilt) {
-        gsap.to(element, { x: 0, y: 0, duration: 0.3, ease: 'power2.out' });
-        if (innerRef.current) {
-           gsap.to(innerRef.current, { x: 0, y: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
-        }
-      }
-
-      if (enableMagnetism) {
-        gsap.to(element, { x: 0, y: 0, duration: 0.3, ease: 'power2.out' });
-      }
-    };
-
-    const handleMouseMove = (e: any) => {
-      if (!enableTilt && !enableMagnetism) return;
-
-      const rect = element.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      if (enableTilt) {
-        const mx = (x - centerX) / 20;
-        const my = (y - centerY) / 20;
-        gsap.to(element, { x: mx, y: my, duration: 0.1, ease: 'power2.out' });
-        if (innerRef.current) {
-          gsap.to(innerRef.current, { x: -mx, y: -my, scale: 1.03, duration: 0.1, ease: 'power2.out' });
-        }
-      }
-
-      if (enableMagnetism) {
-        const magnetX = (x - centerX) * 0.05;
-        const magnetY = (y - centerY) * 0.05;
-        magnetismAnimationRef.current = gsap.to(element, { x: magnetX, y: magnetY, duration: 0.3, ease: 'power2.out' });
-      }
-    };
-
-    const handleClick = (e: any) => {
-      if (!clickEffect) return;
-
-      const rect = element.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const maxDistance = Math.max(
-        Math.hypot(x, y), Math.hypot(x - rect.width, y),
-        Math.hypot(x, y - rect.height), Math.hypot(x - rect.width, y - rect.height)
-      );
-
-      const ripple = document.createElement('div');
-      ripple.style.cssText = `
-        position: absolute;
-        width: ${maxDistance * 2}px;
-        height: ${maxDistance * 2}px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(${glowColor}, 0.4) 0%, rgba(${glowColor}, 0.2) 30%, transparent 70%);
-        left: ${x - maxDistance}px;
-        top: ${y - maxDistance}px;
-        pointer-events: none;
-        z-index: 1000;
-      `;
-      element.appendChild(ripple);
-
-      gsap.fromTo(ripple, { scale: 0, opacity: 1 }, {
-        scale: 1, opacity: 0, duration: 0.8, ease: 'power2.out',
-        onComplete: () => ripple.remove()
-      });
-      
-      if (onClick) onClick(e);
     };
 
     element.addEventListener('mouseenter', handleMouseEnter);
     element.addEventListener('mouseleave', handleMouseLeave);
-    element.addEventListener('mousemove', handleMouseMove);
-    element.addEventListener('click', handleClick);
 
     return () => {
       isHoveredRef.current = false;
       element.removeEventListener('mouseenter', handleMouseEnter);
       element.removeEventListener('mouseleave', handleMouseLeave);
-      element.removeEventListener('mousemove', handleMouseMove);
-      element.removeEventListener('click', handleClick);
       clearAllParticles();
     };
-  }, [animateParticles, clearAllParticles, shouldDisableAnimations, enableTilt, enableMagnetism, clickEffect, glowColor, enableStars, onClick]);
+  }, [clearAllParticles, shouldDisableAnimations]);
 
   const baseClassName = `magic-bento-card ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''} ${enableStars ? 'particle-container' : ''} ${className}`;
   
