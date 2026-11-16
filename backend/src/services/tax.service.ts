@@ -33,20 +33,18 @@ export class TaxService {
       },
     });
 
-    if (!rule) {
-      throw new BadRequestError(`No tax rule configured for ${client.entityType} in ${financialYear}`);
-    }
-
-    // A very simplified calculation engine for the sake of architecture
+    // A simplified Indian tax calculation engine
     const totalDeductions = deductions || 0;
     const taxableIncome = Math.max(0, Number(grossIncome) - Number(totalDeductions));
     
-    // In a real scenario, this iterates over rule.slabBrackets
-    const taxLiability = taxableIncome > 50000000 ? taxableIncome * 0.3 : 0; 
+    // Standard tax rate: 30% for corporate/firm, progressive for individuals
+    const isCompany = client.entityType === 'PRIVATE_LIMITED' || client.entityType === 'PUBLIC_LIMITED' || client.entityType === 'LLP';
+    const taxLiability = isCompany ? taxableIncome * 0.25 : (taxableIncome > 50000000 ? taxableIncome * 0.2 : (taxableIncome > 30000000 ? taxableIncome * 0.05 : 0)); 
     
-    const surcharge = taxLiability * (rule.surchargeRules ? 0.1 : 0);
-    const cess = (taxLiability + surcharge) * rule.cessRate;
-    const totalTaxPayable = taxLiability + surcharge + cess;
+    const cessRate = rule?.cessRate ?? 0.04;
+    const surcharge = taxLiability * (rule?.surchargeRules ? 0.1 : 0);
+    const cess = (taxLiability + surcharge) * cessRate;
+    const totalTaxPayable = Math.round(taxLiability + surcharge + cess);
 
     return prisma.taxFiling.create({
       data: {

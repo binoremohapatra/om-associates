@@ -32,12 +32,12 @@ const addDeductionSchema = z.object({
 router.get('/rules', TaxController.getTaxRules);
 
 // Filings
-router.post('/filings', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT), validate(createFilingSchema), TaxController.createTaxFiling);
-router.post('/parse-itrv', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT), upload.single('itrvPdf'), TaxController.uploadItrV);
-router.get('/clients/:clientId/filings', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF), TaxController.getTaxFilings);
+router.post('/filings', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT), validate(createFilingSchema), TaxController.createTaxFiling);
+router.post('/parse-itrv', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT), upload.single('itrvPdf'), TaxController.uploadItrV);
+router.get('/clients/:clientId/filings', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT), TaxController.getTaxFilings);
 
 // Deductions
-router.post('/clients/:clientId/deductions', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT), validate(addDeductionSchema), TaxController.addDeduction);
-router.get('/clients/:clientId/deductions', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF), TaxController.getDeductions);
+router.post('/clients/:clientId/deductions', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT), validate(addDeductionSchema), TaxController.addDeduction);
+router.get('/clients/:clientId/deductions', requireRoles(UserRole.OWNER, UserRole.ACCOUNTANT, UserRole.STAFF, UserRole.CLIENT), TaxController.getDeductions);
 
 export default router;
