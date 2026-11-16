@@ -9,7 +9,7 @@ import {
   FileText, Calculator, Clock, ShieldCheck, 
   Landmark, Briefcase, Download, 
   Newspaper, CreditCard, Calendar, Upload, Scale, MessageSquare,
-  MessageCircle, Mail, PhoneCall, Linkedin
+  MessageCircle, Mail, PhoneCall, Link
 } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
@@ -208,7 +208,7 @@ export default function DashboardPage() {
                   onClick={handleLinkedInClick}
                   className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#0077B5]/10 border border-[#0077B5]/20 hover:bg-[#0077B5]/20 transition-all text-[#0077B5] group"
                 >
-                  <Linkedin size={24} className="group-hover:scale-110 transition-transform" />
+                  <Link size={24} className="group-hover:scale-110 transition-transform" />
                   <span className="text-sm font-medium">LinkedIn</span>
                 </button>
               </div>
