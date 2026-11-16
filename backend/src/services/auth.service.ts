@@ -13,13 +13,16 @@ export class AuthService {
   }
 
   static async register(email: string, passwordHash: string, name: string) {
-    // Determine organization. For now, find default or create one
-    let org = await prisma.organization.findFirst({ where: { name: 'Default Organization' } });
-    if (!org) {
-      org = await prisma.organization.create({
-        data: { name: 'Default Organization', email: 'admin@taxos.in' }
-      });
-    }
+    // Multi-tenant: Every account gets its OWN isolated Organization & Client workspace
+    const orgName = `${name || 'Client'}'s Organization`;
+    const org = await prisma.organization.create({
+      data: {
+        name: orgName,
+        email: email,
+        entityType: 'PRIVATE_LIMITED',
+        subscriptionTier: 'FREE'
+      }
+    });
 
     const userCode = 'USR-' + Math.floor(10000 + Math.random() * 90000).toString();
     const user = await prisma.user.create({
@@ -31,6 +34,20 @@ export class AuthService {
         organizationId: org.id,
         emailVerified: true,
         authProvider: 'EMAIL',
+        role: 'OWNER'
+      }
+    });
+
+    // Auto-create initial isolated company for this user
+    await prisma.client.create({
+      data: {
+        organizationId: org.id,
+        name: `${name || 'My'} Enterprises Pvt Ltd`,
+        entityType: 'PRIVATE_LIMITED',
+        email: email,
+        city: 'New Delhi',
+        state: 'Delhi',
+        isActive: true
       }
     });
 
@@ -145,12 +162,15 @@ export class AuthService {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      let org = await prisma.organization.findFirst({ where: { name: 'Default Organization' } });
-      if (!org) {
-        org = await prisma.organization.create({
-          data: { name: 'Default Organization', email: 'admin@taxos.in' }
-        });
-      }
+      const orgName = `${name || 'Client'}'s Organization`;
+      const org = await prisma.organization.create({
+        data: {
+          name: orgName,
+          email: email,
+          entityType: 'PRIVATE_LIMITED',
+          subscriptionTier: 'FREE'
+        }
+      });
 
       const userCode = 'USR-' + Math.floor(10000 + Math.random() * 90000).toString();
       user = await prisma.user.create({
@@ -162,7 +182,21 @@ export class AuthService {
           organizationId: org.id,
           authProvider: provider.toUpperCase() as any,
           providerId,
-          emailVerified: true // OAuth providers imply verified emails
+          emailVerified: true,
+          role: 'OWNER'
+        }
+      });
+
+      // Auto-create initial isolated company for this user
+      await prisma.client.create({
+        data: {
+          organizationId: org.id,
+          name: `${name || 'My'} Enterprises Pvt Ltd`,
+          entityType: 'PRIVATE_LIMITED',
+          email: email,
+          city: 'New Delhi',
+          state: 'Delhi',
+          isActive: true
         }
       });
     }

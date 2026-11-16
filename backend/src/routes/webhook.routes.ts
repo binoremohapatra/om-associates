@@ -74,15 +74,14 @@ router.post('/clerk', express.raw({ type: 'application/json' }), async (req, res
       }
       organizationId = org.id;
     } else {
-      let org = await prisma.organization.findFirst({ where: { name: 'Default Organization' } });
-      if (!org) {
-        org = await prisma.organization.create({
-          data: {
-            name: 'Default Organization',
-            email: 'admin@taxos.com',
-          }
-        });
-      }
+      let org = await prisma.organization.create({
+        data: {
+          name: `${name || email || 'Client'}'s Workspace`,
+          email: email || 'admin@taxos.com',
+          entityType: 'PRIVATE_LIMITED',
+          subscriptionTier: 'FREE'
+        }
+      });
       organizationId = org.id;
     }
 
