@@ -9,7 +9,7 @@ import {
   FileText, Calculator, Clock, ShieldCheck, 
   Landmark, Briefcase, Download, 
   Newspaper, CreditCard, Calendar, Upload, Scale, MessageSquare,
-  MessageCircle, Mail, PhoneCall
+  MessageCircle, Mail, PhoneCall, Linkedin
 } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
@@ -50,17 +50,27 @@ export default function DashboardPage() {
     fetchGovNews();
   }, []);
 
-  // Define WhatsApp and Email links
-  const whatsappNumber = "919999999999";
-  const emailAddress = "contact@omassociates.com";
+  // Define WhatsApp, Phone, Email and LinkedIn links
+  const whatsappNumber = "917503901456";
+  const phoneNumber = "+91 75039 01456";
+  const emailAddress = "Om.associates.adv@gmail.com";
+  const linkedinUrl = "https://www.linkedin.com/in/om-prakash-tripathi-7962aa403";
 
   const handleWhatsAppClick = useCallback(() => {
     window.open(`https://wa.me/${whatsappNumber}?text=Hi, I would like to book a consultation.`, '_blank', 'noopener,noreferrer');
   }, [whatsappNumber]);
 
+  const handlePhoneClick = useCallback(() => {
+    window.open(`tel:${phoneNumber.replace(/\s/g, '')}`, '_blank');
+  }, [phoneNumber]);
+
   const handleEmailClick = useCallback(() => {
     window.location.href = `mailto:${emailAddress}?subject=Booking Consultation Request`;
   }, [emailAddress]);
+
+  const handleLinkedInClick = useCallback(() => {
+    window.open(linkedinUrl, '_blank', 'noopener,noreferrer');
+  }, [linkedinUrl]);
 
   if (loading) {
     return (
@@ -161,15 +171,15 @@ export default function DashboardPage() {
             <div className="flex flex-col h-full justify-between gap-4">
               <div className="p-5 rounded-2xl bg-gradient-to-r from-white/5 to-transparent border border-white/10 flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-[#C9A94B]/20 flex items-center justify-center border border-[#C9A94B]/30">
-                  <img src="https://ui-avatars.com/api/?name=Om+Associates&background=C9A94B&color=000" alt="Consultant" className="w-full h-full rounded-full" />
+                  <img src="https://ui-avatars.com/api/?name=Om+Prakash&background=C9A94B&color=000" alt="Consultant" className="w-full h-full rounded-full" />
                 </div>
                 <div>
-                  <h4 className="text-white font-medium text-lg">Senior Consultant</h4>
-                  <p className="text-slate-400 text-sm">OM Associates CA Firm</p>
+                  <h4 className="text-white font-medium text-lg">Om Prakash Tripathi</h4>
+                  <p className="text-slate-400 text-sm">Senior Consultant - OM Associates</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <button 
                   onClick={handleWhatsAppClick}
                   className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all text-emerald-400 group"
@@ -177,23 +187,39 @@ export default function DashboardPage() {
                   <MessageCircle size={24} className="group-hover:scale-110 transition-transform" />
                   <span className="text-sm font-medium">WhatsApp</span>
                 </button>
+
+                <button 
+                  onClick={handlePhoneClick}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-all text-blue-400 group"
+                >
+                  <PhoneCall size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Call</span>
+                </button>
                 
                 <button 
                   onClick={handleEmailClick}
                   className="flex flex-col items-center gap-2 p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-all text-sky-400 group"
                 >
                   <Mail size={24} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Email Us</span>
+                  <span className="text-sm font-medium">Email</span>
                 </button>
-                
+
                 <button 
-                  onClick={() => navigate('/appointments')}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#C9A94B]/10 border border-[#C9A94B]/30 hover:bg-[#C9A94B]/20 hover:shadow-[0_0_15px_rgba(201,169,75,0.2)] transition-all text-[#C9A94B] group"
+                  onClick={handleLinkedInClick}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#0077B5]/10 border border-[#0077B5]/20 hover:bg-[#0077B5]/20 transition-all text-[#0077B5] group"
                 >
-                  <Calendar size={24} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Book Appt</span>
+                  <Linkedin size={24} className="group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">LinkedIn</span>
                 </button>
               </div>
+
+              <button
+                onClick={() => navigate('/appointments')}
+                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#C9A94B]/10 border border-[#C9A94B]/30 hover:bg-[#C9A94B]/20 transition-all text-[#C9A94B] group"
+              >
+                <Calendar size={20} className="group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-medium">Book Appointment</span>
+              </button>
             </div>
           </BentoCard>
 
