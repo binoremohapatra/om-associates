@@ -65,7 +65,9 @@ export default function DashboardPage() {
   }, [phoneNumber]);
 
   const handleEmailClick = useCallback(() => {
-    window.location.href = `mailto:${emailAddress}?subject=Booking Consultation Request`;
+    const subject = encodeURIComponent('Booking Consultation Request');
+    const body = encodeURIComponent('Hi, I would like to book a consultation with OM Associates.');
+    window.location.href = `mailto:${emailAddress}?subject=${subject}&body=${body}`;
   }, [emailAddress]);
 
   const handleLinkedInClick = useCallback(() => {
