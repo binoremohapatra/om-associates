@@ -41,12 +41,12 @@ interface Stats {
 }
 
 const DEPT_FILTERS = [
-  { slug: 'all', label: 'All Sources', icon: '🏛️' },
-  { slug: 'gst-council', label: 'GST Council', icon: '📋' },
-  { slug: 'cbic', label: 'CBIC', icon: '💼' },
-  { slug: 'income-tax', label: 'Income Tax', icon: '💰' },
-  { slug: 'dgft', label: 'DGFT', icon: '🌐' },
-  { slug: 'mca', label: 'MCA', icon: '🏢' },
+  { slug: 'all', label: 'All Sources' },
+  { slug: 'gst-council', label: 'GST Council' },
+  { slug: 'cbic', label: 'CBIC' },
+  { slug: 'income-tax', label: 'Income Tax' },
+  { slug: 'dgft', label: 'DGFT' },
+  { slug: 'mca', label: 'MCA' },
 ];
 
 const CATEGORY_FILTERS = ['All', 'Notification', 'Circular', 'Press Release', 'Trade Notice', 'Public Notice', 'Rate'];
@@ -55,10 +55,6 @@ const PRIORITY_BADGE: Record<string, string> = {
   HIGH: 'bg-red-500/15 text-red-400 border-red-500/30',
   NORMAL: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
   LOW: 'bg-slate-500/15 text-slate-400 border-slate-500/30',
-};
-
-const DEPT_ICONS: Record<string, string> = {
-  'gst-council': '📋', cbic: '💼', 'income-tax': '💰', dgft: '🌐', mca: '🏢',
 };
 
 type ViewMode = 'grid' | 'list' | 'timeline';
@@ -106,7 +102,7 @@ function NewsCard({ item, view, bookmarked, onBookmark, token }:
         onClick={() => window.open(item.officialUrl, '_blank')}>
         <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
           style={{ backgroundColor: `${color}20`, border: `1px solid ${color}30` }}>
-          {DEPT_ICONS[item.category?.toLowerCase()] || '📄'}
+          <FileText className="w-4 h-4" style={{ color }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -155,9 +151,9 @@ function NewsCard({ item, view, bookmarked, onBookmark, token }:
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: `${color}20`, border: `1px solid ${color}30` }}>
-            {DEPT_ICONS[item.category?.toLowerCase()] || '📄'}
+            <FileText className="w-3.5 h-3.5" style={{ color }} />
           </div>
           <div>
             <DeptBadge dept={item.department} color={color} />
@@ -411,7 +407,7 @@ export default function NewsPage() {
             {DEPT_FILTERS.map(d => (
               <button key={d.slug} id={`dept-filter-${d.slug}`} onClick={() => { setDeptFilter(d.slug); setPage(1); }}
                 className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${deptFilter === d.slug ? 'bg-[#C9A94B]/20 text-[#C9A94B] border border-[#C9A94B]/30' : 'bg-white/[0.04] text-slate-500 border border-white/[0.07] hover:text-white'}`}>
-                {d.icon} {d.label}
+                {d.label}
               </button>
             ))}
           </div>

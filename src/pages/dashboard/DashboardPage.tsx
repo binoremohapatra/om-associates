@@ -364,10 +364,10 @@ export default function DashboardPage() {
                     onChange={(e) => handleCompanyChange(e.target.value)}
                     className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer appearance-none pr-5 py-0.5"
                   >
-                    <option value="all" className="bg-[#111115] text-white">🌐 All Entities (Consolidated)</option>
+                    <option value="all" className="bg-[#111115] text-white">All Entities (Consolidated)</option>
                     {clientCompanies.map((c: any) => (
                       <option key={c.id} value={c.id} className="bg-[#111115] text-white">
-                        🏢 {c.name} ({c.state})
+                        {c.name} ({c.state})
                       </option>
                     ))}
                   </select>

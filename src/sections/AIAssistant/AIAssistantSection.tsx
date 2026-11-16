@@ -45,7 +45,7 @@ export default function AIAssistantSection() {
     {
       id: '0',
       role: 'assistant',
-      content: "👋 Hello! I'm TaxOS AI, your intelligent tax advisor. I can help you with GST queries, income tax planning, deduction strategies, and compliance questions. What would you like to know today?",
+      content: "Hello! I'm TaxOS AI, your intelligent tax advisor. I can help you with GST queries, income tax planning, deduction strategies, and compliance questions. What would you like to know today?",
       timestamp: new Date(),
     },
   ]);

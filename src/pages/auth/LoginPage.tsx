@@ -404,7 +404,7 @@ export default function LoginPage() {
 
           {/* Bottom trust line */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            {['🔒 SSL Secured', 'ISO 27001', 'DPIIT Recognised'].map((t, i) => (
+            {['SSL Secured', 'ISO 27001', 'DPIIT Recognised'].map((t, i) => (
               <React.Fragment key={t}>
                 {i > 0 && <span style={{ color: '#2E2E3A' }}>·</span>}
                 <span className="text-xs" style={{ color: '#3E3E4E' }}>{t}</span>
