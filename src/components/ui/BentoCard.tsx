@@ -35,13 +35,14 @@ export const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
         {...props}
       >
         <div className="absolute inset-0 z-0 rounded-[inherit]">
-          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} />
+          {/* Cursor glow effect disabled per user request */}
+          {/* <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={3} /> */}
         </div>
         <MagicBentoCard
           className="h-full w-full backdrop-blur-2xl border-white/[0.08]"
           glowColor="201, 169, 75"
           enableStars={false}
-          enableBorderGlow={true}
+          enableBorderGlow={false} // Disabled cursor border glow
           enableTilt={true}
           enableMagnetism={false} // Disable magnetism for large cards to prevent layout jitter
         >

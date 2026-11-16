@@ -181,20 +181,12 @@ export const GlobalSpotlight = ({
 export const MagicBentoGrid = ({ children, className = '' }: any) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
-  
+
+  // Global spotlight disabled per user request to remove cursor glow effect
   return (
-    <>
-      <GlobalSpotlight 
-        gridRef={gridRef} 
-        disableAnimations={isMobile}
-        enabled={true}
-        spotlightRadius={DEFAULT_SPOTLIGHT_RADIUS}
-        glowColor={DEFAULT_GLOW_COLOR}
-      />
-      <div className={`bento-section ${className}`} ref={gridRef}>
-        {children}
-      </div>
-    </>
+    <div className={`bento-section ${className}`} ref={gridRef}>
+      {children}
+    </div>
   );
 };
 
